@@ -75,6 +75,8 @@ Ext.define("SiteSelector.view.BodyList", {
 				records.filter(function(r) { return r.data.side == $this.alias; }).forEach(function(r) { $this.drawSite(r); });
 			} else {
 				$this.getStore().un("addrecords", fn);
+				// through rotating display we can hold a reference to a BodyList that ceases to exist
+				// so we remove the listener on it if we can detect that happened
 			}
 		};
 		

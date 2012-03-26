@@ -68,7 +68,9 @@ Ext.define("SiteSelector.view.SiteEdit", {
 					var r = form.getRecord();
 					form.updateRecord(r);
 					r.dirty = true;
-					Ext.data.StoreManager.get("Sites").sync();
+					var siteStore = Ext.data.StoreManager.get("Sites");
+					siteStore.sync();
+					siteStore.sort(siteStore.sorters);
 					form.destroy();
 					Ext.ComponentQuery.query("BodyList").map(function(list) {
 						list.clearSites();
