@@ -1,16 +1,23 @@
 Ext.define("SiteSelector.view.SiteEdit", {
 	extend: "Ext.form.Panel",
 	alias: "widget.SiteEdit",
-	requires: ['Ext.field.DatePicker', 'Ext.field.Select'],
+	requires: ['Ext.field.DatePicker', 'Ext.field.Select', 'Ext.ux.field.DateTimePicker'],
 	config: {
 		scroll: 'vertical',
 		items: [
 			{
-				xtype: "datepickerfield",
-				name: "when",
+				xtype: 'datetimepickerfield',
+				name : 'when',
 				label: "Placed",
 				labelWidth: "100%",
-				labelAlign: "top"
+				labelAlign: "top",
+				value: new Date(),
+				picker: {
+					yearFrom: 1980,
+					minuteInterval : 1,
+					ampm : true,
+					slotOrder: ['month', 'day', 'year','hour','minute','ampm']
+				}
 			},
 			{
 				xtype: "selectfield",
