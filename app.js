@@ -84,7 +84,7 @@ Ext.application({
 						// if we don't need to show help, unbind this
 						var help = Ext.Viewport.add({
 							xtype: "panel",
-							html: "Tap the type of site you'd like to add, then tap the body location you'd like to place it at.",
+							html: "Long tap the part of your body you'd like to use as a site. You'll be prompted for the site's type.",
 							style: 'opacity: 0.6;margin: 1em;',
 							overlay: true,
 							top: "1in",
