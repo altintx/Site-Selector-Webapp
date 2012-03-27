@@ -28,14 +28,24 @@ Ext.define('SiteSelector.model.Site', {
 				name: "side",
 				type: "string"
 			},
-			{
-				name: "decays",
-				type: "int"
-			},
+			// {
+			// 	name: "decays",
+			// 	type: "int"
+			// },
 			{
 				name: "location",
 				type: "string"
 			}
 		]
+	},
+	
+	decays: function () {
+		switch (this.get("kind")) {
+			case "pump":
+				return SiteSelector.app.settings().get("pumpreuse");
+			case "cgm":
+				return SiteSelector.app.settings().get("cgmreuse");
+		}
+		return 0;
 	}
 });

@@ -15,12 +15,14 @@ Ext.define('SiteSelector.profile.Tablet', {
 	launch: function() {
 		var $this = this;
 		var defaultViewport = function(viewport) {
+			var main = null;
 			viewport.removeAll(true);
-			if (viewport.getOrientation() == "landscape")
-				viewport.add(Ext.create('SiteSelector.view.tablet.Main')).show();
-			else 
-				viewport.add(Ext.create('SiteSelector.view.phone.Main')).show();
-			
+			if (viewport.getOrientation() == "landscape") {
+				main = Ext.create('SiteSelector.view.tablet.Main');
+			} else {
+				main = Ext.create('SiteSelector.view.phone.Main');
+			}
+			viewport.add(main).show();
 		};
 		Ext.Viewport.on("orientationchange", function(viewport, orientation) {
 			defaultViewport(viewport);

@@ -26,6 +26,6 @@ Ext.define("SiteSelector.controller.Settings", {
 		Ext.Viewport.down("tabpanel").switchTo("front");
 	},
 	activate: function(form) {
-		form.setRecord(SiteSelector.app.settings);
+		form.setRecord(SiteSelector.app.settings());
 	}
 })

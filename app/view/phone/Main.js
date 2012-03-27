@@ -36,11 +36,15 @@ Ext.define("SiteSelector.view.phone.Main", {
     },
 
 	constructor: function(config) {
-		this.config.items.forEach(function(item) {
+		var attachStore = function(item) {
 			if (["BodyList", "SiteLog"].indexOf(item.xtype) > -1)
 				item.store = Ext.getStore('Sites');
-		});
+			else if (item.items && item.items.length)
+				item.items.forEach(attachStore);
+		};
+		this.config.items.forEach(attachStore);
 		this.callParent(arguments);
+
 	},
 
 	switchTo: function(alias) {

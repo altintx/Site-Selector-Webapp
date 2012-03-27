@@ -20,7 +20,6 @@ Ext.define("SiteSelector.controller.Body", {
 			}
 		}
 	},
-	views: ["SiteEdit"],
 	addPump: function(button) {
 		return this.addSite("pump", button.config.side, button.up("BodyList").down("image"))
 	},
@@ -31,13 +30,6 @@ Ext.define("SiteSelector.controller.Body", {
 		var expires = new Date(Date.now() + 10000);
 		view.on("tap", function(el, event) {
 			if (expires < Date.now()) return;
-			var decay = 0;
-			if (type == "pump") {
-				decay = SiteSelector.app.settings.get("pumpreuse");
-			} else {
-				decay = SiteSelector.app.settings.get("cgmreuse");
-			}
-			console.log(event);
 			var w = view.element.getWidth(),
 			    h = view.element.getHeight(),
 			    x = event.pageX - event.target.offsetParent.offsetParent.offsetLeft,
@@ -49,20 +41,23 @@ Ext.define("SiteSelector.controller.Body", {
 				x: x / w,
 				y: y / h,
 				side: side,
-				decays: decay,
 				location: new SiteSelector.model.BodyRegion().regionName(100 * x/w, 100 * y/h, side)
 			});
 			store.sync();
 		}, this, { single: true });
 	},
 	onActivate: function(container) {
-		container.clearSites();
-		container.drawSites();
+		window.setTimeout(function() {
+			container.clearSites();
+			container.drawSites();
+		}, 2);
 	},
 	editSite: function(options) {
+		var $this = this;
 		this.overlay = Ext.Viewport.add({
 			xtype: "SiteEdit",
 			modal: true,
+			hideOnMaskTap: true,
 			record: options.record,
 			showAnimation: {
 				type: "popIn",
@@ -77,7 +72,13 @@ Ext.define("SiteSelector.controller.Body", {
 			centered: true,
 			scrollable: true,
 			width: Ext.Viewport.windowWidth * 0.8,
-			height: Ext.Viewport.windowHeight * 0.8
+			height: Ext.Viewport.windowHeight * 0.8,
+			listeners: {
+				hide: function() {
+					$this.overlay.destroy();
+					delete $this.overlay;
+				}
+			}
 		});
 		this.overlay.show();
 	}
