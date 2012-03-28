@@ -21,7 +21,7 @@ Ext.define("SiteSelector.controller.Body", {
 		}
 	},
 	addPump: function(button) {
-		return this.addSite("pump", button.config.side, button.up("BodyList").down("image"))
+		return this.addSite("pump", button.config.side, button.up("BodyList").down("image"));
 	},
 	addCgm: function(button) {
 		return this.addSite("cgm", button.config.side, button.up("BodyList").down("image"))
@@ -29,11 +29,29 @@ Ext.define("SiteSelector.controller.Body", {
 	addSite: function(type, side, view) {
 		var expires = new Date(Date.now() + 10000);
 		view.on("tap", function(el, event) {
-			if (expires < Date.now()) return;
+			if (expires < Date.now()) {
+				var help = Ext.Viewport.add({
+					xtype: "panel",
+					html: "Oops, I didn't get that. Try again, but hold your finger where you'd like it placed (and don't worry about pressing the add button first.)",
+					style: 'opacity: 0.6;margin: 1em;',
+					overlay: true,
+					top: "1in",
+					hideOnMaskTap: true,
+				});
+				// expire help after 5s
+				Ext.Anim.run(help, 'fade', {
+					after: function() {
+						help.destroy();
+					},
+					out: true,
+					delay: 5000
+				})
+				return;
+			}
 			var w = view.element.getWidth(),
 			    h = view.element.getHeight(),
-			    x = event.pageX - event.target.offsetParent.offsetParent.offsetLeft,
-			    y = event.pageY - event.target.offsetParent.offsetTop,
+			    x = event.browserEvent.offsetX, // event.pageX - event.target.offsetParent.offsetParent.offsetLeft,
+			    y = event.browserEvent.offsetY, //event.pageY - event.target.offsetParent.offsetTop,
 			    store = view.up("panel").getStore();
 			var usage = store.add({
 		        kind: type,
