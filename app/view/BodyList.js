@@ -83,8 +83,8 @@ Ext.define("SiteSelector.view.BodyList", {
 		// needs assigned this way so we can unregister on just this instance
 		$this.getStore().on("addrecords", fn);
 		
-		window.setTimeout(function() {
-			var transformBodyLayout = function() {
+		var fnTimer = function() {
+			if (humanBodyMap.element != null && humanBodyMap.element.getHeight() > 0) {
 				var w = humanBodyMap.element.getWidth(), h = humanBodyMap.element.getHeight();
 				humanBodyMap.destroy();
 				delete $this.config.bodyConfig.layout;
@@ -110,21 +110,13 @@ Ext.define("SiteSelector.view.BodyList", {
 						$this.config.bodyConfig
 					]
 				}).show();
-				
-				debugger;
-				$this.down("img").element.on("longpress", $this.onLongPress());				
-			}
-			if (humanBodyMap.element.getHeight() > 0) {
-				transformBodyLayout();
+
+				$this.down("img").element.on("longpress", $this.onLongPress());
 			} else {
-				$this.on("activate", function() {
-					window.setTimeout(function() {
-						transformBodyLayout();
-					}, 10);
-				},
-				true)
+				setTimeout(fnTimer, 50);
 			}
-		}, 1);
+		}
+		fnTimer();
 	},
 	
 	onLongPress: function() {
