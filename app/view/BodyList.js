@@ -315,7 +315,7 @@ Ext.define("SiteSelector.view.BodyList", {
 	
 	drawSite: function(record, regenerate_time) {
 		var $this = this;
-		var time_left = (record.get("when").getTime() + regenerate_time) - Date.now();
+		var time_left = (record.get("removed") == null)? regenerate_time:  (record.get("removed").getTime() + regenerate_time - Date.now());
 		if (time_left > 0) { 
 			$this.sites.push(this.plotPoint(
 				record.data.x,
