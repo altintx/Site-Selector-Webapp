@@ -54,15 +54,28 @@ Ext.define("SiteSelector.controller.Body", {
 			    x = event.browserEvent.offsetX, // event.pageX - event.target.offsetParent.offsetParent.offsetLeft,
 			    y = event.browserEvent.offsetY, //event.pageY - event.target.offsetParent.offsetTop,
 			    store = view.up("panel").getStore();
+			var lastSite = store.lastSite(side);
 			var usage = store.add({
 		        kind: type,
 				when: new Date(),
 				x: x / w,
 				y: y / h,
 				side: side,
+				removed: null,
 				location: new SiteSelector.model.BodyRegion().regionName(100 * x/w, 100 * y/h, side)
 			});
-			store.sync();
+			if (lastSite) {
+				Ext.Msg.confirm("Remove old site", "Would you like to mark the site you inserted " + lastSite.get("when").toLocaleDateString() + " as removed?", function(button) {
+					if (button == "yes") {
+						lastSite.dirty = true;
+						lastSite.set("removed", new Date());
+					}
+					store.sync();
+					
+				});
+			} else {
+				store.sync();
+			}
 		}, this, { single: true });
 	},
 	onActivate: function(container) {

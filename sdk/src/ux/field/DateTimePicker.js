@@ -266,7 +266,7 @@ Ext.define('Ext.ux.field.DateTimePicker', {
             picker = Ext.factory(picker, Ext.ux.picker.DateTime);
             picker.on({
                 scope: this,
-
+                cancel: 'onPickerCancel',
                 change: 'onPickerChange',
                 hide  : 'onPickerHide'
             });
@@ -294,6 +294,16 @@ Ext.define('Ext.ux.field.DateTimePicker', {
         this.getPicker().show();
 
         return false;
+    },
+
+    /** 
+     * @private
+     * Set _picker back to defaultValue
+     */
+    onPickerCancel: function(picker, options) {
+	    this._picker = this._picker.config;
+        picker.destroy();
+        return true;
     },
 
     /**

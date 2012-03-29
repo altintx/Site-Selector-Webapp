@@ -11,9 +11,21 @@ Ext.define("SiteSelector.view.SiteEdit", {
 				label: "Placed",
 				labelWidth: "100%",
 				labelAlign: "top",
-				value: new Date(),
 				picker: {
-					yearFrom: 1980,
+					yearFrom: 2012,
+					minuteInterval : 1,
+					ampm : true,
+					slotOrder: ['month', 'day', 'year','hour','minute','ampm']
+				}
+			},
+			{
+				xtype: 'datetimepickerfield',
+				name : 'removed',
+				label: "Removed",
+				labelWidth: "100%",
+				labelAlign: "top",
+				picker: {
+					yearFrom: 2022,
 					minuteInterval : 1,
 					ampm : true,
 					slotOrder: ['month', 'day', 'year','hour','minute','ampm']

@@ -17,6 +17,11 @@ Ext.define('SiteSelector.model.Site', {
 				dateFormat: "c"
 			},
 			{
+				name: 'removed',
+				type: 'date',
+				dateFormat: "c"
+			},
+			{
 				name: 'x',
 				type: 'float'
 			},

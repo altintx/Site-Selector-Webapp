@@ -208,15 +208,28 @@ Ext.define("SiteSelector.view.BodyList", {
 					    x = event.browserEvent.offsetX, //  event.pageX - event.target.offsetParent.offsetParent.offsetLeft,
 					    y = event.browserEvent.offsetY, //event.pageY - event.target.offsetParent.offsetTop,
 					    store = $this.getStore();
+					var lastSite = store.lastSite($this.alias);
 					var usage = store.add({
 				        kind: this.getText() == "Pump"? "pump": "cgm",
 						when: new Date(),
 						x: x / w,
 						y: y / h,
 						side: $this.alias,
+						removed: null,
 						location: new SiteSelector.model.BodyRegion().regionName(100 * x/w, 100 * y/h, $this.alias)
 					});
-					store.sync();
+					if (lastSite) {
+						Ext.Msg.confirm("Remove old site", "Would you like to mark the site you inserted " + lastSite.get("when").toLocaleDateString() + " as removed?", function(button) {
+							if (button == "yes") {
+								lastSite.set("removed", new Date());
+								lastSite.dirty = true;
+							}
+							store.sync();
+							
+						});
+					} else {
+						store.sync();
+					}
 			}
 			this.up("actionsheet").hide();
 		}

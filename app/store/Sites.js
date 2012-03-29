@@ -10,5 +10,15 @@ Ext.define("SiteSelector.store.Sites", {
 	        id: 'rotator-app-store-site',
 	    },
 		sorters: 'when'
-	}	
+	},
+	lastSite: function(side) {
+		var $this = this;
+		var last_record = false;
+		this.findBy(function(record, id) {
+			if (record.get("side") == side && record.get("removed") == null) {
+				last_record = record;
+			}
+		});
+		return last_record;
+	}
 });

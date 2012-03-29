@@ -13,4 +13,4 @@ Being based on Sencha Touch, SiteSelector is effectively limited to Webkit-based
 
 Attributions
 ------------
-Human body graphic by Kelli Abeyta - kelliabeyta.com
+Human body graphic by Kelli Abeyta - http://www.kelliabeyta.com

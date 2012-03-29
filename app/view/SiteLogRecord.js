@@ -9,6 +9,9 @@ Ext.define("SiteSelector.view.SiteLogRecord", {
 		when: {
 			flex: 1
 		},
+		removed: {
+			flex: 1
+		},
 		location: {
 			flex: 2
 		},
@@ -21,6 +24,9 @@ Ext.define("SiteSelector.view.SiteLogRecord", {
 			},
 			getWhen: {
 				setDate: "when"
+			},
+			getRemoved: {
+				setDate: "removed"
 			},
 			getLocation: {
 				setHtml: "location"
@@ -79,6 +85,20 @@ Ext.define("SiteSelector.view.SiteLogRecord", {
 		return w;
 	},
 	
+	applyRemoved: function (config) {
+		var w = Ext.factory(config, Ext.Panel, this.getRemoved());
+		w.setDate = function(v) {
+			if (v) {
+				var m = (["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"])[v.getMonth()],
+				    d = v.getDate(), 
+				    y = v.getFullYear();
+				this.setHtml(m + " " + d + ", " + y);
+			} else {
+				this.setHtml("");
+			}
+		}
+		return w;
+	},	
 	updateWhen: function (newWhen, oldWhen) {
 		if (newWhen) {
 			this.add(newWhen);
@@ -86,6 +106,13 @@ Ext.define("SiteSelector.view.SiteLogRecord", {
 		if (oldWhen) {
 			this.remove(oldWhen);
 		}
+	},
+	updateRemoved: function (newWhen, oldWhen) {
+		if (newWhen) {
+			this.add(newWhen);
+		}
+		if (oldWhen) {
+			this.remove(oldWhen);
+		}
 	}
-	
 })
