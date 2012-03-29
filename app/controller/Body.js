@@ -15,8 +15,9 @@ Ext.define("SiteSelector.controller.Body", {
 				tap: "addCgm"
 			},
 			formPanel: {
-				activate: "onActivate",
-				editsite: "editSite"
+				// activate: "onActivate",
+				editsite: "editSite",
+				initialize: "onActivate"
 			}
 		}
 	},
@@ -68,7 +69,7 @@ Ext.define("SiteSelector.controller.Body", {
 		window.setTimeout(function() {
 			container.clearSites();
 			container.drawSites();
-		}, 2);
+		}, 200);
 	},
 	editSite: function(options) {
 		var $this = this;

@@ -1,7 +1,7 @@
 Ext.define("SiteSelector.view.BodyList", {
     extend: 'Ext.Panel',
 	alias: "widget.BodyList",
-	requires: ["Ext.Img", "Ext.ActionSheet"],
+	requires: ["Ext.Img", "Ext.ActionSheet", "Ext.field.Slider"],
 	stores: ['Sites'],
 	
     config: {
@@ -10,7 +10,8 @@ Ext.define("SiteSelector.view.BodyList", {
 		store: null,
 		sites: [],
 		alias: "",
-		bodyConfig: null
+		bodyConfig: null,
+		_sliders: []
 	},
 	
 	constructor: function(config) {
@@ -62,8 +63,11 @@ Ext.define("SiteSelector.view.BodyList", {
 		this.store = config.store;
 		this.sites = [];
 		this.alias = config.alias;
+		this._sliders = [];
 		
 		this.callParent(arguments);
+		
+		this.drawSites = this.drawSitesDefault
 	},
 	
 	
@@ -73,7 +77,12 @@ Ext.define("SiteSelector.view.BodyList", {
 		
 		var fn = function(store, records, index) {
 			if ($this.bodyElement) {
-				records.filter(function(r) { return r.data.side == $this.alias; }).forEach(function(r) { $this.drawSite(r); });
+				records.filter(function(r) { return r.data.side == $this.alias; }).forEach(function(r) { 
+					if ($this.drawSites == $this.drawSitesDefault)
+						$this.drawSite(r, r.decays()); 
+					else
+						$this.drawSite(r, $this.down("sliderfield").getValue() * 86400000)
+				});
 			} else {
 				$this.getStore().un("addrecords", fn);
 				// through rotating display we can hold a reference to a BodyList that ceases to exist
@@ -84,6 +93,18 @@ Ext.define("SiteSelector.view.BodyList", {
 		$this.getStore().on("addrecords", fn);
 		
 		var fnTimer = function() {
+			var fnSlider = function() {
+				var c = Ext.ComponentQuery.query("slider");
+				var slider = null;
+				if (c == null) return setTimeout(fnSlider, 50);
+				while (c.length > 0) {
+					slider = c.shift();
+					if (!$this._sliders.indexOf(slider) > -1) {
+						slider.on("drag", $this.onTimeFilterChange());
+						$this._sliders.push(slider);
+					}
+				}
+			}
 			if (humanBodyMap.element != null && humanBodyMap.element.getHeight() > 0) {
 				var w = humanBodyMap.element.getWidth(), h = humanBodyMap.element.getHeight();
 				humanBodyMap.destroy();
@@ -105,13 +126,14 @@ Ext.define("SiteSelector.view.BodyList", {
 							label: "Time Period",
 							value: 0,
 							minValue: 0,
-							maxValue: 90
+							maxValue: 90,
 						},
 						$this.config.bodyConfig
 					]
 				}).show();
 
 				$this.down("img").element.on("longpress", $this.onLongPress());
+				fnSlider();
 			} else {
 				setTimeout(fnTimer, 50);
 			}
@@ -199,21 +221,87 @@ Ext.define("SiteSelector.view.BodyList", {
 			this.up("actionsheet").hide();
 		}
 	},
+	
+	dayInMS: function() {
+		return 1000 * 60 * 60 * 24;
+	},
 
-	drawSites: function() {
+	drawSitesDefault: function() {
 		var $this = this;
-		$this.getStore().each(function(r) {
-			if (r.data.side == $this.alias) {
-				try { $this.drawSite(r); } 
+
+		$this.getStore().each(function(record) {
+			if (record.data.side == $this.alias) {
+				try { $this.drawSite(record, record.decays() * $this.dayInMS())
+				
+				} 
 				catch (e) { /* incomplete record */	}
 			}
 		});
 	},
-
-	drawSite: function(record) {
+	
+	onTimeFilterChange: function() {
 		var $this = this;
-		var day = 1000 * 60 * 60 * 24;
-		var regenerate_time = record.decays() * day;
+		var scheduled_anim = null;
+		var help = null;
+		return function(slider, thumb) {
+			var value = slider.getValue(), msg = "";
+			if (help) {
+				help.destroy();
+			}
+
+			if (value > 0) {
+				$this.drawSites = $this.drawSitesPeriod;
+				msg = "Viewing all sites within the last " + value + " " + (value > 1? "days": "day");
+			} else {
+				$this.drawSites = $this.drawSitesDefault;
+				msg = "Viewing all unhealed sites";
+			}
+
+			help = Ext.Viewport.add({
+				xtype: "panel",
+				html: msg,
+				style: 'opacity: 0.6;margin: 1em;',
+				overlay: true,
+				top: "1in",
+				hideOnMaskTap: true,
+			});
+			
+			$this.clearSites();
+			$this.drawSites(value);
+			
+			scheduled_anim = Date.now() + 5000;
+			
+			var close_help = function() {
+				if (Date.now() > scheduled_anim) {
+					Ext.Anim.run(help, 'fade', {
+						after: function() {
+							help.destroy();
+						},
+						out: true
+					})
+				} else {
+					setTimeout (close_help, Math.max(scheduled_anim - Date.now(), 250));
+				}
+			}
+			setTimeout(close_help, 5000)
+		};
+	},
+	
+	drawSitesPeriod: function(daysBack) {
+		var $this = this;
+
+		$this.getStore().each(function(record) {
+			if (record.data.side == $this.alias) {
+				try {
+					$this.drawSite(record, $this.dayInMS() * daysBack);
+				} 
+				catch (e) { /* incomplete record */	}
+			}
+		});
+	},
+	
+	drawSite: function(record, regenerate_time) {
+		var $this = this;
 		var time_left = (record.get("when").getTime() + regenerate_time) - Date.now();
 		if (time_left > 0) { 
 			$this.sites.push(this.plotPoint(
