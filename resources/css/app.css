@@ -19,7 +19,7 @@ fieldset, img {
 
 /* line 18, ../themes/stylesheets/sencha-touch/default/core/_reset.scss */
 address, caption, cite, code,
-dfn, em, strong, th, var {
+dfn, em, th, var, strong {
   font-style: normal;
   font-weight: normal;
 }

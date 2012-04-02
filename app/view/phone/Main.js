@@ -4,7 +4,6 @@ Ext.define("SiteSelector.view.phone.Main", {
 		'Ext.TitleBar', 
 		'SiteSelector.store.Sites',
 		"SiteSelector.view.BodyList",
-		"SiteSelector.view.SiteLogRecord",
 		"SiteSelector.view.SiteLog",
 		"SiteSelector.view.Settings"
 		

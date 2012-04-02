@@ -9,7 +9,10 @@ Ext.define("SiteSelector.store.Sites", {
 	        type: 'localstorage',
 	        id: 'rotator-app-store-site',
 	    },
-		sorters: 'when'
+		sorters: 'when',
+		listeners: {
+			write: 'exportFile'
+		}
 	},
 	lastSite: function(side) {
 		var $this = this;
@@ -20,5 +23,78 @@ Ext.define("SiteSelector.store.Sites", {
 			}
 		});
 		return last_record;
+	},
+	
+	exportFile: function(store) {
+		var $this = this;
+		var writeDocument = function(filename, fnSuccess, fnFail) {
+			if (window.requestFileSystem) {
+				window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem) {
+					fileSystem.root.getFile(filename, {create: true, exclusive: false}, function(fileEntry) {
+						fileEntry.createWriter(fnSuccess, fnFail);
+					}, fnFail);
+				},  fnFail);
+			} else {
+				console.log("No access to the file system: Is Phonegap loaded?");
+				fnFail();
+			}
+		};
+		
+		writeDocument("export.csv", function(writer) {
+			var fields = ["kind", "when", "removed", "side", "location"];
+			var display = { kind: "Type", when: "Inserted", removed: "Removed", side: "Side", location: "Location" };
+			var buffer = "";
+			var record_buffer = [];
+			for (var f in fields) {
+				record_buffer.push(display[fields[f]]);
+			}
+			buffer += record_buffer.join() + "\n";
+			$this.each(function(r) {
+				var record_buffer = [];
+				for (var f in fields) {
+					var v = r.get(fields[f]);
+					if (typeof v == "null") v = "";
+					record_buffer.push(v);
+				};
+				buffer += record_buffer.join() + "\n";
+			});
+			writer.write(buffer);
+			writer.onwrite = function() { console.log("refreshed export.csv"); }
+			writer.onwriteend = function() { console.log("closed export.csv"); }
+		}, function() {
+			console.log("Error writing file");
+		});
+		// writeDocument("export.xls", function(writer) {
+		// 	var fields = ["kind", "when", "removed", "map", "side", "location"];
+		// 	var display = { kind: "Type", when: "Inserted", removed: "Removed", map: "Map", side: "Side", location: "Location" };
+		// 	var buffer = "<html><head><title>SiteSelector Log</title></head><body><table>";
+		// 	var record_buffer = [];
+		// 	for (var f in fields) {
+		// 		record_buffer.push(display[fields[f]]);
+		// 	}
+		// 	buffer += ("<tr><td>" + record_buffer.join("</td><td>") + "</td></tr>");
+		// 	$this.each(function(r) {
+		// 		var record_buffer = [];
+		// 		for (var f in fields) {
+		// 			var v;
+		// 			if (fields[f] == "map") {
+		// 				v = "<div style='position:relative'>";
+		// 				v += "<img src=\"body-map.png\" width=\"100\" height=\"300\" />";
+		// 				v += "</div>";
+		// 			} else {
+		// 				v = r.get(fields[f]);
+		// 				if (typeof v == "null") v = "";
+		// 			}
+		// 			record_buffer.push(v);
+		// 		};
+		// 		buffer += ("<tr><td>" + record_buffer.join("</td><td>") + "</td></tr>");
+		// 	});
+		// 	buffer += "</table></body></html>";
+		// 	writer.write(buffer);
+		// 	writer.onwrite = function() { console.log("refreshed export.csv"); }
+		// 	writer.onwriteend = function() { console.log("closed export.csv"); }
+		// }, function() {
+		// 	console.log("Error writing file");
+		// });
 	}
 });

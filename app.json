@@ -50,6 +50,10 @@
         {
             "path": "sdk/resources/css/apple.css",
             "update": "delta"
+        },
+        {
+            "path": "resources/css/bold.css",
+            "update": "delta"
         }
         // {
         //     "path": "resources/css/app.css",

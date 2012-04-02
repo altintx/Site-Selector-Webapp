@@ -263,7 +263,7 @@ Ext.define("SiteSelector.view.BodyList", {
 			}
 
 			if (value > 0) {
-				$this.drawSites = $this.drawSitesPeriod;
+				$this.drawSites = function() { $this.drawSitesPeriod(value); };
 				msg = "Viewing all sites within the last " + value + " " + (value > 1? "days": "day");
 			} else {
 				$this.drawSites = $this.drawSitesDefault;

@@ -5,7 +5,6 @@ Ext.define("SiteSelector.view.tablet.Main", {
 		'SiteSelector.store.Sites', 
 		"Ext.Anim",
 		"SiteSelector.view.BodyList",
-		"SiteSelector.view.SiteLogRecord",
 		"SiteSelector.view.SiteLog",
 		"SiteSelector.view.Settings"
 	],
