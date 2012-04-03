@@ -49,10 +49,11 @@ Ext.define("SiteSelector.controller.Body", {
 				})
 				return;
 			}
+			console.log(event);
 			var w = view.element.getWidth(),
 			    h = view.element.getHeight(),
-			    x = event.browserEvent.offsetX, // event.pageX - event.target.offsetParent.offsetParent.offsetLeft,
-			    y = event.browserEvent.offsetY, //event.pageY - event.target.offsetParent.offsetTop,
+			    x = event.browserEvent.layerX, //event.pageX - event.target.offsetParent.offsetParent.offsetLeft,
+			    y = event.browserEvent.layerY, //pageY - event.target.offsetParent.offsetTop,
 			    store = view.up("panel").getStore();
 			var lastSite = store.lastSite(side);
 			var usage = store.add({

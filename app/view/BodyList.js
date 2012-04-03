@@ -144,6 +144,7 @@ Ext.define("SiteSelector.view.BodyList", {
 	onLongPress: function() {
 		var $this = this;
 		return function(event, target) {
+			console.log(event);
 			var placeHolder = Ext.DomHelper.append(target, {
 				tag: "div"
 			}, true);
@@ -205,8 +206,8 @@ Ext.define("SiteSelector.view.BodyList", {
 				case "CGM":
 					var w = humanBodyMap.element.getWidth(),
 					    h = humanBodyMap.element.getHeight(),
-					    x = event.browserEvent.offsetX, //  event.pageX - event.target.offsetParent.offsetParent.offsetLeft,
-					    y = event.browserEvent.offsetY, //event.pageY - event.target.offsetParent.offsetTop,
+					    x = event.browserEvent.layerX, //event.pageX - event.target.offsetParent.offsetParent.offsetLeft,
+					    y = event.browserEvent.layerY, //event.pageY - event.target.offsetParent.offsetParent.offsetTop,
 					    store = $this.getStore();
 					var lastSite = store.lastSite($this.alias);
 					var usage = store.add({

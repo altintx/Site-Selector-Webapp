@@ -33,8 +33,8 @@ Ext.define("SiteSelector.view.SiteLog", {
 				siteType: function(alias) {
 					if (alias == "pump") {
 						return "Pump";
-					} else if (alias == "cgms") {
-						return "CGM";
+					} else if (alias == "cgm") {
+						return "CGMS";
 					}
 				},
 				location: function(side, location) {
@@ -44,7 +44,8 @@ Ext.define("SiteSelector.view.SiteLog", {
 			}
 		),
 		listeners: {
-			activate: "activate"
+			activate: "activate",
+			itemtap: "itemtap"
 		}
 	},
 	
@@ -57,7 +58,7 @@ Ext.define("SiteSelector.view.SiteLog", {
 			top: "1in",
 			hideOnMaskTap: true,
 		});
-		// expire help after 5s
+		// expire help after 10s
 		Ext.Anim.run(help, 'fade', {
 			after: function() {
 				help.destroy();
@@ -72,5 +73,36 @@ Ext.define("SiteSelector.view.SiteLog", {
 		if (this.helped) return;
 		this.showHelp();
 		this.helped = true;
+	},
+	
+	itemtap: function(list, ix, target, record) {
+		var $this = this;
+		this.overlay = Ext.Viewport.add({
+			xtype: "SiteEdit",
+			modal: true,
+			hideOnMaskTap: true,
+			record: record,
+			showAnimation: {
+				type: "popIn",
+				duration: 250,
+				easing: "ease-out"
+			},
+			hideAnimation: {
+				type: "popOut",
+				duration: 250,
+				easing: "ease-out"
+			},
+			centered: true,
+			scrollable: true,
+			width: Ext.Viewport.windowWidth * 0.8,
+			height: Ext.Viewport.windowHeight * 0.8,
+			listeners: {
+				hide: function() {
+					$this.overlay.destroy();
+					delete $this.overlay;
+				}
+			}
+		});
+		this.overlay.show();
 	}
 })
