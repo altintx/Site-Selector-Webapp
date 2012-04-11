@@ -68,7 +68,6 @@ Ext.define("SiteSelector.view.BodyList", {
 		this.callParent(arguments);
 		
 		this.drawSites = function() { 
-			debugger;
 			$this.drawSitesDefault(); 
 		};
 	},
