@@ -67,7 +67,7 @@ Ext.define("SiteSelector.view.BodyList", {
 		
 		this.callParent(arguments);
 		
-		this.drawSites = this.drawSitesDefault
+		this.drawSites = function() { $this.drawSitesDefault(); };
 	},
 	
 	
@@ -267,7 +267,7 @@ Ext.define("SiteSelector.view.BodyList", {
 				$this.drawSites = function() { $this.drawSitesPeriod(value); };
 				msg = "Viewing all sites within the last " + value + " " + (value > 1? "days": "day");
 			} else {
-				$this.drawSites = $this.drawSitesDefault;
+				$this.drawSites = function() { $this.drawSitesDefault; }
 				msg = "Viewing all unhealed sites";
 			}
 
