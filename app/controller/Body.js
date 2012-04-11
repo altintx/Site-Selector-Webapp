@@ -15,7 +15,7 @@ Ext.define("SiteSelector.controller.Body", {
 				tap: "addCgm"
 			},
 			formPanel: {
-				// activate: "onActivate",
+				activate: "onActivate",
 				editsite: "editSite",
 				initialize: "onActivate"
 			}
