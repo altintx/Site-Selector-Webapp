@@ -67,9 +67,7 @@ Ext.define("SiteSelector.view.BodyList", {
 		
 		this.callParent(arguments);
 		
-		this.drawSites = function() { 
-			$this.drawSitesDefault(); 
-		};
+		this.drawSites = this.drawSitesDefault;
 	},
 	
 	
@@ -210,10 +208,11 @@ Ext.define("SiteSelector.view.BodyList", {
 					    h = humanBodyMap.element.getHeight(),
 					    x = event.browserEvent.layerX, //event.pageX - event.target.offsetParent.offsetParent.offsetLeft,
 					    y = event.browserEvent.layerY, //event.pageY - event.target.offsetParent.offsetParent.offsetTop,
-					    store = $this.getStore();
-					var lastSite = store.lastSite($this.alias);
+					    store = $this.getStore(),
+					    kind = (this.getText() == "Pump"? "pump": "cgm");
+					var lastSite = store.lastSite($this.alias, kind);
 					var usage = store.add({
-				        kind: this.getText() == "Pump"? "pump": "cgm",
+				        kind: kind,
 						when: new Date(),
 						x: x / w,
 						y: y / h,
@@ -266,10 +265,10 @@ Ext.define("SiteSelector.view.BodyList", {
 			}
 
 			if (value > 0) {
-				$this.drawSites = function() { $this.drawSitesPeriod(value); };
+				$this.drawSites = $this.drawSitesPeriod;
 				msg = "Viewing all sites within the last " + value + " " + (value > 1? "days": "day");
 			} else {
-				$this.drawSites = function() { $this.drawSitesDefault; }
+				$this.drawSites = $this.drawSitesDefault;
 				msg = "Viewing all unhealed sites";
 			}
 

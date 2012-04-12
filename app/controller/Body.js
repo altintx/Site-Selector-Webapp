@@ -55,7 +55,7 @@ Ext.define("SiteSelector.controller.Body", {
 			    x = event.browserEvent.layerX, //event.pageX - event.target.offsetParent.offsetParent.offsetLeft,
 			    y = event.browserEvent.layerY, //pageY - event.target.offsetParent.offsetTop,
 			    store = view.up("panel").getStore();
-			var lastSite = store.lastSite(side);
+			var lastSite = store.lastSite(side, type);
 			var usage = store.add({
 		        kind: type,
 				when: new Date(),

@@ -13,7 +13,8 @@ Ext.application({
 	
 	controllers: [
 		"Settings",
-		"Body"
+		"Body",
+		"Log"
 	],
 	
 	views: [
@@ -23,12 +24,14 @@ Ext.application({
 	models: [
 		"Site",
 		"Setting",
-		"BodyRegion"
+		"BodyRegion",
+		"Log"
 	],
 	
 	stores: [
 		"Sites",
-		"Settings"
+		"Settings",
+		"Logs"
 	],
 	
 	profiles: [

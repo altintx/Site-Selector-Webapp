@@ -5,7 +5,7 @@ Ext.define("SiteSelector.view.tablet.Main", {
 		'SiteSelector.store.Sites', 
 		"Ext.Anim",
 		"SiteSelector.view.BodyList",
-		"SiteSelector.view.SiteLog",
+		"SiteSelector.view.LogViewer",
 		"SiteSelector.view.Settings"
 	],
     alias: "widget.Main",
@@ -42,8 +42,9 @@ Ext.define("SiteSelector.view.tablet.Main", {
 				]
 			},
 			{
-				xtype: "SiteLog",
+				xtype: "LogViewer",
 				title: "Log",
+				store: "Logs"
 			},
 			{
 				xtype: "Settings"
@@ -53,7 +54,7 @@ Ext.define("SiteSelector.view.tablet.Main", {
 
 	constructor: function(config) {
 		var attachStore = function(item) {
-			if (["BodyList", "SiteLog"].indexOf(item.xtype) > -1)
+			if (["BodyList"].indexOf(item.xtype) > -1)
 				item.store = Ext.getStore('Sites');
 			else if (item.items && item.items.length)
 				item.items.forEach(attachStore);

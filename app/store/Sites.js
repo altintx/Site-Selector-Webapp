@@ -5,20 +5,21 @@ Ext.define("SiteSelector.store.Sites", {
 	config: {
 		model: "SiteSelector.model.Site",
 		autoLoad: true,
-	    proxy: {
-	        type: 'localstorage',
-	        id: 'rotator-app-store-site',
-	    },
+		proxy: {
+			type: 'localstorage',
+			id: 'rotator-app-store-site',
+		},
 		sorters: 'when',
 		listeners: {
-			write: 'exportFile'
+			write: 'exportFile',
+			beforesync: 'onBeforeSync'
 		}
 	},
-	lastSite: function(side) {
+	lastSite: function(side, kind) {
 		var $this = this;
 		var last_record = false;
 		this.findBy(function(record, id) {
-			if (record.get("side") == side && record.get("removed") == null) {
+			if (record.get("side") == side && record.get("kind") == kind && record.get("removed") == null) {
 				last_record = record;
 			}
 		});
@@ -96,5 +97,30 @@ Ext.define("SiteSelector.store.Sites", {
 		// }, function() {
 		// 	console.log("Error writing file");
 		// });
+	},
+	
+	onBeforeSync: function (store) {
+		var field;
+		store.getUpdatedRecords().forEach(function(m) {
+			// TODO: log if site is removed
+			console.log(m);
+			for (field in m.modified) {
+				if (field == "removed") {
+					Ext.data.StoreManager.get("Logs").record(m, "Site Removed", "The " + m.get("kind") + " site was removed from " + m.get("location"));
+				}
+			}
+		});
+		store.getNewRecords().forEach(function(m) {
+			// TODO: log if new site
+			Ext.data.StoreManager.get("Logs").record(m, "Site Inserted", "New " + m.get("kind") + " site was inserted at " + m.get("location"));
+			console.log(m);			
+		});
+		store.getRemovedRecords().forEach(function(m) {
+			// TODO: delete from log if site is deleted
+			Ext.data.StoreManager.get("Logs").remove(Ext.data.StoreManager.get("Logs").filterBy(function(r) {
+				return (r.get("fk") == m.getId() && r.get("model") == m.getName());
+			}));
+			console.log(m);
+		});
 	}
 });

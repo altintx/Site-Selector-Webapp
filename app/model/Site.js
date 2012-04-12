@@ -33,10 +33,6 @@ Ext.define('SiteSelector.model.Site', {
 				name: "side",
 				type: "string"
 			},
-			// {
-			// 	name: "decays",
-			// 	type: "int"
-			// },
 			{
 				name: "location",
 				type: "string"
@@ -52,5 +48,6 @@ Ext.define('SiteSelector.model.Site', {
 				return SiteSelector.app.settings().get("cgmreuse");
 		}
 		return 0;
-	}
+	},
+	
 });
