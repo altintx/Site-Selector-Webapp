@@ -3,6 +3,7 @@ Ext.Loader.setPath({
 	'Ext': 'sdk/src'
 });
 //</debug>
+
 Ext.application({
 	name: 'SiteSelector',
 
@@ -43,12 +44,13 @@ Ext.application({
 		this.settingsStore = Ext.data.StoreManager.get("Settings");
 		var settings = this.settingsStore.first();
 		if (!settings) {
-			// this.showHelp = true;
 			var R = this.settingsStore.add({
 				usecgms: 1,
 				usepump: 1,
 				pumpreuse: 28,
-				cgmreuse: 14
+				cgmreuse: 14,
+				pumplasts: 2,
+				cgmlasts: 3
 			});
 			settings = R[0];
 			var settingsView = Ext.Viewport.add({
@@ -73,13 +75,10 @@ Ext.application({
 				listeners: {
 					initialize: function() {
 						window.setTimeout(function() {
-						Ext.Msg.alert(
-							"Configure",
-							"To get started, please indicate how quickly you heal.",
-							function() {
-								// settingsView.setRecord(this.settings);
-							}
-						);
+							Ext.Msg.alert(
+								"Configure",
+								"To get started, please indicate how quickly you heal."
+							);
 						}, 1);
 					},
 					saved: function() {

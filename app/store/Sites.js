@@ -36,7 +36,7 @@ Ext.define("SiteSelector.store.Sites", {
 					}, fnFail);
 				},  fnFail);
 			} else {
-				console.log("No access to the file system: Is Phonegap loaded?");
+				console.log("No File I/O available: Is Phonegap loaded?");
 				fnFail();
 			}
 		};
@@ -101,26 +101,62 @@ Ext.define("SiteSelector.store.Sites", {
 	
 	onBeforeSync: function (store) {
 		var field;
-		store.getUpdatedRecords().forEach(function(m) {
-			// TODO: log if site is removed
-			console.log(m);
-			for (field in m.modified) {
-				if (field == "removed") {
-					Ext.data.StoreManager.get("Logs").record(m, "Site Removed", "The " + m.get("kind") + " site was removed from " + m.get("location"));
+		try {
+			store.getUpdatedRecords().forEach(function(m) {
+				for (field in m.modified) {
+					if (field == "removed") {
+						Ext.data.StoreManager.get("Logs").record(m, "Site Removed", "The " + m.get("kind") + " site was removed from " + m.get("location"));
+						(new LocalNotification()).cancel(m.getId());
+					}
 				}
-			}
-		});
-		store.getNewRecords().forEach(function(m) {
-			// TODO: log if new site
-			Ext.data.StoreManager.get("Logs").record(m, "Site Inserted", "New " + m.get("kind") + " site was inserted at " + m.get("location"));
-			console.log(m);			
-		});
-		store.getRemovedRecords().forEach(function(m) {
-			// TODO: delete from log if site is deleted
-			Ext.data.StoreManager.get("Logs").remove(Ext.data.StoreManager.get("Logs").filterBy(function(r) {
-				return (r.get("fk") == m.getId() && r.get("model") == m.getName());
-			}));
-			console.log(m);
-		});
+			});
+			store.getNewRecords().forEach(function(m) {
+				// TODO: log if new site
+				Ext.data.StoreManager.get("Logs").record(m, "Site Inserted", "New " + m.get("kind") + " site was inserted at " + m.get("location"));
+				
+				if (SiteSelector.app.settings().get("usereminders")) {
+					try {
+						var nice = "";
+						if (m.get("kind") == "pump") {
+							nice = "pump";
+						} else {
+							nice = "CGM";
+						}
+						var slave = function() {
+							if (m.phantom) {
+								setTimeout(slave, 500);
+								return;
+							}
+							(new LocalNotification()).add({ date: Date.now() / 1000 +  m.lasts() * 86400, message: 'It\'s time to change your ' + nice, badge: 0, id: m.getId().toString() });
+						}
+						slave();
+					} catch (e) {
+						console.log("Local Notifications not supported");
+					}
+
+				}
+			});
+			store.getRemovedRecords().forEach(function(m) {
+				try {
+					(new LocalNotification()).cancel(m.getId());
+				} catch (e) {
+					console.log("Error cancelling notification", e);
+				}
+				
+				try {
+					var logs = Ext.data.StoreManager.get("Logs");
+					logs.each(function(r) {
+						if (r.get("fk") == m.getId() && r.get("model") == "SiteSelector.model.Site") {
+							console.log("removing", r);
+							logs.remove(r);
+						}
+					});
+				} catch (e) {
+					console.log("Error removing logs", e);
+				}
+			});
+		} catch (e) {
+			console.log("Exception in onBeforeSync", e);
+		}
 	}
 });

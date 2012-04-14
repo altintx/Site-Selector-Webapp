@@ -49,7 +49,6 @@ Ext.define("SiteSelector.controller.Body", {
 				})
 				return;
 			}
-			console.log(event);
 			var w = view.element.getWidth(),
 			    h = view.element.getHeight(),
 			    x = event.browserEvent.layerX, //event.pageX - event.target.offsetParent.offsetParent.offsetLeft,
@@ -86,33 +85,37 @@ Ext.define("SiteSelector.controller.Body", {
 		}, 200);
 	},
 	editSite: function(options) {
-		var $this = this;
-		this.overlay = Ext.Viewport.add({
-			xtype: "SiteEdit",
-			modal: true,
-			hideOnMaskTap: true,
-			record: options.record,
-			showAnimation: {
-				type: "popIn",
-				duration: 250,
-				easing: "ease-out"
-			},
-			hideAnimation: {
-				type: "popOut",
-				duration: 250,
-				easing: "ease-out"
-			},
-			centered: true,
-			scrollable: true,
-			width: Ext.Viewport.windowWidth * 0.8,
-			height: Ext.Viewport.windowHeight * 0.8,
-			listeners: {
-				hide: function() {
-					$this.overlay.destroy();
-					delete $this.overlay;
+		try {
+			var $this = this;
+			this.overlay = Ext.Viewport.add({
+				xtype: "SiteEdit",
+				modal: true,
+				hideOnMaskTap: true,
+				record: options.record,
+				showAnimation: {
+					type: "popIn",
+					duration: 250,
+					easing: "ease-out"
+				},
+				hideAnimation: {
+					type: "popOut",
+					duration: 250,
+					easing: "ease-out"
+				},
+				centered: true,
+				scrollable: true,
+				width: Ext.Viewport.windowWidth * 0.8,
+				height: Ext.Viewport.windowHeight * 0.8,
+				listeners: {
+					hide: function() {
+						$this.overlay.destroy();
+						delete $this.overlay;
+					}
 				}
-			}
-		});
+			});
+		} catch (e) {
+			console.log("Exception in BodyController::editSite", e);
+		}
 		this.overlay.show();
 	}
 });

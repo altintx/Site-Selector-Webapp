@@ -144,7 +144,6 @@ Ext.define("SiteSelector.view.BodyList", {
 	onLongPress: function() {
 		var $this = this;
 		return function(event, target) {
-			console.log(event);
 			var placeHolder = Ext.DomHelper.append(target, {
 				tag: "div"
 			}, true);

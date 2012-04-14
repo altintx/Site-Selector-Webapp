@@ -22,7 +22,7 @@
             "path": "sdk/sencha-touch.js"
         },
 		{
-			path: "cordova-1.5.0.js"
+			path: "localnotification.js"
 		},
 		{
 			path: "triangle.js"

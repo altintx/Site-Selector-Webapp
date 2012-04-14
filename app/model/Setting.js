@@ -34,6 +34,18 @@ Ext.define('SiteSelector.model.Setting', {
 			{
 				name: "height",
 				type: "int"
+			},
+			{
+				name: "pumplasts",
+				type: "int"
+			},
+			{
+				name: "cgmlasts",
+				type: "int"
+			},
+			{
+				name: "usereminders",
+				type: "int"
 			}
 	    ]
 	}

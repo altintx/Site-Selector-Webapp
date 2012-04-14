@@ -50,4 +50,13 @@ Ext.define('SiteSelector.model.Site', {
 		return 0;
 	},
 	
+	lasts: function() {
+		switch (this.get("kind")) {
+			case "pump":
+				return SiteSelector.app.settings().get("pumplasts");
+			case "cgm":
+				return SiteSelector.app.settings().get("cgmlasts");
+		}
+		return 0;
+	}
 });
