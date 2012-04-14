@@ -1,21 +1,10 @@
 Ext.define("SiteSelector.view.SiteEdit", {
 	extend: "Ext.form.Panel",
 	alias: "widget.SiteEdit",
-	requires: ['Ext.field.DatePicker', 'Ext.field.Select', 'Ext.ux.field.DateTimePicker'],
+	requires: ['Ext.field.DatePicker', 'Ext.field.Select', 'Ext.ux.field.DateTimePicker', 'Ext.field.Toggle'],
 	config: {
-		scroll: 'vertical',
 		items: [
-			(function(config) {
-				if (Ext.is.Phone) {
-					config.picker.slotOrder.push("ampm");
-					config.dateTimeFormat = 'm/d/Y - gA';
-				} else {
-					config.picker.slotOrder.push("minutes");
-					config.picker.slotOrder.push("ampm");
-					config.dateTimeFormat = 'm/d/Y h:i:A';
-				}
-				return config;
-			})({
+			{
 				xtype: 'datetimepickerfield',
 				name : 'when',
 				label: "Placed",
@@ -26,56 +15,19 @@ Ext.define("SiteSelector.view.SiteEdit", {
 					ampm : true,
 					slotOrder: ['month', 'day', 'year','hour'] // append more fields depending on device type
 				}
-			}),
-			// {
-			// 	xtype: 'datetimepickerfield',
-			// 	name : 'when',
-			// 	label: "Placed",
-			// 	labelWidth: "100%",
-			// 	labelAlign: "top",
-			// 	picker: {
-			// 		yearFrom: 2012,
-			// 		minuteInterval : 1,
-			// 		ampm : true,
-			// 		slotOrder: ['month', 'day', 'year','hour'] // append more fields depending on device type
-			// 	}
-			// },
-			// {
-			// 	xtype: 'datetimepickerfield',
-			// 	name : 'removed',
-			// 	label: "Removed",
-			// 	labelWidth: "100%",
-			// 	labelAlign: "top",
-			// 	picker: {
-			// 		yearFrom: 2022,
-			// 		minuteInterval : 1,
-			// 		ampm : true,
-			// 		slotOrder: ['month', 'day', 'year','hour','minute','ampm']
-			// 	}
-			// },
-			(function(config) {
-				if (Ext.is.Phone) {
-					config.picker.slotOrder.push("ampm");
-					config.dateTimeFormat = 'm/d/Y - gA';
-				} else {
-					config.picker.slotOrder.push("minutes");
-					config.picker.slotOrder.push("ampm");
-					config.dateTimeFormat = 'm/d/Y h:i:A';
-				}
-				return config;
-			})({
+			},
+			{
 				xtype: 'datetimepickerfield',
 				name : 'removed',
 				label: "Removed",
 				labelWidth: "100%",
 				labelAlign: "top",
 				picker: {
-					yearFrom: 2012,
+					yearFrom: 2022,
 					ampm : true,
-					slotOrder: ['month', 'day', 'year','hour'] // append more fields depending on device type
+					slotOrder: ['month', 'day', 'year','hour']
 				}
-			}),
-
+			},
 			{
 				xtype: "selectfield",
 				name: "kind",
@@ -143,18 +95,24 @@ Ext.define("SiteSelector.view.SiteEdit", {
 				}
 			}
 		]
+	},
+	
+	constructor: function(config) {
+		Ext.applyIf(config, this.config);
+		if (Ext.os.is.Phone) {
+			config.items[0].picker.slotOrder.push("ampm");
+			config.items[0].dateTimeFormat = 'm/d/Y gA';
+			config.items[1].picker.slotOrder.push("ampm");
+			config.items[1].dateTimeFormat = 'm/d/Y gA';
+		} else {
+			config.items[0].picker.slotOrder.push("minute");
+			config.items[0].picker.slotOrder.push("ampm");
+			config.items[0].dateTimeFormat = 'm/d/Y h:i:A';
+			config.items[1].picker.slotOrder.push("minute");
+			config.items[1].picker.slotOrder.push("ampm");
+			config.items[1].dateTimeFormat = 'm/d/Y h:i:A';
+		}
+		
+		this.callParent(arguments);
 	}
-	// 
-	// constructor: function(config) {
-	// 	debugger;
-	// 	if (Ext.is.Phone) {
-	// 		config.items[0].picker.slotOrder.push("ampm");
-	// 		config.items[0].dateTimeFormat = 'm/d/Y hA';
-	// 	} else {
-	// 		config.items[0].picker.slotOrder.push("minutes");
-	// 		config.items[0].picker.slotOrder.push("ampm");
-	// 		config.items[0].dateTimeFormat = 'm/d/Y h:i:A';
-	// 	}
-	// 	this.callParent(config);
-	// }
 });
