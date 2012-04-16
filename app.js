@@ -15,11 +15,14 @@ Ext.application({
 	controllers: [
 		"Settings",
 		"Body",
-		"Log"
+		"Log",
+		"BloodSugar"
 	],
 	
 	views: [
-		'SiteEdit'
+		'SiteEdit',
+		"LogActionSheet",
+		
 	],
 	
 	models: [
@@ -32,13 +35,15 @@ Ext.application({
 	stores: [
 		"Sites",
 		"Settings",
-		"Logs"
+		"Logs",
+		"BloodSugars"
 	],
 	
 	profiles: [
 		"Phone",
 		"Tablet"
 	],
+	firstLoad: true,
 	
 	settings: function() {
 		this.settingsStore = Ext.data.StoreManager.get("Settings");
@@ -135,5 +140,13 @@ Ext.application({
 				window.location.reload();
 			}
 		);
+	},
+	onRender: function() {
+		if (this.firstLoad){        
+			Ext.repaint();
+			this.firstLoad=false;
+			// alert("here");
+			window.scrollTo(0,0);
+		}
 	}
 });

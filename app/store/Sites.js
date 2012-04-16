@@ -156,7 +156,7 @@ Ext.define("SiteSelector.store.Sites", {
 				}
 			});
 		} catch (e) {
-			console.log("Exception in onBeforeSync", e);
+			console.log("Exception in SitesStore::onBeforeSync", e);
 		}
 	}
 });
