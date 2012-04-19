@@ -48,7 +48,17 @@ Ext.define("SiteSelector.view.bloodsugar.Add", {
 					}
 				}
 			},
-			{
+			(function(config) {
+				if (Ext.os.is.Phone) {
+					config.picker.slotOrder.push("ampm");
+					config.dateTimeFormat = 'm/d/Y gA';
+				} else {
+					config.picker.slotOrder.push("minute");
+					config.picker.slotOrder.push("ampm");
+					config.dateTimeFormat = 'm/d/Y h:i:A';
+				}
+				return config;
+			})({
 				xtype: 'datetimepickerfield',
 				name : 'when',
 				label: "Placed",
@@ -57,7 +67,7 @@ Ext.define("SiteSelector.view.bloodsugar.Add", {
 					ampm : true,
 					slotOrder: ['month', 'day', 'year','hour'] // append more fields depending on device type
 				}
-			},
+			}),
 			{
 				xtype: "spinnerfield",
 				name: "reading",
@@ -89,69 +99,7 @@ Ext.define("SiteSelector.view.bloodsugar.Add", {
 						flex: 3
 					}
 				]
-			}/* ,
-			{
-				xtype: "container",
-				layout: "hbox",
-				items: [
-					{
-						xtype: "togglefield",
-						name: "treat",
-						label: false,
-						flex: 1
-					},
-					{
-						xtype: "spinnerfield",
-						name: "treat_grams",
-						label: "Treat: 0g",
-						minValue: 0,
-						maxValue: 1000,
-						increment: 1,
-						cycle: false,
-						flex: 3
-					}
-				]
-			},
-			{
-				xtype: "container",
-				layout: "hbox",
-				items: [
-					{
-						xtype: "togglefield",
-						name: "insulin",
-						label: false,
-						flex: 1
-					},
-					{
-						xtype: "spinnerfield",
-						name: "insulin_units",
-						label: "Insulin: 0U",
-						minValue: 0,
-						maxValue: 100,
-						increment: 1,
-						cycle: false,
-						flex: 3
-					}
-				]
 			}
-			*/
 		]
-	},
-	
-	constructor: function(config) {
-		Ext.applyIf(config, this.config);
-		
-		if (config.items[2].picker.slotOrder.indexOf("ampm") == -1) {
-			if (Ext.os.is.Phone) {
-				config.items[2].picker.slotOrder.push("ampm");
-				config.items[2].dateTimeFormat = 'm/d/Y gA';
-			} else {
-				config.items[2].picker.slotOrder.push("minute");
-				config.items[2].picker.slotOrder.push("ampm");
-				config.items[2].dateTimeFormat = 'm/d/Y h:i:A';
-			}
-		}
-		
-		this.callParent(arguments);
 	}
 });

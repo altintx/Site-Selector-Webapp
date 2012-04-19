@@ -36,7 +36,17 @@ Ext.define("SiteSelector.view.bloodsugar.Edit", {
 					}
 				]
 			},
-			{
+			(function(config) {
+				if (Ext.os.is.Phone) {
+					config.picker.slotOrder.push("ampm");
+					config.dateTimeFormat = 'm/d/Y gA';
+				} else {
+					config.picker.slotOrder.push("minute");
+					config.picker.slotOrder.push("ampm");
+					config.dateTimeFormat = 'm/d/Y h:i:A';
+				}
+				return config;
+			})({
 				xtype: 'datetimepickerfield',
 				name : 'when',
 				label: "Placed",
@@ -45,7 +55,7 @@ Ext.define("SiteSelector.view.bloodsugar.Edit", {
 					ampm : true,
 					slotOrder: ['month', 'day', 'year','hour'] // append more fields depending on device type
 				}
-			},
+			}),
 			{
 				xtype: "spinnerfield",
 				name: "reading",
@@ -56,22 +66,5 @@ Ext.define("SiteSelector.view.bloodsugar.Edit", {
 				cycle: false
 			}
 		]
-	},
-	
-	constructor: function(config) {
-		Ext.applyIf(config, this.config);
-		
-		if (config.items[2].picker.slotOrder.indexOf("ampm") == -1) {
-			if (Ext.os.is.Phone) {
-				config.items[2].picker.slotOrder.push("ampm");
-				config.items[2].dateTimeFormat = 'm/d/Y gA';
-			} else {
-				config.items[2].picker.slotOrder.push("minute");
-				config.items[2].picker.slotOrder.push("ampm");
-				config.items[2].dateTimeFormat = 'm/d/Y h:i:A';
-			}
-		}
-		
-		this.callParent(arguments);
 	}
 });

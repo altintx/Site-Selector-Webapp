@@ -85,7 +85,6 @@ Ext.define("SiteSelector.controller.Body", {
 		}, 200);
 	},
 	editSite: function(options) {
-		try {
 			var $this = this;
 			this.overlay = Ext.Viewport.add({
 				xtype: "SiteEdit",
@@ -113,9 +112,6 @@ Ext.define("SiteSelector.controller.Body", {
 					}
 				}
 			});
-		} catch (e) {
-			console.log("Exception in BodyController::editSite", e);
-		}
 		this.overlay.show();
 	}
 });

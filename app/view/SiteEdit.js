@@ -4,7 +4,17 @@ Ext.define("SiteSelector.view.SiteEdit", {
 	requires: ['Ext.field.DatePicker', 'Ext.field.Select', 'Ext.ux.field.DateTimePicker', 'Ext.field.Toggle'],
 	config: {
 		items: [
-			{
+			(function(config) {
+				if (Ext.os.is.Phone) {
+					config.picker.slotOrder.push("ampm");
+					config.dateTimeFormat = 'm/d/Y gA';
+				} else {
+					config.picker.slotOrder.push("minute");
+					config.picker.slotOrder.push("ampm");
+					config.dateTimeFormat = 'm/d/Y h:i:A';
+				}
+				return config;
+			})({
 				xtype: 'datetimepickerfield',
 				name : 'when',
 				label: "Placed",
@@ -15,8 +25,18 @@ Ext.define("SiteSelector.view.SiteEdit", {
 					ampm : true,
 					slotOrder: ['month', 'day', 'year','hour'] // append more fields depending on device type
 				}
-			},
-			{
+			}),
+			(function(config) {
+				if (Ext.os.is.Phone) {
+					config.picker.slotOrder.push("ampm");
+					config.dateTimeFormat = 'm/d/Y gA';
+				} else {
+					config.picker.slotOrder.push("minute");
+					config.picker.slotOrder.push("ampm");
+					config.dateTimeFormat = 'm/d/Y h:i:A';
+				}
+				return config;
+			})({
 				xtype: 'datetimepickerfield',
 				name : 'removed',
 				label: "Removed",
@@ -27,7 +47,7 @@ Ext.define("SiteSelector.view.SiteEdit", {
 					ampm : true,
 					slotOrder: ['month', 'day', 'year','hour']
 				}
-			},
+			}),
 			{
 				xtype: "selectfield",
 				name: "kind",
@@ -95,27 +115,5 @@ Ext.define("SiteSelector.view.SiteEdit", {
 				}
 			}
 		]
-	},
-	
-	constructor: function(config) {
-		Ext.applyIf(config, this.config);
-		
-		if (config.items[0].picker.slotOrder.indexOf("ampm") == -1) {
-			if (Ext.os.is.Phone) {
-				config.items[0].picker.slotOrder.push("ampm");
-				config.items[0].dateTimeFormat = 'm/d/Y gA';
-				config.items[1].picker.slotOrder.push("ampm");
-				config.items[1].dateTimeFormat = 'm/d/Y gA';
-			} else {
-				config.items[0].picker.slotOrder.push("minute");
-				config.items[0].picker.slotOrder.push("ampm");
-				config.items[0].dateTimeFormat = 'm/d/Y h:i:A';
-				config.items[1].picker.slotOrder.push("minute");
-				config.items[1].picker.slotOrder.push("ampm");
-				config.items[1].dateTimeFormat = 'm/d/Y h:i:A';
-			}
-		}
-		
-		this.callParent(arguments);
 	}
 });
