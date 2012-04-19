@@ -30,6 +30,11 @@ Ext.define("SiteSelector.view.phone.Main", {
 				store: "Logs"
 			},
 			{
+				xtype: "ReportBrowser",
+				title: "Reports",
+				iconCls: "info"
+			},
+			{
 				xtype: "Settings"
 			}
         ]

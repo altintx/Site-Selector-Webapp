@@ -16,7 +16,8 @@ Ext.application({
 		"Settings",
 		"Body",
 		"Log",
-		"BloodSugar"
+		"BloodSugar",
+		"Reports"
 	],
 	
 	views: [

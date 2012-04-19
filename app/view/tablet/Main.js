@@ -47,6 +47,11 @@ Ext.define("SiteSelector.view.tablet.Main", {
 				store: "Logs"
 			},
 			{
+				xtype: "ReportBrowser",
+				title: "Reports",
+				iconCls: "info"
+			},
+			{
 				xtype: "Settings"
 			}
         ]

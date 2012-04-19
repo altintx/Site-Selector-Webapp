@@ -52,6 +52,10 @@
             "update": "delta"
         },
         {
+            "path": "resources/css/body.css",
+            "update": "delta"
+        },
+        {
             "path": "resources/css/bold.css",
             "update": "delta"
         }

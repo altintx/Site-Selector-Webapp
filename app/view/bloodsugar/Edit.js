@@ -60,13 +60,16 @@ Ext.define("SiteSelector.view.bloodsugar.Edit", {
 	
 	constructor: function(config) {
 		Ext.applyIf(config, this.config);
-		if (Ext.os.is.Phone) {
-			config.items[2].picker.slotOrder.push("ampm");
-			config.items[2].dateTimeFormat = 'm/d/Y gA';
-		} else {
-			config.items[2].picker.slotOrder.push("minute");
-			config.items[2].picker.slotOrder.push("ampm");
-			config.items[2].dateTimeFormat = 'm/d/Y h:i:A';
+		
+		if (config.items[2].picker.slotOrder.indexOf("ampm") == -1) {
+			if (Ext.os.is.Phone) {
+				config.items[2].picker.slotOrder.push("ampm");
+				config.items[2].dateTimeFormat = 'm/d/Y gA';
+			} else {
+				config.items[2].picker.slotOrder.push("minute");
+				config.items[2].picker.slotOrder.push("ampm");
+				config.items[2].dateTimeFormat = 'm/d/Y h:i:A';
+			}
 		}
 		
 		this.callParent(arguments);
