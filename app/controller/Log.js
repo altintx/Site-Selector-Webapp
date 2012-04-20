@@ -3,7 +3,8 @@ Ext.define("SiteSelector.controller.Log", {
 	config: {
 		control: {
 			Log: {
-				itemtap: 'log_onItemTap'
+				itemtap: 'log_onItemTap',
+				itemswipe: 'log_onItemSwipe'
 			},
 			AddLog: {
 				tap: 'addLogEvent_onTap'
@@ -130,6 +131,31 @@ Ext.define("SiteSelector.controller.Log", {
 					}
 				});
 				
+		}
+	},
+	
+	log_onItemSwipe: function(dataview, ix, target, record, event, options) {
+		if (event.direction == "left") {
+			var del = Ext.create("Ext.Button", {
+				ui: "decline",
+				text: "Delete",
+				style: "position:absolute;right:0.125in;",
+				handler: function() {
+					debugger;
+					var owner = record.getOwner();
+					var ownerStore = owner.stores[0];
+					ownerStore.remove(owner);
+					ownerStore.sync();
+				}
+			});
+			del.renderTo(Ext.DomQuery.selectNode(".deleteplaceholder", target.dom));
+			Ext.Anim.run(del, 'fade', {
+				after: function() {
+					del.destroy();
+				},
+				out: true,
+				delay: 5000
+			})
 		}
 	}
 })
