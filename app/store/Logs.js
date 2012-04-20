@@ -16,7 +16,7 @@ Ext.define("SiteSelector.store.Logs", {
 	},
 	
 	record: function(record, title, description) {
-		var when = new Date(), R = null;
+		var when = record.data.when || new Date(), R = null;
 		var $this = this;
 		if (!record.phantom) {
 			R = this.add({
