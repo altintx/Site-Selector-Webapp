@@ -4,7 +4,7 @@ Ext.define("SiteSelector.view.LogViewer", {
 	config: {
 		iconCls: "bookmarks",
 		itemTpl: new Ext.XTemplate(
-			'<table width=\"100%\"><tr>' +
+			'<div class="deleteplaceholder"></div><table width=\"100%\"><tr>' +
 			'<td width=\"50%\">{title}</td>' +
 			"<td width=\"50%\">{[values.when.toLocaleDateString()]} {[values.when.toLocaleTimeString()]}</td></tr>" +
 			"<tr><td width=\"100%\" colspan=\"2\">{description}</td>" +
