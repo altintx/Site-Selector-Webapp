@@ -12,7 +12,10 @@ Ext.define("SiteSelector.view.bloodsugar.Edit", {
 					{
 						align: "left",
 						text: "Cancel",
-						action: "cancel"
+						action: "cancel",
+						handler: function() {
+							this.up("EditBloodSugar").destroy();
+						}
 					},
 					{
 						align: "right",
