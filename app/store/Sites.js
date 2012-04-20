@@ -102,17 +102,18 @@ Ext.define("SiteSelector.store.Sites", {
 	onBeforeSync: function (store) {
 		var field;
 		try {
+			var logStore = Ext.data.StoreManager.get("Logs");
 			store.getUpdatedRecords().forEach(function(m) {
 				for (field in m.modified) {
 					if (field == "removed") {
-						Ext.data.StoreManager.get("Logs").record(m, "Site Removed", "The " + m.get("kind") + " site was removed from " + m.get("location"));
+						logStore.record(m, "Site Removed", "The " + m.get("kind") + " site was removed from " + m.get("location"));
 						(new LocalNotification()).cancel(m.getId());
 					}
 				}
 			});
 			store.getNewRecords().forEach(function(m) {
 				// TODO: log if new site
-				Ext.data.StoreManager.get("Logs").record(m, "Site Inserted", "New " + m.get("kind") + " site was inserted at " + m.get("location"));
+				logStore.record(m, "Site Inserted", "New " + m.get("kind") + " site was inserted at " + m.get("location"));
 				
 				if (SiteSelector.app.settings().get("usereminders")) {
 					try {
@@ -144,17 +145,17 @@ Ext.define("SiteSelector.store.Sites", {
 				}
 				
 				try {
-					var logs = Ext.data.StoreManager.get("Logs");
-					logs.each(function(r) {
+					logStore.each(function(r) {
 						if (r.get("fk") == m.getId() && r.get("model") == "SiteSelector.model.Site") {
 							console.log("removing", r);
-							logs.remove(r);
+							logStore.remove(r);
 						}
 					});
 				} catch (e) {
 					console.log("Error removing logs", e);
 				}
 			});
+			logStore.sync();
 		} catch (e) {
 			console.log("Exception in SitesStore::onBeforeSync", e);
 		}
