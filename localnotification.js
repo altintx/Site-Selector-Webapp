@@ -13,6 +13,9 @@ var LocalNotification = function() {
 };
 
 LocalNotification.prototype.add = function(options) {
+	if (!Cordova.available) {
+		return console.log("Trying to use native notifications but Cordova is not available");
+	}
 	var defaults = {
 		date: false,
 		message: '',
@@ -42,6 +45,9 @@ LocalNotification.prototype.add = function(options) {
 };
 
 LocalNotification.prototype.cancel = function(id) {
+	if (!Cordova.available) {
+		return console.log("Trying to use native notifications but Cordova is not available");
+	}
 	Cordova.exec(
 		function() { console.log("Cancelled notification ID#" + id); }, 
 		function() { console.log("Failed cancelling notification ID#" + id); }, 
@@ -53,6 +59,9 @@ LocalNotification.prototype.cancel = function(id) {
 };
 
 LocalNotification.prototype.cancelAll = function(id) {
+	if (!Cordova.available) {
+		return console.log("Trying to use native notifications but Cordova is not available");
+	}
 	Cordova.exec(
 		function() { console.log("Cancelled notifications"); }, 
 		function() { console.log("Failed cancelling notifications"); }, 
