@@ -22,8 +22,7 @@ Ext.application({
 	
 	views: [
 		'SiteEdit',
-		"LogActionSheet",
-		
+		"LogActionSheet"
 	],
 	
 	models: [
@@ -89,23 +88,6 @@ Ext.application({
 					},
 					saved: function() {
 						settingsView.destroy();
-						// if we don't need to show help, unbind this
-						var help = Ext.Viewport.add({
-							xtype: "panel",
-							html: "Long tap the part of your body you'd like to use as a site. You'll be prompted for the site's type.",
-							style: 'opacity: 0.6;margin: 1em;',
-							overlay: true,
-							top: "1in",
-							hideOnMaskTap: true,
-						});
-						// expire help after 5s
-						Ext.Anim.run(help, 'fade', {
-							after: function() {
-								help.destroy();
-							},
-							out: true,
-							delay: 5000
-						})
 					}
 				}
 			});
