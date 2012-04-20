@@ -1,7 +1,7 @@
 Ext.define("SiteSelector.view.BodyList", {
-    extend: 'Ext.Panel',
+    extend: 'Ext.Container',
 	alias: "widget.BodyList",
-	requires: ["Ext.Img", "Ext.ActionSheet", "Ext.field.Slider"],
+	requires: ["Ext.Img", "Ext.ActionSheet", "Ext.field.Slider", "SiteSelector.view.Body"],
 	stores: ['Sites'],
 	
     config: {
@@ -15,25 +15,10 @@ Ext.define("SiteSelector.view.BodyList", {
 	},
 	
 	constructor: function(config) {
-		var $this = this;
-		var resolution = 480;
-		
-		if (Ext.Viewport.windowHeight > 1024) {
-			resolution = "4k";
-		} else if (Ext.Viewport.windowHeight > 480) {
-			resolution = "1k";
-		}
-
-		var imgSrc = config.alias == "front"?
-			("resources/images/body/" + resolution + "/front.png"): 
-			("resources/images/body/" + resolution + "/back.png");
-		
-		config.bodyConfig = {
-			xtype: "image",
-			src: imgSrc,
-			style: "background-size:100% 100%;",
-			layout: "fit"
-		};
+		this.store = config.store;
+		this.sites = [];
+		this.alias = config.alias;
+		this._sliders = [];
 		
 		config.items = [
 			{
@@ -42,28 +27,59 @@ Ext.define("SiteSelector.view.BodyList", {
 				title: config.title,
 				items: [
 					{
-						text: "Add Pump",
+						text: "History",
 						align: "left",
-						action: "add",
-						type: "pump",
-						side: config.alias
+						handler: function() {
+							var container = this.up("BodyList").down("container[alias=vbox]");
+							container.getScrollable().getScroller().scrollTo(0,0);
+							var help = Ext.Viewport.add({
+								xtype: "panel",
+								html: "Swipe up to dismiss. You can also swipe down to reveal this panel.",
+								overlay: true,
+								top: "1in",
+								hideOnMaskTap: true,
+							});
+							help.showBy(container.down("sliderfield"));
+							// expire help after 5s
+							Ext.Anim.run(help, 'fade', {
+								after: function() {
+									help.destroy();
+								},
+								out: true,
+								delay: 5000
+							})
+							
+						}
 					},
 					{
-						text: "Add Sensor",
+						text: "Add Site",
 						align: "right",
-						action: "add",
-						type: "cgm",
-						side: config.alias
+						handler: function() {
+							var help = Ext.Viewport.add({
+								xtype: "panel",
+								html: "Hold your finger on the body image to indicate where you've placed your site.",
+								overlay: true,
+								top: "1in",
+								hideOnMaskTap: true,
+							});
+							help.showBy(this);
+							// expire help after 5s
+							Ext.Anim.run(help, 'fade', {
+								after: function() {
+									help.destroy();
+								},
+								out: true,
+								delay: 5000
+							})
+
+						}
 					}
 				]
 			},
-			config.bodyConfig
+			{
+				xtype: "body"
+			}
 		];
-		
-		this.store = config.store;
-		this.sites = [];
-		this.alias = config.alias;
-		this._sliders = [];
 		
 		this.callParent(arguments);
 		
@@ -108,12 +124,10 @@ Ext.define("SiteSelector.view.BodyList", {
 			if (humanBodyMap.element != null && humanBodyMap.element.getHeight() > 0) {
 				var w = humanBodyMap.element.getWidth(), h = humanBodyMap.element.getHeight();
 				humanBodyMap.destroy();
-				delete $this.config.bodyConfig.layout;
-				$this.config.bodyConfig.width = w;
-				$this.config.bodyConfig.height = h + 1;
 				$this.add({
 					xtype: "container",
 					layout: "vbox",
+					alias: "vbox",
 					scrollable: {
 						direction: "vertical",
 						initialOffset: {
@@ -128,11 +142,15 @@ Ext.define("SiteSelector.view.BodyList", {
 							minValue: 0,
 							maxValue: 90,
 						},
-						$this.config.bodyConfig
+						{
+							xtype: "body",
+							width: w,
+							height: h + 1
+						}
 					]
 				}).show();
 
-				$this.down("img").element.on("longpress", $this.onLongPress());
+				$this.down("body").element.on("longpress", $this.onLongPress());
 				fnSlider();
 			} else {
 				setTimeout(fnTimer, 50);
@@ -205,8 +223,8 @@ Ext.define("SiteSelector.view.BodyList", {
 				case "CGM":
 					var w = humanBodyMap.element.getWidth(),
 					    h = humanBodyMap.element.getHeight(),
-					    x = event.browserEvent.layerX, //event.pageX - event.target.offsetParent.offsetParent.offsetLeft,
-					    y = event.browserEvent.layerY, //event.pageY - event.target.offsetParent.offsetParent.offsetTop,
+					    x = event.browserEvent.layerX,
+					    y = event.browserEvent.layerY,
 					    store = $this.getStore(),
 					    kind = (this.getText() == "Pump"? "pump": "cgm");
 					var lastSite = store.lastSite($this.alias, kind);
