@@ -19,7 +19,6 @@ Ext.define("SiteSelector.store.BloodSugars", {
 		var field;
 		var logStore = Ext.data.StoreManager.get("Logs");
 		try {
-			debugger;
 			store.getUpdatedRecords().forEach(function(m) {
 				var ix = logStore.findBy(function(r) {
 					return (r.get("fk") == m.getId() && r.get("model") == "SiteSelector.model.BloodSugar");
@@ -30,12 +29,24 @@ Ext.define("SiteSelector.store.BloodSugars", {
 					r.set("description", expr);
 				})((m.get("kind") == "meter"? "#bgnow" : "#cgmow") + " " + m.get("reading"));
 			});
-			logStore.sync();			
 			store.getNewRecords().forEach(function(m) {
 				(function(expr) {
 					logStore.record(m, expr, expr);
 				})((m.get("kind") == "meter"? "#bgnow" : "#cgmow") + " " + m.get("reading"));
 			});
+			store.getRemovedRecords().forEach(function(m) {
+				try {
+					logStore.each(function(r) {
+						if (r.get("fk") == m.getId() && r.get("model") == "SiteSelector.model.BloodSugar") {
+							console.log("removing", r);
+							logStore.remove(r);
+						}
+					});
+				} catch (e) {
+					console.log("Error removing logs", e);
+				}
+			});
+			logStore.sync();			
 		} catch (e) {
 			console.log("Exception in BloodSugarsStore::onBeforeSync", e);
 		}
