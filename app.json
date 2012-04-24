@@ -17,21 +17,21 @@
      *
      *      }
      */
-    "js": [
-        {
-            "path": "sdk/sencha-touch.js"
-        },
+	"js": [
+		{
+			"path": "sdk/sencha-touch.js"
+		},
 		{
 			path: "localnotification.js"
 		},
 		{
 			path: "triangle.js"
 		},
-        {
-            "path": "app.js",
-            "update": "delta"
-        }
-    ],
+		{
+			"path": "app.js",
+			"update": "delta"
+		}
+	],
 
     /**
      * List of all CSS assets in the right inclusion order.

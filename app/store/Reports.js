@@ -13,11 +13,6 @@ Ext.define("SiteSelector.store.Reports", {
 					name: "Site Effectiveness",
 					xtype: "SiteSelector.view.reports.SiteEffectiveness",
 					leaf: true
-				},
-				{
-					name: "Site Accuracy",
-					xtype: "SiteSelector.view.reports.SiteAccuracy",
-					leaf: true
 				}
 			]
 		}

@@ -3,8 +3,7 @@ Ext.define("SiteSelector.controller.Reports", {
 	config: {
 		views: [
 			"SiteSelector.view.reports.Browser",
-			"SiteSelector.view.reports.SiteEffectiveness",
-			"SiteSelector.view.reports.SiteAccuracy"
+			"SiteSelector.view.reports.SiteEffectiveness"
 		],
 		stores: [
 			"SiteSelector.store.Reports"
@@ -21,7 +20,6 @@ Ext.define("SiteSelector.controller.Reports", {
 	},
 	
 	ListNav_onLeafItemTap: function(tree, list, ix, domTarget, record, event) {
-		console.log("leafitemtap", record);
 		tree.setDetailCard(Ext.create(
 			record.get("xtype"),
 			{}
