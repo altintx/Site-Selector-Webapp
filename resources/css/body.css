@@ -15,3 +15,14 @@
 	width: 1.5in;
 	height: 3in;
 }
+
+.site.pump {
+	background-image: -webkit-linear-gradient(bottom, #4A094A 52%, #8C4FA6 76%);
+}
+
+.site.cgm {
+	background-image: -webkit-linear-gradient(top, #D18023 52%, #8F4411 76%);
+}
+.site {
+	background-image: -webkit-linear-gradient(bottom, #8f0508 52%, #c51e0f 76%);
+}

@@ -3,13 +3,20 @@ Ext.define("SiteSelector.view.Body", {
 	alias: "widget.body",
 	config: {
 		style: "background-size:100% 100%;",
-		layout: "fit"
+		layout: "fit",
+		side: "front",
+		alias: "front"
 	},
 	
 	constructor: function(config) {
-		if (!("side" in config)) {
-			config.side = "front";
+		if (!("alias" in config)) {
+			config.alias = "front";
 		}
+
+		if (!("side" in config)) {
+			config.side = config.alias;
+		}
+		
 		
 		if ("resolution" in config) {
 			if (config.resolution == parseInt(config.resolution)) {

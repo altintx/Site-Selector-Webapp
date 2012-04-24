@@ -77,7 +77,8 @@ Ext.define("SiteSelector.view.BodyList", {
 				]
 			},
 			{
-				xtype: "body"
+				xtype: "body",
+				alias: config.alias
 			}
 		];
 		
@@ -145,12 +146,18 @@ Ext.define("SiteSelector.view.BodyList", {
 						{
 							xtype: "body",
 							width: w,
-							height: h + 1
+							height: h + 1,
+							alias: $this.alias
 						}
 					]
 				}).show();
 
 				$this.down("body").element.on("longpress", $this.onLongPress());
+				$this.down("body").on("tap", function() {
+					if (!$this.long_tap_active) {
+						$this.fireEvent("tap", $this)
+					}
+				});
 				fnSlider();
 			} else {
 				setTimeout(fnTimer, 50);
@@ -162,95 +169,9 @@ Ext.define("SiteSelector.view.BodyList", {
 	onLongPress: function() {
 		var $this = this;
 		return function(event, target) {
-			var placeHolder = Ext.DomHelper.append(target, {
-				tag: "div"
-			}, true);
-			placeHolder.setStyle({
-				position: "absolute"
-			});
-			var site = new Ext.Button({
-				cls: "circle",
-				baseCls: "site",
-				style: {
-					opacity: 1,
-					'background-image': '-webkit-linear-gradient(bottom, #8f0508 52%, #c51e0f 76%)'
-				},
-				text: "+",
-				renderTo: placeHolder
-			});
-			placeHolder.setSize("0.25in", "0.25in");;
-			placeHolder.setXY(event.pageX - placeHolder.getWidth() / 2, event.pageY - placeHolder.getHeight() / 2)
-			site.show();
-
-			$this.actions = Ext.Viewport.add({
-				xtype: "actionsheet",
-				items: [
-					{
-						xtype: "button",
-						text: "Pump",
-						handler: $this.actionMenuClick(event)
-					},
-					{
-						xtype: "button",
-						text: "CGM",
-						handler: $this.actionMenuClick(event)
-					},
-					{
-						xtype: "button",
-						text: "Cancel",
-						ui: "decline",
-						handler: $this.actionMenuClick(event)
-					}
-				],
-				listeners: {
-					hide: function() {
-						site.destroy();
-						placeHolder.destroy();
-						$this.actions.destroy();
-					}
-				}
-			});
-			$this.actions.show();
-		}
-	},
-	
-	actionMenuClick: function(event) {
-		var $this = this;
-		var humanBodyMap = $this.down("img");
-		return function() {
-			switch (this.getText()) {
-				case "Pump":
-				case "CGM":
-					var w = humanBodyMap.element.getWidth(),
-					    h = humanBodyMap.element.getHeight(),
-					    x = event.browserEvent.layerX,
-					    y = event.browserEvent.layerY,
-					    store = $this.getStore(),
-					    kind = (this.getText() == "Pump"? "pump": "cgm");
-					var lastSite = store.lastSite($this.alias, kind);
-					var usage = store.add({
-				        kind: kind,
-						when: new Date(),
-						x: x / w,
-						y: y / h,
-						side: $this.alias,
-						removed: null,
-						location: new SiteSelector.model.BodyRegion().regionName(100 * x/w, 100 * y/h, $this.alias)
-					});
-					if (lastSite) {
-						Ext.Msg.confirm("Remove old site", "Would you like to mark the site you inserted " + lastSite.get("when").toLocaleDateString() + " as removed?", function(button) {
-							if (button == "yes") {
-								lastSite.set("removed", new Date());
-								lastSite.dirty = true;
-							}
-							store.sync();
-							
-						});
-					} else {
-						store.sync();
-					}
-			}
-			this.up("actionsheet").hide();
+			$this.long_tap_active = true;
+			window.setTimeout(function() { delete $this.long_tap_active; }, 1000);
+			$this.fireEvent("longtap", event, target, $this);
 		}
 	},
 	
@@ -340,10 +261,6 @@ Ext.define("SiteSelector.view.BodyList", {
 				record.data.x,
 				record.data.y,
 				time_left / regenerate_time,
-				(record.data.kind == "pump"? 
-					'-webkit-linear-gradient(bottom, #4A094A 52%, #8C4FA6 76%)':
-					'-webkit-linear-gradient(top, #D18023 52%, #8F4411 76%)'
-				),
 				record
 			));
 		}
@@ -357,7 +274,7 @@ Ext.define("SiteSelector.view.BodyList", {
 		return this.store;
 	},
 	
-	plotPoint: function (x, y, opacity, gradient, record) {
+	plotPoint: function (x, y, opacity, record) {
 		var img = this.down("img").element,
 		    placeHolder = Ext.DomHelper.append(img.parent(), {
 		    	tag: "div"
@@ -369,11 +286,10 @@ Ext.define("SiteSelector.view.BodyList", {
 		placeHolder.setSize("0.25in", "0.25in");;
 		if (placeHolder.getWidth() > 0) {
 			var site = new Ext.Button({
-				cls: "circle",
+				cls: "circle " + record.get("kind"),
 				baseCls: "site",
 				style: {
-					opacity: opacity,
-					'background-image': gradient
+					opacity: opacity
 				},
 				text: "+",
 				renderTo: placeHolder,
