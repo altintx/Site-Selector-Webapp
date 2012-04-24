@@ -2,8 +2,7 @@ Ext.define("SiteSelector.controller.Body", {
 	extend: "Ext.app.Controller",
 	config: {
 		refs: {
-			formPanel: "BodyList",
-			editSiteButton: "BodyList button[action=editsite]"
+			formPanel: "BodyList"
 		},
 		control: {
 			formPanel: {

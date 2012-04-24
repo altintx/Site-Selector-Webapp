@@ -263,8 +263,8 @@ Ext.define("SiteSelector.view.BodyList", {
 
 		$this.getStore().each(function(record) {
 			if (record.data.side == $this.alias) {
-				try { $this.drawSite(record, record.decays() * $this.dayInMS())
-				
+				try {
+					$this.drawSite(record, record.decays() * $this.dayInMS());
 				} 
 				catch (e) { /* incomplete record */	}
 			}
