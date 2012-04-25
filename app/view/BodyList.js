@@ -59,7 +59,7 @@ Ext.define("SiteSelector.view.BodyList", {
 						handler: function() {
 							var help = Ext.Viewport.add({
 								xtype: "panel",
-								html: "Temporarily hiding existing sites.",
+								html: "Temporarily hiding existing sites. Long-tap to place a site, or short-tap to zoom first.",
 								overlay: true,
 								top: "1in",
 								hideOnMaskTap: true,
