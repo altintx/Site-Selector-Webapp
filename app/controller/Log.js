@@ -141,21 +141,32 @@ Ext.define("SiteSelector.controller.Log", {
 				text: "Delete",
 				style: "position:absolute;right:0.125in;",
 				handler: function() {
-					debugger;
 					var owner = record.getOwner();
 					var ownerStore = owner.stores[0];
 					ownerStore.remove(owner);
 					ownerStore.sync();
 				}
 			});
+			var removeDeleteButton = function() {
+				Ext.Anim.run(del, 'fade', {
+					after: function() {
+						del.destroy();
+					},
+					out: true
+				});
+			};
+			
 			del.renderTo(Ext.DomQuery.selectNode(".deleteplaceholder", target.dom));
-			Ext.Anim.run(del, 'fade', {
-				after: function() {
-					del.destroy();
-				},
-				out: true,
-				delay: 5000
-			})
+			dataview.on({
+				single: true,
+				buffer: 250,
+				itemtouchstart: removeDeleteButton
+			});
+			dataview.element.on({
+				single: true,
+				buffer: 250,
+				touchstart: removeDeleteButton
+			});
 		}
 	}
 })
