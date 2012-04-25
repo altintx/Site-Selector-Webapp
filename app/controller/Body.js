@@ -40,7 +40,7 @@ Ext.define("SiteSelector.controller.Body", {
 			centered: true,
 			scrollable: true,
 			width: Ext.Viewport.windowWidth * 0.8,
-			height: Ext.Viewport.windowHeight * 0.8,
+			height: Math.max(Ext.Viewport.windowHeight * 0.4, 300),
 			listeners: {
 				hide: function() {
 					$this.overlay.destroy();

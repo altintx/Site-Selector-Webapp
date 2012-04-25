@@ -1,3 +1,15 @@
 .x-floating strong {
 	font-weight: bold;
 }
+
+.transparentlabel {
+	background: transparent;
+}
+
+.x-form-fieldset .x-layout-hbox .x-field {
+	border-bottom: 0;
+}
+
+.x-form-fieldset .x-layout-hbox {
+	border-bottom: 1px solid #DDD;
+}

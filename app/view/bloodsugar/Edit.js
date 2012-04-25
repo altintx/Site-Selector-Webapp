@@ -25,48 +25,53 @@ Ext.define("SiteSelector.view.bloodsugar.Edit", {
 				],
 			},
 			{
-				xtype: "selectfield",
-				name: "kind",
-				label: "From",
-				options: [
+				xtype: "fieldset",
+				items: [
 					{
-						text: "Meter",
-						value: "meter"
+						xtype: "selectfield",
+						name: "kind",
+						label: "From",
+						options: [
+							{
+								text: "Meter",
+								value: "meter"
+							},
+							{
+								text: "CGM",
+								value: "cgm"
+							}
+						]
 					},
+					(function(config) {
+						if (Ext.os.is.Phone) {
+							config.picker.slotOrder.push("ampm");
+							config.dateTimeFormat = 'm/d/Y gA';
+						} else {
+							config.picker.slotOrder.push("minute");
+							config.picker.slotOrder.push("ampm");
+							config.dateTimeFormat = 'm/d/Y h:i:A';
+						}
+						return config;
+					})({
+						xtype: 'datetimepickerfield',
+						name : 'when',
+						label: "Placed",
+						picker: {
+							yearFrom: 2012,
+							ampm : true,
+							slotOrder: ['month', 'day', 'year','hour'] // append more fields depending on device type
+						}
+					}),
 					{
-						text: "CGM",
-						value: "cgm"
+						xtype: "spinnerfield",
+						name: "reading",
+						label: "Reading",
+						minValue: 0,
+						maxValue: 1000,
+						increment: 1,
+						cycle: false
 					}
 				]
-			},
-			(function(config) {
-				if (Ext.os.is.Phone) {
-					config.picker.slotOrder.push("ampm");
-					config.dateTimeFormat = 'm/d/Y gA';
-				} else {
-					config.picker.slotOrder.push("minute");
-					config.picker.slotOrder.push("ampm");
-					config.dateTimeFormat = 'm/d/Y h:i:A';
-				}
-				return config;
-			})({
-				xtype: 'datetimepickerfield',
-				name : 'when',
-				label: "Placed",
-				picker: {
-					yearFrom: 2012,
-					ampm : true,
-					slotOrder: ['month', 'day', 'year','hour'] // append more fields depending on device type
-				}
-			}),
-			{
-				xtype: "spinnerfield",
-				name: "reading",
-				label: "Reading",
-				minValue: 0,
-				maxValue: 1000,
-				increment: 1,
-				cycle: false
 			}
 		]
 	}
