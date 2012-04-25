@@ -100,11 +100,12 @@ Ext.define("SiteSelector.view.Body", {
 				},
 				text: "+",
 				renderTo: placeHolder,
-				handler: function(button) {
+				handler: function(button, event) {
 					$this.fireEvent("editsite", {
 						record: record,
 						button: button
 					});
+					event.stopEvent();
 				}
 			});
 			site.show();
