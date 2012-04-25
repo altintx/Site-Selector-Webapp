@@ -48,23 +48,44 @@ Ext.application({
 	settings: function() {
 		this.settingsStore = Ext.data.StoreManager.get("Settings");
 		var settings = this.settingsStore.first();
-		if (!settings) {
-			var R = this.settingsStore.add({
-				usecgms: 1,
-				usepump: 1,
-				pumpreuse: 28,
-				cgmreuse: 14,
-				pumplasts: 2,
-				cgmlasts: 3
-			});
-			settings = R[0];
+		if (!settings || [settings.data.pumplasts, settings.data.cgmlasts, settings.data.usezoom].indexOf(null) > -1) {
+			if (!settings) {
+				var R = this.settingsStore.add({
+					usecgms: 1,
+					usepump: 1,
+					pumpreuse: 28,
+					cgmreuse: 14,
+					pumplasts: 2,
+					cgmlasts: 3,
+					usezoom: Ext.os.is.phone? 1: 0
+				});
+				settings = R[0];
+			}
+			var w_w = Ext.Viewport.windowWidth * 0.8, w_h = Ext.Viewport.windowHeight * 0.8;
+			var msg = "Please tailor these parameters to your body.", title = "Getting Started"
+			if (Ext.os.is.phone) {
+				w_w = Ext.Viewport.windowWidth;
+				w_h = Ext.Viewport.windowHeight;
+			} else {
+				if (!settings.data.pumplasts) {
+					settings.data.pumplasts = 2;
+				}
+				if (!settings.data.cgmlasts) {
+					settings.data.cgmlasts = 3;
+				}
+				if (!settings.data.usezoom) {
+					settings.data.usezoom = Ext.os.is.phone? 1: 0;
+				}
+				msg = "New settings to check out: Reminders and Zoom. If you use reminders it's important to set the Pump and/or CGM's <i>lasts</i> length (in days).";
+				title = "Thanks for upgrading!";
+			}
 			var settingsView = Ext.Viewport.add({
 				modal: true,
 				record: settings,
 				centered: true,
 				scrollable: true,
-				width: Ext.Viewport.windowWidth * 0.8,
-				height: Ext.Viewport.windowHeight * 0.8,
+				width: w_w,
+				height: w_h,
 				showAnimation: {
 					type: "popIn",
 					duration: 250,
@@ -81,8 +102,8 @@ Ext.application({
 					initialize: function() {
 						window.setTimeout(function() {
 							Ext.Msg.alert(
-								"Configure",
-								"To get started, please indicate how quickly you heal."
+								title,
+								msg
 							);
 						}, 1);
 					},

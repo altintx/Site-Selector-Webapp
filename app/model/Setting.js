@@ -46,6 +46,10 @@ Ext.define('SiteSelector.model.Setting', {
 			{
 				name: "usereminders",
 				type: "int"
+			},
+			{
+				name: "usezoom",
+				type: "int"
 			}
 	    ]
 	}
