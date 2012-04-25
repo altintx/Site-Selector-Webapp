@@ -81,7 +81,6 @@ Ext.define("SiteSelector.store.Sites", {
 			});
 			store.getNewRecords().forEach(function(m) {
 				// TODO: log if new site
-				debugger;
 				logStore.record(m, "Site Inserted", "New " + m.get("kind") + " site was inserted at " + m.get("location"));
 				
 				if (SiteSelector.app.settings().get("usereminders")) {

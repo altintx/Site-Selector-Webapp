@@ -73,7 +73,6 @@ Ext.define("SiteSelector.view.BodyList", {
 								out: true,
 								delay: 5000
 							})
-							debugger;
 							var bl = this.up("BodyList");
 							bl.clearSites();
 							var t = setTimeout(function() {
