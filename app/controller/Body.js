@@ -152,6 +152,8 @@ Ext.define("SiteSelector.controller.Body", {
 		    m_y = event.browserEvent.layerY / m_h * 100,
 			$this = this;
 		
+		if (!SiteSelector.app.settings().get("usezoom")) return;
+		
 		var x1 = m_x - 10,
 			x2 = m_x + 10,
 			y1 = m_y - 10,
@@ -178,7 +180,7 @@ Ext.define("SiteSelector.controller.Body", {
 			items: [
 				{
 					xtype: "titlebar",
-					title: "Accuplace",
+					title: "Zoomed Placement",
 					docked: "top"
 				},
 				{
