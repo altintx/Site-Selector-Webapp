@@ -23,7 +23,6 @@ Ext.define("SiteSelector.view.LogViewer", {
 						var help = Ext.Viewport.add({
 							xtype: "panel",
 							html: "<h3>To save this data as a spreadsheet:</h3><ol><li>Connect your iOS device to your computer.</li><li>In <strong>iTunes</strong>, click to the <strong>Apps</strong> tab.</li><li>Scroll down to <strong>File Sharing</strong></li><li>Choose <strong>Site Selector</strong>.</li><li>Choose <strong>export.csv</strong></li><li>Press <strong>Save to...</strong></li></ol>",
-							style: 'opacity: 0.6;margin: 1em;',
 							overlay: true,
 							top: "1in",
 							hideOnMaskTap: true,
@@ -36,7 +35,7 @@ Ext.define("SiteSelector.view.LogViewer", {
 							out: true,
 							delay: 10000
 						})
-						help.show();
+						help.showBy(this);
 					}
 				},
 				{
