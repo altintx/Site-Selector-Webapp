@@ -5,7 +5,8 @@ Ext.define("SiteSelector.view.Body", {
 		style: "background-size:100% 100%;",
 		layout: "fit",
 		side: "front",
-		alias: "front"
+		alias: "front",
+		sites: []
 	},
 	
 	constructor: function(config) {
@@ -19,13 +20,15 @@ Ext.define("SiteSelector.view.Body", {
 		
 		
 		if ("resolution" in config) {
+			var availableResolutions = [480, "1k", "4k"];
 			if (config.resolution == parseInt(config.resolution)) {
-				var availableResolutions = [480, "1k", "4k"];
 				if (availableResolutions[config.resolution]) {
 					config.resolution = availableResolutions[config.resolution];
 				} else {
 					throw new Error("Don't know what to do with provided resolution (" + config.resolution + ")");
 				}
+			} else if (config.resolution = "max") {
+				config.resolution = availableResolutions[availableResolutions.length - 1];
 			}
 		} else {
 			config.resolution = 480;
@@ -46,5 +49,75 @@ Ext.define("SiteSelector.view.Body", {
 			("resources/images/body/" + config.resolution + "/back.png");
 		
 		return this.callParent([config]);
+	},
+	
+	initialize: function() {
+		var $this = this;
+		this.sites = [];
+		this.element.on("tap", function(event, node, options, eOpts) {
+			if (!$this.long_tap)
+				$this.fireEvent("tap", event, node, options, eOpts);
+		});
+		
+		this.element.on("longpress", function(event) {
+			$this.long_tap = true;
+			$this.fireEvent("longtap", event, $this.element);
+			setTimeout(function() {
+				delete $this.long_tap;
+			}, 1000);
+		});
+
+	},
+	
+	drawSite: function(record, regenerate_time) {
+		var time_left = (record.get("removed") == null)? regenerate_time:  (record.get("removed").getTime() + regenerate_time - Date.now());
+		if (time_left > 0) { 
+			this.sites.push(this.plotPoint(
+				record.data.x,
+				record.data.y,
+				time_left / regenerate_time,
+				record
+			));
+		}
+	},
+	
+	plotPoint: function (x, y, opacity, record) {
+		var img = this.element,
+		    placeHolder = Ext.DomHelper.append(img, {
+		    	tag: "div"
+		    }, true),
+		    $this = this;
+		placeHolder.setStyle({
+			position: "absolute"
+		});
+		placeHolder.setSize("0.25in", "0.25in");;
+		if (placeHolder.getWidth() > 0) {
+			var site = new Ext.Button({
+				cls: "circle " + record.get("kind"),
+				baseCls: "site",
+				style: {
+					opacity: opacity
+				},
+				text: "+",
+				renderTo: placeHolder,
+				handler: function(button) {
+					$this.fireEvent("editsite", {
+						record: record,
+						button: button
+					});
+				}
+			});
+			site.show();
+			var s = placeHolder.getWidth() / 2;
+			placeHolder.setXY([
+				img.getX() + img.getWidth() * x - s, 
+				img.getY() + img.getHeight() * y - s
+			]);
+		}
+		return placeHolder;
+	},
+	
+	clearSites: function() {
+		this.sites.forEach(function(site) { site.destroy(); });
 	}
 })

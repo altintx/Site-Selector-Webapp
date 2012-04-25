@@ -43,9 +43,9 @@ Ext.define('SiteSelector.model.Site', {
 	decays: function () {
 		switch (this.get("kind")) {
 			case "pump":
-				return SiteSelector.app.settings().get("pumpreuse");
+				return 1000 * 60 * 60 * 24 * SiteSelector.app.settings().get("pumpreuse");
 			case "cgm":
-				return SiteSelector.app.settings().get("cgmreuse");
+				return 1000 * 60 * 60 * 24 * SiteSelector.app.settings().get("cgmreuse");
 		}
 		return 0;
 	},

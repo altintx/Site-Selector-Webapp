@@ -47,8 +47,10 @@ Ext.define("SiteSelector.view.BodyList", {
 								},
 								out: true,
 								delay: 5000
-							})
-							
+							});
+							container.getScrollable().getScroller().on("scroll", function(event) {
+								help.destroy();
+							}, true);
 						}
 					},
 					{
@@ -57,7 +59,7 @@ Ext.define("SiteSelector.view.BodyList", {
 						handler: function() {
 							var help = Ext.Viewport.add({
 								xtype: "panel",
-								html: "Hold your finger on the body image to indicate where you've placed your site.",
+								html: "Temporarily hiding existing sites.",
 								overlay: true,
 								top: "1in",
 								hideOnMaskTap: true,
@@ -71,7 +73,16 @@ Ext.define("SiteSelector.view.BodyList", {
 								out: true,
 								delay: 5000
 							})
-
+							debugger;
+							var bl = this.up("BodyList");
+							bl.clearSites();
+							var t = setTimeout(function() {
+								bl.drawSites();
+							}, 5000);
+							bl.down("body").on("tap", function() {
+								bl.drawSites();
+								clearTimeout(t);
+							})
 						}
 					}
 				]
@@ -93,12 +104,12 @@ Ext.define("SiteSelector.view.BodyList", {
 		var humanBodyMap = $this.down("img");
 		
 		var fn = function(store, records, index) {
-			if ($this.bodyElement) {
+			if (humanBodyMap.element) {
 				records.filter(function(r) { return r.data.side == $this.alias; }).forEach(function(r) { 
 					if ($this.drawSites == $this.drawSitesDefault)
-						$this.drawSite(r, r.decays()); 
+						humanBodyMap.drawSite(r, r.decays()); 
 					else
-						$this.drawSite(r, $this.down("sliderfield").getValue() * 86400000)
+						humanBodyMap.drawSite(r, $this.down("sliderfield").getValue() * 86400000)
 				});
 			} else {
 				$this.getStore().un("addrecords", fn);
@@ -147,17 +158,24 @@ Ext.define("SiteSelector.view.BodyList", {
 							xtype: "body",
 							width: w,
 							height: h + 1,
-							alias: $this.alias
+							alias: $this.alias,
+							listeners: {
+								tap: function(event, node) {
+									if (!$this.long_tap_active) {
+										$this.fireEvent("tap", event, $this);
+									}
+								},
+								editsite: function(params) {
+									$this.fireEvent("editsite", params);
+								},
+								longtap: function(event, target) {
+									$this.fireEvent("longtap", event, target, $this);
+								}
+							}
 						}
 					]
 				}).show();
 
-				$this.down("body").element.on("longpress", $this.onLongPress());
-				$this.down("body").on("tap", function() {
-					if (!$this.long_tap_active) {
-						$this.fireEvent("tap", $this)
-					}
-				});
 				fnSlider();
 			} else {
 				setTimeout(fnTimer, 50);
@@ -166,26 +184,18 @@ Ext.define("SiteSelector.view.BodyList", {
 		fnTimer();
 	},
 	
-	onLongPress: function() {
-		var $this = this;
-		return function(event, target) {
-			$this.long_tap_active = true;
-			window.setTimeout(function() { delete $this.long_tap_active; }, 1000);
-			$this.fireEvent("longtap", event, target, $this);
-		}
-	},
-	
-	dayInMS: function() {
-		return 1000 * 60 * 60 * 24;
-	},
-
+	// dayInMS: function() {
+	// 	return 1000 * 60 * 60 * 24;
+	// },
+	// 
 	drawSitesDefault: function() {
 		var $this = this;
-
+		var body = $this.down("body");
+		
 		$this.getStore().each(function(record) {
 			if (record.data.side == $this.alias) {
 				try {
-					$this.drawSite(record, record.decays() * $this.dayInMS());
+					body.drawSite(record, record.decays());
 				} 
 				catch (e) { /* incomplete record */	}
 			}
@@ -193,9 +203,10 @@ Ext.define("SiteSelector.view.BodyList", {
 	},
 	
 	onTimeFilterChange: function() {
-		var $this = this;
-		var scheduled_anim = null;
-		var help = null;
+		var $this = this,
+		    scheduled_anim = null;
+		    help = null,
+		    body = this.down("body");
 		return function(slider, thumb) {
 			var value = slider.getValue(), msg = "";
 			if (help) {
@@ -220,7 +231,7 @@ Ext.define("SiteSelector.view.BodyList", {
 			});
 			
 			$this.clearSites();
-			$this.drawSites(value);
+			$this.drawSites(value * 1000 * 60 * 60 * 24);
 			
 			scheduled_anim = Date.now() + 5000;
 			
@@ -242,71 +253,20 @@ Ext.define("SiteSelector.view.BodyList", {
 	
 	drawSitesPeriod: function(daysBack) {
 		var $this = this;
+		var body = $this.down("body");
 
 		$this.getStore().each(function(record) {
 			if (record.data.side == $this.alias) {
 				try {
-					$this.drawSite(record, $this.dayInMS() * daysBack);
+					body.drawSite(record, daysBack);
 				} 
 				catch (e) { /* incomplete record */	}
 			}
 		});
 	},
 	
-	drawSite: function(record, regenerate_time) {
-		var $this = this;
-		var time_left = (record.get("removed") == null)? regenerate_time:  (record.get("removed").getTime() + regenerate_time - Date.now());
-		if (time_left > 0) { 
-			$this.sites.push(this.plotPoint(
-				record.data.x,
-				record.data.y,
-				time_left / regenerate_time,
-				record
-			));
-		}
-	},
-
 	clearSites: function() {
-		this.sites.forEach(function(site) { site.destroy(); });
+		this.down("body").clearSites();
 	},
 	
-	getStore: function () {
-		return this.store;
-	},
-	
-	plotPoint: function (x, y, opacity, record) {
-		var img = this.down("img").element,
-		    placeHolder = Ext.DomHelper.append(img.parent(), {
-		    	tag: "div"
-		    }, true),
-		    $this = this;
-		placeHolder.setStyle({
-			position: "absolute"
-		});
-		placeHolder.setSize("0.25in", "0.25in");;
-		if (placeHolder.getWidth() > 0) {
-			var site = new Ext.Button({
-				cls: "circle " + record.get("kind"),
-				baseCls: "site",
-				style: {
-					opacity: opacity
-				},
-				text: "+",
-				renderTo: placeHolder,
-				handler: function(button) {
-					$this.fireEvent("editsite", {
-						record: record,
-						button: button
-					});
-				}
-			});
-			site.show();
-			var s = placeHolder.getWidth() / 2;
-			placeHolder.setXY([
-				img.getX() + img.getWidth() * x - s, 
-				img.getY() + img.getHeight() * y - s
-			]);
-		}
-		return placeHolder;
-	}
 });
