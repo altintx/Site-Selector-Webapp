@@ -74,13 +74,14 @@ Ext.define("SiteSelector.store.Sites", {
 			store.getUpdatedRecords().forEach(function(m) {
 				for (field in m.modified) {
 					if (field == "removed") {
-						logStore.record(m, "Site Removed", "The " + m.get("kind") + " site was removed from " + m.get("location"));
+						logStore.record(m, "Site Removed", "The " + m.get("kind") + " site was removed from " + m.get("location"), { date_field: false });
 						(new LocalNotification()).cancel(m.getId());
 					}
 				}
 			});
 			store.getNewRecords().forEach(function(m) {
 				// TODO: log if new site
+				debugger;
 				logStore.record(m, "Site Inserted", "New " + m.get("kind") + " site was inserted at " + m.get("location"));
 				
 				if (SiteSelector.app.settings().get("usereminders")) {

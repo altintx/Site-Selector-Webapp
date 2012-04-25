@@ -15,8 +15,9 @@ Ext.define("SiteSelector.store.Logs", {
 		}
 	},
 	
-	record: function(record, title, description) {
-		var when = record.data.when || new Date(), R = null;
+	record: function(record, title, description, options) {
+		options = Ext.applyIf(options || {}, { date_field: "when" });
+		var when = options.date_field? (record.data[options.date_field] || new Date()): new Date(), R = null;
 		var $this = this;
 		if (!record.phantom) {
 			R = this.add({
