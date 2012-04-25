@@ -101,9 +101,10 @@ Ext.define("SiteSelector.view.BodyList", {
 	
 	initialize: function() {
 		var $this = this;
-		var humanBodyMap = $this.down("img");
+		var humanBodyMap = $this.down("body");
 		
 		var fn = function(store, records, index) {
+			humanBodyMap = $this.down("body");
 			if (humanBodyMap.element) {
 				records.filter(function(r) { return r.data.side == $this.alias; }).forEach(function(r) { 
 					if ($this.drawSites == $this.drawSitesDefault)
@@ -184,10 +185,6 @@ Ext.define("SiteSelector.view.BodyList", {
 		fnTimer();
 	},
 	
-	// dayInMS: function() {
-	// 	return 1000 * 60 * 60 * 24;
-	// },
-	// 
 	drawSitesDefault: function() {
 		var $this = this;
 		var body = $this.down("body");
