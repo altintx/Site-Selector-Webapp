@@ -160,9 +160,9 @@ Ext.define("SiteSelector.view.BodyList", {
 							height: h + 1,
 							alias: $this.alias,
 							listeners: {
-								tap: function(event, node) {
+								tap: function(x, y, node) {
 									if (!$this.long_tap_active) {
-										$this.fireEvent("tap", event, $this);
+										$this.fireEvent("zoom", x, y, $this);
 									}
 								},
 								editsite: function(params) {

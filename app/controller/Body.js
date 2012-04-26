@@ -10,7 +10,7 @@ Ext.define("SiteSelector.controller.Body", {
 				editsite: "editSite",
 				initialize: "onActivate",
 				longtap: "addSite",
-				tap: "zoom"
+				zoom: "zoom"
 			}
 		}
 	},
@@ -145,11 +145,11 @@ Ext.define("SiteSelector.controller.Body", {
 		}
 	},
 	
-	zoom: function(event, body) {
+	zoom: function(x, y, body) {
 		var m_w = body.element.getWidth(),
 		    m_h = body.element.getHeight(),
-		    m_x = event.browserEvent.layerX / m_w * 100,
-		    m_y = event.browserEvent.layerY / m_h * 100,
+		    m_x = x / m_w * 100,
+		    m_y = y / m_h * 100,
 			$this = this;
 		
 		if (!SiteSelector.app.settings().get("usezoom")) return;
@@ -197,7 +197,6 @@ Ext.define("SiteSelector.controller.Body", {
 							left: (-x1 * 5) + "%",
 							width: "500%",
 							height: "500%",
-							resolution: "max",
 							listeners: {
 								initialize: function() {
 									var body = this;
