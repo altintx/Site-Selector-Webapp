@@ -20,9 +20,9 @@ Ext.define("SiteSelector.view.Body", {
 		
 		
 		if ("resolution" in config) {
-			var availableResolutions = [480, "1k", "4k"];
+			var availableResolutions = [1024, 2048];
 			if (config.resolution == parseInt(config.resolution)) {
-				if (availableResolutions[config.resolution]) {
+				if (availableResolutions.indexOf(config.resolution) > -1) {
 					config.resolution = availableResolutions[config.resolution];
 				} else {
 					throw new Error("Don't know what to do with provided resolution (" + config.resolution + ")");
@@ -34,9 +34,9 @@ Ext.define("SiteSelector.view.Body", {
 			config.resolution = 480;
 		
 			if (Ext.Viewport.windowHeight > 1024) {
-				config.resolution = "4k";
+				config.resolution = 2048;
 			} else if (Ext.Viewport.windowHeight > 480) {
-				config.resolution = "1k";
+				config.resolution = 1024;
 			}
 		}
 		
@@ -45,8 +45,8 @@ Ext.define("SiteSelector.view.Body", {
 		}
 		
 		config.src = config.side == "front"?
-			("resources/images/body/" + config.resolution + "/front.png"): 
-			("resources/images/body/" + config.resolution + "/back.png");
+			("resources/images/body/" + config.resolution + "-front.png"): 
+			("resources/images/body/" + config.resolution + "-back.png");
 		
 		return this.callParent([config]);
 	},

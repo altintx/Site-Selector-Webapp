@@ -187,7 +187,8 @@ Ext.define("SiteSelector.controller.Body", {
 					xtype: "container",
 					style: {
 						overflow: "hidden",
-						position: "relative"
+						position: "relative",
+						"background-color": "#444"
 					},
 					items: [
 						{
@@ -197,6 +198,7 @@ Ext.define("SiteSelector.controller.Body", {
 							left: (-x1 * 5) + "%",
 							width: "500%",
 							height: "500%",
+							resolution: "max",
 							listeners: {
 								initialize: function() {
 									var body = this;
