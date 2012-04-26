@@ -76,7 +76,7 @@ Ext.define("SiteSelector.view.Body", {
 		this.element.on("touchstart", function(event) {
 			touches[event.touch.identifier] = {
 				x: event.browserEvent.layerX,
-				y: event.browserEvent.layerX,
+				y: event.browserEvent.layerY,
 				is_long: false
 			};
 		});
