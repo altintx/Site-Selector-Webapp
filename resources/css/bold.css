@@ -1,7 +1,9 @@
 .x-floating strong {
 	font-weight: bold;
 }
-
+.x-floating em {
+	font-style: italic;
+}
 .transparent_label {
 	background: transparent;
 }
@@ -12,4 +14,11 @@
 
 .x-form-fieldset .x-layout-hbox {
 	border-bottom: 1px solid #DDD;
+}
+
+.x-floating .x-innerhtml li {
+	list-style: inside disc;
+	margin-left: 2em;
+	text-indent: -1em;
+	padding-right: 1em;
 }

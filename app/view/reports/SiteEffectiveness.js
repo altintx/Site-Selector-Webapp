@@ -1,7 +1,7 @@
 Ext.define("SiteSelector.view.reports.SiteEffectiveness", {
 	extend: "Ext.dataview.List",
 	config: {
-		itemTpl: new Ext.XTemplate('<table><tr><td rowspan="3"><div style="overflow-y:hidden;height:0.75in;margin-right:0.25in;"><div class="body-thumbnail-{side}" style="top:-{y*3}%;"><div class="circle" style="' + 
+		itemTpl: new Ext.XTemplate('<table><tr><td rowspan="3"><div style="overflow-y:hidden;height:0.95in;margin-right:0.25in;"><div class="body-thumbnail-{side}" style="top:-{y*2.8}%;"><div class="circle" style="' + 
 			'left:{x}%;' +
 			'top:{y}%;' +
 			'background:-webkit-linear-gradient(bottom, #4A094A 52%, #8C4FA6 76%);'+
@@ -9,7 +9,26 @@ Ext.define("SiteSelector.view.reports.SiteEffectiveness", {
 			'margin-top:-0.125in;' +
 			'">+</div></div></div></td><td><strong>{location}</strong></td></tr>' +
 			'<tr><td>eAG: {eag} StDev: {standard_dev}</td></tr>' +
-			'<tr><td>Max Rate: {max_roc}</td></tr></table>')
+			'<tr><td>Max Decrease: {max_dec} Max Increase: {max_inc}</td></tr></table>'),
+		items: [
+			{
+				xtype: "button",
+				text: "Definitions",
+				docked: "bottom",
+				handler: function() {
+					Ext.create('Ext.Panel', {
+						html: "<ul>" +
+							"<li>The standard deviation indicates that 68% of the time, your logged blood sugars are within <em>StDev</em> mg/dL of <em>eAG</em>. Lower is better.</li>" +
+							"<li>Max Decrease is the fastest observed decrease in blood sugar. A higher number may suggest good insulin absorbtion, or you might have just taken too much insulin.</li>" +
+							"<li>Max increase is the fastest observed increase in blood sugar. A higher number may suggest poor insulin absorbtion, or, too little insulin for a meal.</li>" +
+							"</ul>",
+						overlay: true,
+						modal: true,
+						hideOnMaskTap: true
+					}).showBy(this)
+				}
+			}
+		]
 	},
 	
 	constructor: function(config) {
@@ -28,7 +47,8 @@ Ext.define("SiteSelector.view.reports.SiteEffectiveness", {
 					side: site.get("side"),
 					location: site.get("location"),
 					eag: 0,
-					max_roc: 0
+					max_inc: 0,
+					max_dec: 0
 				},
 				siteStarted = site.get("when").getTime(),
 				siteEnded = site.get("removed").getTime(),
@@ -64,13 +84,18 @@ Ext.define("SiteSelector.view.reports.SiteEffectiveness", {
 				change = readings[ix + 1].data.reading - readings[ix].data.reading;
 				plot.eag += (readings[ix].data.reading + change / 2);
 				// 60000 is the number of milliseconds in a minute
-				plot.max_roc = Math.max(Math.abs(change) / (timespan / 60000), plot.max_roc);
+				if (change <= 0) {
+					plot.max_dec = Math.max(Math.abs(change) / (timespan / 60000), plot.max_dec);
+				} else {
+					plot.max_inc= Math.max(Math.abs(change) / (timespan / 60000), plot.max_inc);
+				}
 			}
 			
 			plot.eag /= (readings.length - 1);
 			plot.eag = parseInt(plot.eag * 100) / 100;
 			plot.standard_dev = parseInt(plot.standard_dev * 100) / 100;
-			plot.max_roc = parseInt(plot.max_roc * 100) / 100 + " mg/dl per Minute";
+			plot.max_inc = parseInt(plot.max_inc * 100) / 100 + " mg/dl per Min";
+			plot.max_dec = parseInt(plot.max_dec * 100) / 100 + " mg/dl per Min";
 			
 			data.push(plot);
 		});
