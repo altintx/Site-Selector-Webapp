@@ -140,7 +140,7 @@ Ext.define("SiteSelector.view.BodyList", {
 					xtype: "container",
 					layout: "vbox",
 					alias: "vbox",
-					style: "background-color: #444;",
+					style: "background-color: #282020;",
 					scrollable: {
 						direction: "vertical",
 						initialOffset: {

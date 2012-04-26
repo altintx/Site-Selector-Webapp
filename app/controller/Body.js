@@ -188,7 +188,7 @@ Ext.define("SiteSelector.controller.Body", {
 					style: {
 						overflow: "hidden",
 						position: "relative",
-						"background-color": "#444"
+						"background-color": "#301111"
 					},
 					items: [
 						{

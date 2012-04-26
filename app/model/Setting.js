@@ -50,6 +50,10 @@ Ext.define('SiteSelector.model.Setting', {
 			{
 				name: "usezoom",
 				type: "int"
+			},
+			{
+				name: "infusion_sites_consent",
+				type: "int"
 			}
 	    ]
 	}

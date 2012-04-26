@@ -6,6 +6,8 @@ Ext.define("SiteSelector.view.Body", {
 		layout: "fit",
 		side: "front",
 		alias: "front",
+		resolution: 480,
+		skin: "body",
 		sites: []
 	},
 	
@@ -78,6 +80,8 @@ Ext.define("SiteSelector.view.Body", {
 				is_long: false
 			};
 		});
+		
+		this.element.on("swipe", this.onSwipe.bind(this))
 	},
 	
 	drawSite: function(record, regenerate_time) {
@@ -131,5 +135,42 @@ Ext.define("SiteSelector.view.Body", {
 	
 	clearSites: function() {
 		this.sites.forEach(function(site) { site.destroy(); });
+	},
+	
+	onSwipe: function(e) {
+		var $this = this;
+		var toggler = function() {
+			if ($this.config.skin == "body") {
+				$this.config.skin = "body-shaded-ambiguous";
+			} else {
+				$this.config.skin = "body";
+			}
+			$this.setSrc("resources/images/" + $this.config.skin + "/" + $this.config.resolution + "-" + $this.config.side + ".png");
+		};
+		console.log(SiteSelector.app.settings().get("infusion_sites_consent"));
+		if (SiteSelector.app.settings().get("infusion_sites_consent")) {
+			toggler();
+		} else {
+			Ext.Msg.show({
+				title: "Consult your doctor",
+				message: "Site Selector will now highlight areas commonly used for infusion sites. This doesn't mean you should use them, not does it mean they will work for you. Consult your doctor.",
+				buttons: [{
+					text: "Highlight Common Sites",
+					itemId: "ok"
+				},
+				{
+					text: "Don't Highlight",
+					itemId: "cancel"
+				}],
+				fn: function(buttonId) {
+					if (buttonId == "cancel") return;
+					
+					var s = SiteSelector.app.settings();
+					s.set("infusion_sites_consent", Date.now());
+					Ext.data.StoreManager.get("Settings").sync();
+					toggler();
+				}
+			})
+		}
 	}
 })
