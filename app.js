@@ -48,7 +48,7 @@ Ext.application({
 	settings: function() {
 		this.settingsStore = Ext.data.StoreManager.get("Settings");
 		var settings = this.settingsStore.first();
-		if (!settings || [settings.data.pumplasts, settings.data.cgmlasts, settings.data.usezoom].indexOf(null) > -1) {
+		if (!settings || [settings.data.pumplasts, settings.data.cgmlasts, settings.data.usezoom, settings.data.carb_ratio, settings.data.correction_factor,settings.data.target_bg].indexOf(null) > -1) {
 			if (!settings) {
 				var R = this.settingsStore.add({
 					usecgms: 1,
@@ -57,6 +57,9 @@ Ext.application({
 					cgmreuse: 14,
 					pumplasts: 2,
 					cgmlasts: 3,
+					carb_ratio: 15,
+					correction_factor: 50,
+					target_bg: 100,
 					usezoom: Ext.os.is.phone? 1: 0
 				});
 				settings = R[0];
@@ -76,7 +79,17 @@ Ext.application({
 				if (!settings.data.usezoom) {
 					settings.data.usezoom = Ext.os.is.phone? 1: 0;
 				}
-				msg = "New settings to check out: Reminders and Zoom. If you use reminders it's important to set the Pump and/or CGM's <i>lasts</i> length (in days).";
+				if (!settings.data.carb_ratio) {
+					settings.data.carb_ratio = 15;
+				}
+				if (!settings.data.correction_factor) {
+					settings.data.correction_factor = 50;
+				}
+				if (!settings.data.target_bg) {
+					settings.data.target_bg = 100;
+				}
+				
+				msg = "New settings to check out: Reminders, Zoom, Blood Sugars and Insulin Needs. If you use reminders it's important to set the Pump and/or CGM's <i>lasts</i> length (in days).";
 				title = "Thanks for upgrading!";
 			}
 			var settingsView = Ext.Viewport.add({
