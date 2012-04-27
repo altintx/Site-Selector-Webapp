@@ -81,7 +81,14 @@ Ext.define("SiteSelector.view.bloodsugar.Add", {
 						minValue: 0,
 						maxValue: 1000,
 						increment: 1,
-						cycle: false
+						cycle: false,
+						listeners: {
+							spin: function(spinner) {
+								if ("parity_set" in spinner.up("AddBloodSugar")) return;
+								
+								spinner.up("AddBloodSugar").down("spinnerfield[name=parity_reading]").setValue(spinner.getValue())
+							}
+						}
 					},
 					{
 						xtype: "container",
@@ -91,6 +98,7 @@ Ext.define("SiteSelector.view.bloodsugar.Add", {
 								xtype: "togglefield",
 								name: "parity",
 								label: false,
+								ui: "small",
 								flex: 1
 							},
 							{
@@ -103,7 +111,12 @@ Ext.define("SiteSelector.view.bloodsugar.Add", {
 								maxValue: 1000,
 								increment: 1,
 								cycle: false,
-								flex: 3
+								flex: 3,
+								listeners: {
+									spin: function(spinner) {
+										this.up("AddBloodSugar").parity_set = true;
+									}
+								}
 							}
 						]
 					}
