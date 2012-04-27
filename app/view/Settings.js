@@ -21,7 +21,10 @@ Ext.define("SiteSelector.view.Settings", {
 			},
 			{
 				xtype: "fieldset",
-				title: "Pump",
+				title: "Pump & Insulin",
+				defaults: {
+					labelWidth: "40%"
+				},
 				items: [
 					{
 						xtype: 'numberfield',
@@ -37,11 +40,25 @@ Ext.define("SiteSelector.view.Settings", {
 						minValue: 0,
 						maxValue: 100
 					},
+					{
+						xtype: "numberfield",
+						label: "Carb Ratio",
+						name: "carb_ratio",
+						minValue: 0,
+						maxValue: 20
+					},
+					{
+						xtype: "numberfield",
+						label: "Correction Factor",
+						name: "correction_factor",
+						minValue: 0,
+						maxValue: 100
+					}
 				]
 			},
 			{
 				xtype: "fieldset",
-				title: "CGM",
+				title: "CGM & Blood Sugar",
 				items: [
 					{
 						xtype: 'numberfield',
@@ -57,6 +74,21 @@ Ext.define("SiteSelector.view.Settings", {
 						minValue: 0,
 						maxValue: 100
 					},
+					{
+						xtype: "selectfield",
+						label: "Units",
+						options: [
+							{
+								text: "mg/dL",
+								value: "us"
+							}
+						]
+					},
+					{
+						xtype: "numberfield",
+						label: "Target BG",
+						name: "target_bg"
+					}
 				]
 			},
 
@@ -81,24 +113,6 @@ Ext.define("SiteSelector.view.Settings", {
 						xtype: 'togglefield',
 						name: 'usezoom',
 						label: 'Enable',
-					}
-				]
-			},
-			
-			{
-				xtype: "fieldset",
-				title: "Blood Sugar",
-				instructions: "At this time, mg/dl is the only supported measure",
-				items: [
-					{
-						xtype: "selectfield",
-						label: "Units",
-						options: [
-							{
-								text: "mg/dL",
-								value: "us"
-							}
-						]
 					}
 				]
 			}

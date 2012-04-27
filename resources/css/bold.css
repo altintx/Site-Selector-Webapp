@@ -22,3 +22,34 @@
 	text-indent: -1em;
 	padding-right: 1em;
 }
+
+
+.x-toggle-field.x-field-small {
+	min-height: 1.8em;
+}
+
+.x-toggle-field.x-field-small > .x-component-outer {
+	padding: 0.4em;
+}
+
+.x-toggle-field.x-field-small .x-toggle {
+	border-radius: 0.8em;
+	-webkit-border-radius: 0.8em;
+	height: 1.6em;
+}
+
+
+.x-toggle-field.x-field-small .x-thumb {
+	height: 1.2em;
+	width: 1.2em;
+	border-radius: 0.6em;
+	-webkit-border-radius: 0.6em;
+}
+
+.x-toggle-field.x-field-small .x-thumb::before {
+	height: 1.2em;
+	width: 1.2em;
+}
+.x-toggle-field.x-field-small .x-toggle-on .x-thumb {
+	left: -0.35em;	
+}

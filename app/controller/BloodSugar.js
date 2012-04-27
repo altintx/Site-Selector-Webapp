@@ -16,7 +16,8 @@ Ext.define("SiteSelector.controller.BloodSugar", {
 		},
 		refs: {
 			addSaveButton: 'AddBloodSugar button[action=save]',
-			editSaveButton: 'EditBloodSugar button[action=save]'
+			editSaveButton: 'EditBloodSugar button[action=save]',
+			addWindow: 'AddBloodSugar'
 		}
 	},
 	
