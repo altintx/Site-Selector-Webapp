@@ -44,7 +44,7 @@ Ext.define("SiteSelector.view.bloodsugar.Add", {
 						listeners: {
 							change: function(select) {
 								var label = "";
-								if (select.getValue() == "bgnow") {
+								if (select.getValue() == "meter") {
 									label="CGM";
 								} else {
 									label="Meter";
@@ -90,6 +90,11 @@ Ext.define("SiteSelector.view.bloodsugar.Add", {
 							}
 						}
 					},
+				],
+			},
+			{
+				xtype: "fieldset",
+				items: [
 					{
 						xtype: "container",
 						layout: "hbox",
@@ -115,12 +120,14 @@ Ext.define("SiteSelector.view.bloodsugar.Add", {
 								listeners: {
 									spin: function(spinner) {
 										this.up("AddBloodSugar").parity_set = true;
+										this.up("container").down("togglefield").setValue(1);
 									}
 								}
 							}
 						]
 					}
-				]
+				],
+				instructions: "This will be saved only if selected"
 			}
 		]
 	}
