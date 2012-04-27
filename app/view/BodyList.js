@@ -1,7 +1,7 @@
 Ext.define("SiteSelector.view.BodyList", {
     extend: 'Ext.Container',
 	alias: "widget.BodyList",
-	requires: ["Ext.Img", "Ext.ActionSheet", "Ext.field.Slider", "SiteSelector.view.Body"],
+	requires: ["Ext.Img", "Ext.ActionSheet", "Ext.field.Slider", "SiteSelector.view.Body", "Ext.ux.ComboButton"],
 	stores: ['Sites'],
 	
     config: {
@@ -56,32 +56,41 @@ Ext.define("SiteSelector.view.BodyList", {
 					{
 						text: "Add Site",
 						align: "right",
-						handler: function() {
-							var help = Ext.Viewport.add({
-								xtype: "panel",
-								html: "Temporarily hiding existing sites. Long-tap to place a site, or short-tap to zoom first.",
-								overlay: true,
-								top: "1in",
-								hideOnMaskTap: true,
-							});
-							help.showBy(this);
-							// expire help after 5s
-							Ext.Anim.run(help, 'fade', {
-								after: function() {
-									help.destroy();
-								},
-								out: true,
-								delay: 5000
-							})
-							var bl = this.up("BodyList");
-							bl.clearSites();
-							var t = setTimeout(function() {
-								bl.drawSites();
-							}, 5000);
-							bl.down("body").on("tap", function() {
-								bl.drawSites();
-								clearTimeout(t);
-							})
+						xtype: "combobutton",
+						listeners: {
+							tap: function(button, e) {
+								console.log(e);
+								var help = Ext.Viewport.add({
+									xtype: "panel",
+									html: "Temporarily hiding existing sites. Long-tap to place a site, or short-tap to zoom first.",
+									overlay: true,
+									top: "1in",
+									hideOnMaskTap: true,
+								});
+								help.showBy(this);
+								// expire help after 5s
+								Ext.Anim.run(help, 'fade', {
+									after: function() {
+										help.destroy();
+									},
+									out: true,
+									delay: 5000
+								})
+								var bl = this.up("BodyList");
+								bl.clearSites();
+								var t = setTimeout(function() {
+									bl.drawSites();
+								}, 5000);
+								bl.down("body").on("tap", function() {
+									bl.drawSites();
+									clearTimeout(t);
+								})
+							},
+							longtap: function() {
+								var menu = Ext.create('SiteSelector.view.LogActionSheet');
+								Ext.Viewport.add(menu);
+								menu.show();
+							}
 						}
 					}
 				]

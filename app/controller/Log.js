@@ -16,7 +16,8 @@ Ext.define("SiteSelector.controller.Log", {
 		refs: {
 			'Log': 'LogViewer',
 			'AddLog': 'LogViewer button[action=addevent]',
-			'AddEvent': 'LogActionSheet button'
+			'AddEvent': 'LogActionSheet button',
+			'menu': 'LogActionSheet'
 		}
 	},
 	
@@ -93,7 +94,8 @@ Ext.define("SiteSelector.controller.Log", {
 	
 	addEvent_onTap: function (button, event) {
 		console.log(button);
-		this.menu.destroy();
+		this.getMenu().destroy();
+		
 
 		switch (button.alias) {
 			case "addfood":
