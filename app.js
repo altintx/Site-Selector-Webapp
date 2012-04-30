@@ -92,9 +92,6 @@ Ext.application({
 				if (!settings.data.target_bg) {
 					settings.data.target_bg = 100;
 				}
-				if (!settings.data.target_bg) {
-					settings.data.target_bg = 100;
-				}
 				if (!settings.data.usereminders) {
 					settings.data.usereminders = 0;
 				}
