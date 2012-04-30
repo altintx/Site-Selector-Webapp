@@ -63,6 +63,7 @@ Ext.application({
 					carb_ratio: 15,
 					correction_factor: 50,
 					target_bg: 100,
+					usereminders: 1,
 					usezoom: Ext.os.is.phone? 1: 0
 				});
 				settings = R[0];
@@ -90,6 +91,12 @@ Ext.application({
 				}
 				if (!settings.data.target_bg) {
 					settings.data.target_bg = 100;
+				}
+				if (!settings.data.target_bg) {
+					settings.data.target_bg = 100;
+				}
+				if (!settings.data.usereminders) {
+					settings.data.usereminders = 0;
 				}
 				
 				msg = "New settings to check out: Reminders, Zoom, Blood Sugars and Insulin Needs. If you use reminders it's important to set the Pump and/or CGM's <i>lasts</i> length (in days).";
