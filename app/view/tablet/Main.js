@@ -3,10 +3,7 @@ Ext.define("SiteSelector.view.tablet.Main", {
     requires: [
 		'Ext.TitleBar', 
 		'SiteSelector.store.Sites', 
-		"Ext.Anim",
-		"SiteSelector.view.BodyList",
-		"SiteSelector.view.LogViewer",
-		"SiteSelector.view.Settings"
+		"Ext.Anim"
 	],
     alias: "widget.Main",
     config: {

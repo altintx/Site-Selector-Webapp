@@ -2,11 +2,7 @@ Ext.define("SiteSelector.view.phone.Main", {
     extend: 'Ext.tab.Panel',
     requires: [
 		'Ext.TitleBar', 
-		'SiteSelector.store.Sites',
-		"SiteSelector.view.BodyList",
-		"SiteSelector.view.LogViewer",
-		"SiteSelector.view.Settings"
-		
+		'SiteSelector.store.Sites'
 	],
     alias: "widget.Main",	
     config: {
