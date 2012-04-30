@@ -33,12 +33,12 @@ Ext.define("SiteSelector.view.Body", {
 				config.resolution = availableResolutions[availableResolutions.length - 1];
 			}
 		} else {
-			config.resolution = 480;
-		
 			if (Ext.Viewport.windowHeight > 1024) {
 				config.resolution = 2048;
 			} else if (Ext.Viewport.windowHeight > 480) {
 				config.resolution = 1024;
+			} else {
+				config.resolution = 480;
 			}
 		}
 		
@@ -50,7 +50,7 @@ Ext.define("SiteSelector.view.Body", {
 			("resources/images/body/" + config.resolution + "-front.png"): 
 			("resources/images/body/" + config.resolution + "-back.png");
 		
-		return this.callParent([config]);
+		this.callParent([config]);
 	},
 	
 	initialize: function() {
@@ -58,7 +58,6 @@ Ext.define("SiteSelector.view.Body", {
 		this.sites = [];
 		
 		var touches = {};
-		
 		this.element.on("tap", function(event, node, options, eOpts) {
 			var T = touches[event.touch.identifier];
 			delete touches[event.touch.identifier]
@@ -66,13 +65,11 @@ Ext.define("SiteSelector.view.Body", {
 			
 			$this.fireEvent("tap", T.x, T.y, node);
 		});
-		
 		this.element.on("longpress", function(event) {
 			touches[event.touch.identifier].is_long = true;
 
 			$this.fireEvent("longtap", event, $this.element);
 		});
-		
 		this.element.on("touchstart", function(event) {
 			touches[event.touch.identifier] = {
 				x: event.browserEvent.layerX,
@@ -80,8 +77,7 @@ Ext.define("SiteSelector.view.Body", {
 				is_long: false
 			};
 		});
-		
-		this.element.on("swipe", this.onSwipe.bind(this))
+		this.element.on("swipe", function(e) { $this.onSwipe(e) })
 	},
 	
 	drawSite: function(record, regenerate_time) {
