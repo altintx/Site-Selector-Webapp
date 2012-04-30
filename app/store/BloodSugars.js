@@ -18,38 +18,30 @@ Ext.define("SiteSelector.store.BloodSugars", {
 	onBeforeSync: function (store) {
 		var field;
 		var logStore = Ext.data.StoreManager.get("Logs");
-		try {
-			store.getUpdatedRecords().forEach(function(m) {
-				var ix = logStore.findBy(function(r) {
-					return (r.get("fk") == m.getId() && r.get("model") == "SiteSelector.model.BloodSugar");
-				})
-				var r = logStore.getAt(ix);
-				(function(expr) {
-					r.set("title", expr);
-					r.set("description", expr);
-				})((m.get("kind") == "meter"? "#bgnow" : "#cgmow") + " " + m.get("reading"));
-			});
-			store.getNewRecords().forEach(function(m) {
-				(function(expr) {
-					logStore.record(m, expr, expr);
-				})((m.get("kind") == "meter"? "#bgnow" : "#cgmow") + " " + m.get("reading"));
-			});
-			store.getRemovedRecords().forEach(function(m) {
-				try {
-					logStore.each(function(r) {
-						if (r.get("fk") == m.getId() && r.get("model") == "SiteSelector.model.BloodSugar") {
-							console.log("removing", r);
-							logStore.remove(r);
-						}
-					});
-				} catch (e) {
-					console.log("Error removing logs", e);
+		store.getUpdatedRecords().forEach(function(m) {
+			var ix = logStore.findBy(function(r) {
+				return (r.get("fk") == m.getId() && r.get("model") == "SiteSelector.model.BloodSugar");
+			})
+			var r = logStore.getAt(ix);
+			(function(expr) {
+				r.set("title", expr);
+				r.set("description", expr);
+			})((m.get("kind") == "meter"? "#bgnow" : "#cgmow") + " " + m.get("reading"));
+		});
+		store.getNewRecords().forEach(function(m) {
+			(function(expr) {
+				logStore.record(m, expr, expr);
+			})((m.get("kind") == "meter"? "#bgnow" : "#cgmow") + " " + m.get("reading"));
+		});
+		store.getRemovedRecords().forEach(function(m) {
+			logStore.each(function(r) {
+				if (r.get("fk") == m.getId() && r.get("model") == "SiteSelector.model.BloodSugar") {
+					console.log("removing", r);
+					logStore.remove(r);
 				}
 			});
-			logStore.sync();			
-		} catch (e) {
-			console.log("Exception in BloodSugarsStore::onBeforeSync", e);
-		}
+		});
+		logStore.sync();			
 	},
 	
 	mostRecent: function(kind) {

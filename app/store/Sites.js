@@ -69,63 +69,46 @@ Ext.define("SiteSelector.store.Sites", {
 	
 	onBeforeSync: function (store) {
 		var field;
-		try {
-			var logStore = Ext.data.StoreManager.get("Logs");
-			store.getUpdatedRecords().forEach(function(m) {
-				for (field in m.modified) {
-					if (field == "removed") {
-						logStore.record(m, "Site Removed", "The " + m.get("kind") + " site was removed from " + m.get("location"), { date_field: false });
-						(new LocalNotification()).cancel(m.getId());
-					}
-				}
-			});
-			store.getNewRecords().forEach(function(m) {
-				// TODO: log if new site
-				logStore.record(m, "Site Inserted", "New " + m.get("kind") + " site was inserted at " + m.get("location"));
-				
-				if (SiteSelector.app.settings().get("usereminders")) {
-					try {
-						var nice = "";
-						if (m.get("kind") == "pump") {
-							nice = "pump";
-						} else {
-							nice = "CGM";
-						}
-						var slave = function() {
-							if (m.phantom) {
-								setTimeout(slave, 500);
-								return;
-							}
-							(new LocalNotification()).add({ date: Date.now() / 1000 +  m.lasts() * 86400, message: 'It\'s time to change your ' + nice, badge: 0, id: m.getId().toString() });
-						}
-						slave();
-					} catch (e) {
-						console.log("Local Notifications not supported");
-					}
-
-				}
-			});
-			store.getRemovedRecords().forEach(function(m) {
-				try {
+		var logStore = Ext.data.StoreManager.get("Logs");
+		store.getUpdatedRecords().forEach(function(m) {
+			for (field in m.modified) {
+				if (field == "removed") {
+					logStore.record(m, "Site Removed", "The " + m.get("kind") + " site was removed from " + m.get("location"), { date_field: false });
 					(new LocalNotification()).cancel(m.getId());
-				} catch (e) {
-					console.log("Error cancelling notification", e);
 				}
-				
-				try {
-					logStore.each(function(r) {
-						if (r.get("fk") == m.getId() && r.get("model") == "SiteSelector.model.Site") {
-							console.log("removing", r);
-							logStore.remove(r);
-						}
-					});
-				} catch (e) {
-					console.log("Error removing logs", e);
+			}
+		});
+		store.getNewRecords().forEach(function(m) {
+			// TODO: log if new site
+			logStore.record(m, "Site Inserted", "New " + m.get("kind") + " site was inserted at " + m.get("location"));
+			
+			if (SiteSelector.app.settings().get("usereminders")) {
+				var nice = "";
+				if (m.get("kind") == "pump") {
+					nice = "pump";
+				} else {
+					nice = "CGM";
+				}
+				var slave = function() {
+					if (m.phantom) {
+						setTimeout(slave, 500);
+						return;
+					}
+					(new LocalNotification()).add({ date: Date.now() / 1000 +  m.lasts() * 86400, message: 'It\'s time to change your ' + nice, badge: 0, id: m.getId().toString() });
+				}
+				slave();
+			}
+		});
+		store.getRemovedRecords().forEach(function(m) {
+			(new LocalNotification()).cancel(m.getId());
+			
+			logStore.each(function(r) {
+				if (r.get("fk") == m.getId() && r.get("model") == "SiteSelector.model.Site") {
+					console.log("removing", r);
+					logStore.remove(r);
 				}
 			});
-			logStore.sync();
-		} catch (e) {
-			console.log("Exception in SitesStore::onBeforeSync", e);
-		}
+		});
+		logStore.sync();
 	}
 });
