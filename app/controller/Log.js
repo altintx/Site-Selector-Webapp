@@ -43,8 +43,6 @@ Ext.define("SiteSelector.controller.Log", {
 					},
 					centered: true,
 					scrollable: true,
-					width: Ext.Viewport.windowWidth * 0.8,
-					height: Ext.Viewport.windowHeight * 0.8,
 					listeners: {
 						hide: function() {
 							overlay.destroy();
@@ -70,8 +68,6 @@ Ext.define("SiteSelector.controller.Log", {
 					},
 					centered: true,
 					scrollable: true,
-					width: Ext.Viewport.windowWidth * 0.8,
-					height: Ext.Viewport.windowHeight * 0.8,
 					listeners: {
 						hide: function() {
 							overlay.destroy();
@@ -125,8 +121,6 @@ Ext.define("SiteSelector.controller.Log", {
 					},
 					centered: true,
 					scrollable: true,
-					width: Ext.Viewport.windowWidth * 0.8,
-					height: Ext.Viewport.windowHeight * 0.8,
 					listeners: {
 						hide: function() {
 							overlay.destroy();

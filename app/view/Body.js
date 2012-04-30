@@ -135,6 +135,11 @@ Ext.define("SiteSelector.view.Body", {
 	
 	onSwipe: function(e) {
 		var $this = this;
+		if (this.config.resolution < 1024) {
+			console.log("Shaded assets not available at low resolutions");
+			return;
+		};
+		
 		var toggler = function() {
 			if ($this.config.skin == "body") {
 				$this.config.skin = "body-shaded-ambiguous";
@@ -143,7 +148,6 @@ Ext.define("SiteSelector.view.Body", {
 			}
 			$this.setSrc("resources/images/" + $this.config.skin + "/" + $this.config.resolution + "-" + $this.config.side + ".png");
 		};
-		console.log(SiteSelector.app.settings().get("infusion_sites_consent"));
 		if (SiteSelector.app.settings().get("infusion_sites_consent")) {
 			toggler();
 		} else {

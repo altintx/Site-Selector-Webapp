@@ -21,8 +21,11 @@ Ext.application({
 	],
 	
 	views: [
-		'SiteEdit',
-		"LogActionSheet"
+		"LogActionSheet",
+		"BodyList",
+		"LogViewer",
+		"Settings",
+		"SiteEdit"
 	],
 	
 	models: [
