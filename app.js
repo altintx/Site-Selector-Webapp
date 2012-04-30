@@ -25,6 +25,7 @@ Ext.application({
 		"BodyList",
 		"LogViewer",
 		"Settings",
+		"SiteEdit"
 	],
 	
 	models: [
