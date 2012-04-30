@@ -26,6 +26,7 @@
 
 .x-toggle-field.x-field-small {
 	min-height: 1.8em;
+	
 }
 
 .x-toggle-field.x-field-small > .x-component-outer {
@@ -36,6 +37,7 @@
 	border-radius: 0.8em;
 	-webkit-border-radius: 0.8em;
 	height: 1.6em;
+	width: auto;
 }
 
 
