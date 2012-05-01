@@ -19,8 +19,8 @@ Ext.define("SiteSelector.view.reports.SiteEffectiveness", {
 					Ext.create('Ext.Panel', {
 						html: "<ul>" +
 							"<li>The standard deviation indicates that 68% of the time, your logged blood sugars are within <em>StDev</em> mg/dL of <em>eAG</em>. Lower is better.</li>" +
-							"<li>Max Decrease is the fastest observed decrease in blood sugar. A higher number may suggest good insulin absorbtion, or you might have just taken too much insulin.</li>" +
-							"<li>Max increase is the fastest observed increase in blood sugar. A higher number may suggest poor insulin absorbtion, or, too little insulin for a meal.</li>" +
+							"<li>Max Decrease is the fastest observed decrease in blood sugar. A higher number may suggest good insulin absorption, or you might have just taken too much insulin.</li>" +
+							"<li>Max increase is the fastest observed increase in blood sugar. A higher number may suggest poor insulin absorption, or, too little insulin for a meal.</li>" +
 							"</ul>",
 						overlay: true,
 						modal: true,
