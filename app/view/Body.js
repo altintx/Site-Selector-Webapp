@@ -33,12 +33,10 @@ Ext.define("SiteSelector.view.Body", {
 				config.resolution = availableResolutions[availableResolutions.length - 1];
 			}
 		} else {
-			if (Ext.Viewport.windowHeight > 1024) {
+			if (Ext.Viewport.windowHeight > 480) {
 				config.resolution = 2048;
-			} else if (Ext.Viewport.windowHeight > 480) {
-				config.resolution = 1024;
 			} else {
-				config.resolution = 480;
+				config.resolution = 1024;
 			}
 		}
 		
