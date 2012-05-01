@@ -3,7 +3,8 @@ Ext.define("SiteSelector.controller.Reports", {
 	config: {
 		views: [
 			"SiteSelector.view.reports.Browser",
-			"SiteSelector.view.reports.SiteEffectiveness"
+			"SiteSelector.view.reports.SiteEffectiveness",
+			"SiteSelector.view.reports.SiteLog"
 		],
 		stores: [
 			"SiteSelector.store.Reports"
