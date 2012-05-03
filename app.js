@@ -51,7 +51,8 @@ Ext.application({
 	settings: function() {
 		this.settingsStore = Ext.data.StoreManager.get("Settings");
 		var settings = this.settingsStore.first();
-		if (!settings || settings.data.version  < 2) {
+		if (this.firstLoad && (!settings || settings.data.version  < 2)) {
+			var application = this;
 			if (!settings) {
 				var R = this.settingsStore.add({
 					usecgms: 1,
@@ -75,7 +76,7 @@ Ext.application({
 				w_w = Ext.Viewport.windowWidth;
 				w_h = Ext.Viewport.windowHeight;
 			}
-			switch (settings.version) {
+			switch (settings.data.version) {
 				case null: 
 				case 1.0:
 				case 1.1:
@@ -131,6 +132,7 @@ Ext.application({
 					}
 				}
 			});
+			application.firstLoad = false;
 			settingsView.show();
 		}
 		return settings;
