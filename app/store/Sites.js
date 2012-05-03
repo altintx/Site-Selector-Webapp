@@ -134,5 +134,12 @@ Ext.define("SiteSelector.store.Sites", {
 				});
 		});
 		logStore.sync();
+	},
+	
+	recompute_locations: function() {
+		this.each(function(m) {
+			m.set("location,", new SiteSelector.model.BodyRegion().regionName(100 * m.get("x"), 100 * m.get("y"), m.get("side")));
+		}, this);
+		this.sync();
 	}
 });

@@ -92,6 +92,7 @@ Ext.application({
 					});
 					this.settingsStore.sync();
 					Ext.data.StoreManager.get("Sites").backport_logs();
+					Ext.data.StoreManager.get("Sites").recompute_locations();
 					msg = "New settings to check out: Reminders, Zoom, Blood Sugars and Insulin Needs. If you use reminders it's important to set the Pump and/or CGM's <i>lasts</i> length (in days).";
 					title = "Thanks for upgrading!";
 
