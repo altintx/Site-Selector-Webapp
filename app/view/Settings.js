@@ -13,7 +13,6 @@ Ext.define("SiteSelector.view.Settings", {
 				items: [
 					{
 						text: "Save",
-						ui: "confirm",
 						align: "right",
 						action: "save"
 					}
