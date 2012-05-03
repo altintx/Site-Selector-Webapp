@@ -116,15 +116,15 @@ Ext.define("SiteSelector.controller.Body", {
 					    y = event.browserEvent.layerY,
 					    store = Ext.data.StoreManager.get("Sites"),
 					    kind = (this.getText() == "Pump"? "pump": "cgm");
-					var lastSite = store.lastSite($this.config.alias, kind);
+					var lastSite = store.lastSite($this.config.side, kind);
 					var usage = store.add({
 						kind: kind,
 						when: new Date(),
 						x: x / w,
 						y: y / h,
-						side: $this.config.alias,
+						side: $this.config.side,
 						removed: null,
-						location: new SiteSelector.model.BodyRegion().regionName(100 * x/w, 100 * y/h, $this.config.alias)
+						location: new SiteSelector.model.BodyRegion().regionName(100 * x/w, 100 * y/h, $this.config.side)
 					});
 					if (lastSite) {
 						Ext.Msg.confirm("Remove old site", "Would you like to mark the site you inserted " + lastSite.get("when").toLocaleDateString() + " as removed?", function(button) {
@@ -174,6 +174,8 @@ Ext.define("SiteSelector.controller.Body", {
 			y2 = 100;
 		}
 		
+		debugger;
+		
 		var zoom = Ext.create('Ext.Panel', {
 			items: [
 				{
@@ -191,7 +193,7 @@ Ext.define("SiteSelector.controller.Body", {
 					items: [
 						{
 							xtype: "body",
-							alias: body.alias,
+							side: body.side,
 							top: (-y1 * 5) + "%",
 							left: (-x1 * 5) + "%",
 							width: "500%",
@@ -202,7 +204,7 @@ Ext.define("SiteSelector.controller.Body", {
 									var body = this;
 									setTimeout(function() {
 										Ext.data.StoreManager.get("Sites").each(function(record) {
-											if (record.data.side == body.config.alias) {
+											if (record.data.side == body.config.side) {
 												try {
 													body.drawSite(record, record.decays());
 												} 

@@ -9,7 +9,7 @@ Ext.define("SiteSelector.view.BodyList", {
 		layout: "fit",
 		store: null,
 		sites: [],
-		alias: "",
+		side: "",
 		bodyConfig: null,
 		_sliders: []
 	},
@@ -17,7 +17,7 @@ Ext.define("SiteSelector.view.BodyList", {
 	constructor: function(config) {
 		this.store = config.store;
 		this.sites = [];
-		this.alias = config.alias;
+		this.side = config.side;
 		this._sliders = [];
 		
 		config.items = [
@@ -97,7 +97,7 @@ Ext.define("SiteSelector.view.BodyList", {
 			},
 			{
 				xtype: "body",
-				alias: config.alias
+				side: config.side
 			}
 		];
 		
@@ -114,7 +114,7 @@ Ext.define("SiteSelector.view.BodyList", {
 		var fn = function(store, records, index) {
 			humanBodyMap = $this.down("body");
 			if (humanBodyMap.element) {
-				records.filter(function(r) { return r.data.side == $this.alias; }).forEach(function(r) { 
+				records.filter(function(r) { return r.data.side == $this.side; }).forEach(function(r) { 
 					if ($this.drawSites == $this.drawSitesDefault)
 						humanBodyMap.drawSite(r, r.decays()); 
 					else
@@ -171,7 +171,7 @@ Ext.define("SiteSelector.view.BodyList", {
 							xtype: "body",
 							width: w,
 							height: h + 1,
-							alias: $this.alias,
+							side: $this.side,
 							listeners: {
 								tap: function(x, y, node) {
 									if (!$this.long_tap_active) {
@@ -202,7 +202,7 @@ Ext.define("SiteSelector.view.BodyList", {
 		var body = $this.down("body");
 		
 		$this.getStore().each(function(record) {
-			if (record.data.side == $this.alias) {
+			if (record.data.side == $this.side) {
 				try {
 					body.drawSite(record, record.decays());
 				} 
@@ -265,7 +265,7 @@ Ext.define("SiteSelector.view.BodyList", {
 		var body = $this.down("body");
 
 		$this.getStore().each(function(record) {
-			if (record.data.side == $this.alias) {
+			if (record.data.side == $this.side) {
 				try {
 					body.drawSite(record, daysBack);
 				} 

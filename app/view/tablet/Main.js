@@ -27,13 +27,13 @@ Ext.define("SiteSelector.view.tablet.Main", {
 		           	{
 						xtype: "BodyList",
 						title: "Front",
-						alias: "front",
+						side: "front",
 						flex: 1
 					},
 		           	{
 						xtype: "BodyList",
 						title: "Back",
-						alias: "back",
+						side: "back",
 						flex: 1
 					}
 				]

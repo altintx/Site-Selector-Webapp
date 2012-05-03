@@ -13,12 +13,12 @@ Ext.define("SiteSelector.view.phone.Main", {
            	{
 				xtype: "BodyList",
 				title: "Front",
-				alias: "front",
+				side: "front",
 			},
            	{
 				xtype: "BodyList",
 				title: "Back",
-				alias: "back",
+				side: "back",
 			},
 			{
 				xtype: "LogViewer",
@@ -49,6 +49,6 @@ Ext.define("SiteSelector.view.phone.Main", {
 	},
 
 	switchTo: function(alias) {
-		this.setActiveItem(this.down("BodyList[alias=" + alias + "]"));
+		this.setActiveItem(this.down("BodyList[side=" + alias + "]"));
 	}
 });
