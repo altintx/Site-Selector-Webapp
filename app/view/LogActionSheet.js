@@ -9,7 +9,7 @@ Ext.define('SiteSelector.view.LogActionSheet', {
 			},
 			{
 				text: 'Cancel',
-				alias: "cancel"
+				action: "cancel"
 			}
 		]
 	}
