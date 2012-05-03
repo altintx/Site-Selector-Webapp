@@ -115,7 +115,6 @@ Ext.define("SiteSelector.store.Sites", {
 	backport_logs: function() {
 		var logStore = Ext.data.StoreManager.get("Logs");
 		this.each(function(m) {
-			debugger;
 			if (m.data.when)
 				logStore.add({
 					model: m.stores[0].getModel().getName(),
