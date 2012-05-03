@@ -174,8 +174,6 @@ Ext.define("SiteSelector.controller.Body", {
 			y2 = 100;
 		}
 		
-		debugger;
-		
 		var zoom = Ext.create('Ext.Panel', {
 			items: [
 				{
