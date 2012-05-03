@@ -13,7 +13,6 @@ Ext.define("SiteSelector.view.Settings", {
 				items: [
 					{
 						text: "Save",
-						ui: "confirm",
 						align: "right",
 						action: "save"
 					}
@@ -23,7 +22,7 @@ Ext.define("SiteSelector.view.Settings", {
 				xtype: "fieldset",
 				title: "Pump & Insulin",
 				defaults: {
-					labelWidth: "40%"
+					labelWidth: "60%"
 				},
 				items: [
 					{
@@ -59,6 +58,9 @@ Ext.define("SiteSelector.view.Settings", {
 			{
 				xtype: "fieldset",
 				title: "CGM & Blood Sugar",
+				defaults: {
+					labelWidth: "60%"
+				},
 				items: [
 					{
 						xtype: 'numberfield',
@@ -96,6 +98,9 @@ Ext.define("SiteSelector.view.Settings", {
 				xtype: "fieldset",
 				title: "Reminders",
 				instructions: "You'll be reminded after the indicated number of days that it's time to change your site.",
+				defaults: {
+					labelWidth: "60%"
+				},
 				items: [
 					{
 						xtype: 'togglefield',
@@ -107,6 +112,9 @@ Ext.define("SiteSelector.view.Settings", {
 			{
 				xtype: "fieldset",
 				title: "Zoom",
+				defaults: {
+					labelWidth: "60%"
+				},
 				instructions: "The body image can zoom in when you tap on it, so you can more accurately place sites",
 				items: [
 					{

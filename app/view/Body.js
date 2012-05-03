@@ -33,12 +33,10 @@ Ext.define("SiteSelector.view.Body", {
 				config.resolution = availableResolutions[availableResolutions.length - 1];
 			}
 		} else {
-			if (Ext.Viewport.windowHeight > 1024) {
+			if (Ext.Viewport.windowHeight > 480) {
 				config.resolution = 2048;
-			} else if (Ext.Viewport.windowHeight > 480) {
-				config.resolution = 1024;
 			} else {
-				config.resolution = 480;
+				config.resolution = 1024;
 			}
 		}
 		
@@ -139,6 +137,31 @@ Ext.define("SiteSelector.view.Body", {
 			console.log("Shaded assets not available at low resolutions");
 			return;
 		};
+		
+		// // highlight body regions (for debugging)
+		// var newCanvas = document.createElement('canvas');
+		// newCanvas.height = this.getHeight();
+		// newCanvas.width = this.getWidth();
+		// this.element.dom.appendChild(newCanvas);
+		// 
+		// var ctx = newCanvas.getContext("2d");
+		// var drawTriangle = function(t) {
+		// 	ctx.beginPath();
+		// 	ctx.moveTo(newCanvas.width * t.a[0] / 100, newCanvas.height * t.a[1] / 100);
+		// 	ctx.lineTo(newCanvas.width * t.b[0] / 100, newCanvas.height * t.b[1] / 100);
+		// 	ctx.lineTo(newCanvas.width * t.c[0] / 100, newCanvas.height * t.c[1] / 100);
+		// 	ctx.fillStyle = "#ff9999";
+		// 	ctx.strokeStyle = "#000000";
+		// 	ctx.fill();
+		// }
+		// new SiteSelector.model.BodyRegion().regions("back").forEach(function(r) {
+		// 	r.container.forEach(function(t) {
+		// 		drawTriangle(t);
+		// 	})
+		// 	
+		// });
+		// return;
+		
 		
 		var toggler = function() {
 			if ($this.config.skin == "body") {

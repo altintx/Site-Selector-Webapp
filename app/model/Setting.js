@@ -66,6 +66,10 @@ Ext.define('SiteSelector.model.Setting', {
 			{
 				name: "correction_factor",
 				type: "int"
+			},
+			{
+				name: "version",
+				type: "float"
 			}
 	    ]
 	}

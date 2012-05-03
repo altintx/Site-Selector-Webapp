@@ -39,6 +39,6 @@ Ext.define("SiteSelector.view.reports.SiteLog", {
 			}
 		})
 			
-		this.callParent(arguments);
+		this.callParent([config]);
 	}
 });

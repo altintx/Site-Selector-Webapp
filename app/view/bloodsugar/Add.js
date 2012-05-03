@@ -7,14 +7,14 @@ Ext.define("SiteSelector.view.bloodsugar.Add", {
 			if (phone) {
 				return "100%";
 			} else {
-				return Ext.Viewport.windowWidth * 0.8
+				return "80%";
 			}
 		})(Ext.os.is.Phone),
 		height: (function(phone) {
 			if (phone) {
 				return "100%";
 			} else {
-				return Math.max(Ext.Viewport.windowHeight * 0.4, 300);
+				return "50%";
 			}
 		})(Ext.os.is.Phone),
 		

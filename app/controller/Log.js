@@ -89,11 +89,9 @@ Ext.define("SiteSelector.controller.Log", {
 	},
 	
 	addEvent_onTap: function (button, event) {
-		console.log(button);
 		this.getMenu().destroy();
-		
-
-		switch (button.alias) {
+		console.log(button);
+		switch (button.config.action) {
 			case "addfood":
 			case "addinsulin":
 			case "addexercise":

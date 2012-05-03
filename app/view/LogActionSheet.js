@@ -5,7 +5,7 @@ Ext.define('SiteSelector.view.LogActionSheet', {
 		items: [
 			{
 				text: 'Blood Sugar',
-				alias: "addbgnow"
+				action: "addbgnow"
 			},
 			{
 				text: 'Cancel',

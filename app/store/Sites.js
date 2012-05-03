@@ -110,5 +110,36 @@ Ext.define("SiteSelector.store.Sites", {
 			});
 		});
 		logStore.sync();
+	},
+	
+	backport_logs: function() {
+		var logStore = Ext.data.StoreManager.get("Logs");
+		this.each(function(m) {
+			debugger;
+			if (m.data.when)
+				logStore.add({
+					model: m.stores[0].getModel().getName(),
+					fk: m.getId(),
+					when: m.get("when"),
+					title: "Site Inserted",
+					description: "New " + m.get("kind") + " site was inserted at " + m.get("location")
+				});
+			if (m.data.removed)
+				logStore.add({
+					model: m.stores[0].getModel().getName(),
+					fk: m.getId(),
+					when: m.get("removed"),
+					title: "Site Removed",
+					description: "The " + m.get("kind") + " site was removed from " + m.get("location")
+				});
+		});
+		logStore.sync();
+	},
+	
+	recompute_locations: function() {
+		this.each(function(m) {
+			m.set("location,", new SiteSelector.model.BodyRegion().regionName(100 * m.get("x"), 100 * m.get("y"), m.get("side")));
+		}, this);
+		this.sync();
 	}
 });
