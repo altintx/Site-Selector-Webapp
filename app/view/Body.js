@@ -5,19 +5,14 @@ Ext.define("SiteSelector.view.Body", {
 		style: "background-size:100% 100%;",
 		layout: "fit",
 		side: "front",
-		alias: "front",
 		resolution: 480,
 		skin: "body",
 		sites: []
 	},
 	
 	constructor: function(config) {
-		if (!("alias" in config)) {
-			config.alias = "front";
-		}
-
 		if (!("side" in config)) {
-			config.side = config.alias;
+			config.side = "front";
 		}
 		
 		
