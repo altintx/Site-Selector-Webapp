@@ -97,7 +97,8 @@ Ext.define("SiteSelector.view.reports.SiteEffectiveness", {
 			plot.max_inc = parseInt(plot.max_inc * 100) / 100 + " mg/dl per Min";
 			plot.max_dec = parseInt(plot.max_dec * 100) / 100 + " mg/dl per Min";
 			
-			data.push(plot);
+			if (readings.length)
+				data.push(plot);
 		});
 		
 		config.store = Ext.create("Ext.data.Store", {
