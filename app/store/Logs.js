@@ -18,7 +18,14 @@ Ext.define("SiteSelector.store.Logs", {
 			},
 			sortProperty: "when",
 			direction: "DESC"
-		}
+		},
+		sorters: [
+			{
+				sorterFn: function(a,b) {
+					return a.data.when.getTime() < b.data.when.getTime();
+				}
+			}
+		]
 	},
 	
 	record: function(record, title, description, options) {
