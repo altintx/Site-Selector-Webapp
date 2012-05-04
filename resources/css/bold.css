@@ -1,4 +1,4 @@
-.x-floating strong {
+.x-floating strong, table strong {
 	font-weight: bold;
 }
 .x-floating em {
