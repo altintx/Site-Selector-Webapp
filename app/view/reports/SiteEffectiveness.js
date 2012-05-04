@@ -1,15 +1,15 @@
 Ext.define("SiteSelector.view.reports.SiteEffectiveness", {
 	extend: "Ext.dataview.List",
 	config: {
-		itemTpl: new Ext.XTemplate('<table><tr><td rowspan="3"><div style="overflow-y:hidden;height:0.95in;margin-right:0.25in;"><div class="body-thumbnail-{side}" style="top:-{y*2.8}%;"><div class="circle" style="' + 
+		itemTpl: new Ext.XTemplate('<table><tr><td rowspan="2"><div style="overflow-y:hidden;height:0.75in;margin-right:0.1in;"><div class="body-thumbnail-{side}" style="top:-{y*2.25}%;"><div class="circle" style="' + 
 			'left:{x}%;' +
 			'top:{y}%;' +
 			'background:-webkit-linear-gradient(bottom, #4A094A 52%, #8C4FA6 76%);'+
 			'margin-left:-0.125in;' +
 			'margin-top:-0.125in;' +
 			'">+</div></div></div></td><td><strong>{location}</strong></td></tr>' +
-			'<tr><td>eAG: {eag} StDev: {standard_dev}</td></tr>' +
-			'<tr><td>Max Decrease: {max_dec} Max Increase: {max_inc}</td></tr></table>'),
+			'<tr><td>eAG: {eag}<br />({[parseInt((values.eag-values.standard_dev)*100)/100]} - {[parseInt((values.eag+values.standard_dev)*100)/100]})</td></tr>' +
+			'<tr><td colspan="2">Fastest Rise: {max_dec}<br />Fastest Fall: {max_inc}</td></tr></table>'),
 		items: [
 			{
 				xtype: "button",
