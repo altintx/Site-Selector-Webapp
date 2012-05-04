@@ -73,7 +73,13 @@ Ext.define("SiteSelector.store.Sites", {
 		store.getUpdatedRecords().forEach(function(m) {
 			for (field in m.modified) {
 				if (field == "removed") {
-					logStore.record(m, "Site Removed", "The " + m.get("kind") + " site was removed from " + m.get("location"), { date_field: false });
+					// if we're modifying the removal date, delete old one from log and create anew
+					logStore.each(function(r) {
+						if (r.get("title") == "Site Removed" && r.get("fk") == m.getId() && r.get("model") == "SiteSelector.model.Site") {
+							logStore.remove(r);
+						}
+					})
+					logStore.record(m, "Site Removed", "The " + m.get("kind") + " site was removed from " + m.get("location"), { date_field: "removed" });
 					(new LocalNotification()).cancel(m.getId());
 				}
 			}
