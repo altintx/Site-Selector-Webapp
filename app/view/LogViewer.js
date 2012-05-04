@@ -6,7 +6,7 @@ Ext.define("SiteSelector.view.LogViewer", {
 		itemTpl: new Ext.XTemplate(
 			'<div class="deleteplaceholder"></div><table width=\"100%\"><tr>' +
 			'<td width=\"50%\">{title}</td>' +
-			"<td width=\"50%\" align=\"right\">{[(values.when.getHours()-1)%12+1]}:{[('0'+values.when.getMinutes()).substr(-2)]} {[(values.when.getHours()>11)? 'PM': 'AM']}</td></tr>" +
+			"<td width=\"50%\" align=\"right\">{[((values.when.getHours()-1)%12+1)||12]}:{[('0'+values.when.getMinutes()).substr(-2)]} {[(values.when.getHours()>11)? 'PM': 'AM']}</td></tr>" +
 			"<tr><td width=\"100%\" colspan=\"2\">{description}</td>" +
 			"</tr></table>"
 		),
