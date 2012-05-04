@@ -24,8 +24,10 @@ Ext.define("SiteSelector.store.BloodSugars", {
 			})
 			var r = logStore.getAt(ix);
 			(function(expr) {
-				r.set("title", expr);
-				r.set("description", expr);
+				r.set({
+					title: expr,
+					description: expr
+				});
 			})((m.get("kind") == "meter"? "#bgnow" : "#cgmow") + " " + m.get("reading"));
 		});
 		store.getNewRecords().forEach(function(m) {
