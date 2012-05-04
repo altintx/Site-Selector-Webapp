@@ -1,5 +1,5 @@
 .body-thumbnail-front {
-	background-image: url(/resources/images/body/480-front.png);
+	background-image: url(../images/body/480-front.png);
 	background-size: 1.5in 3in;
 	background-repeat: no-repeat;
 	position: relative;
@@ -8,7 +8,7 @@
 }
 
 .body-thumbnail-back {
-	background-image: url(/resources/images/body/480-back.png);
+	background-image: url(../images/body/480-back.png);
 	background-size: 1.5in 3in;
 	background-repeat: no-repeat;
 	position: relative;
