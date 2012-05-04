@@ -1,12 +1,15 @@
 Ext.define("SiteSelector.view.LogViewer", {
 	alias: "widget.LogViewer",
 	extend: "Ext.dataview.List",
+	requires: [
+		'Ext.DateExtras'
+	],
 	config: {
 		iconCls: "bookmarks",
 		itemTpl: new Ext.XTemplate(
 			'<div class="deleteplaceholder"></div><table width=\"100%\"><tr>' +
 			'<td width=\"50%\">{title}</td>' +
-			"<td width=\"50%\" align=\"right\">{[((values.when.getHours()-1)%12+1)||12]}:{[('0'+values.when.getMinutes()).substr(-2)]} {[(values.when.getHours()>11)? 'PM': 'AM']}</td></tr>" +
+			"<td width=\"50%\" align=\"right\">{[Ext.Date.format(values.when, 'g:i A')]}</td></tr>" +
 			"<tr><td width=\"100%\" colspan=\"2\">{description}</td>" +
 			"</tr></table>"
 		),
