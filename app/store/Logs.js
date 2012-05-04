@@ -16,7 +16,8 @@ Ext.define("SiteSelector.store.Logs", {
 			groupFn: function(record) {
 				return record.get("when").toLocaleDateString();
 			},
-			sortProperty: "when"
+			sortProperty: "when",
+			direction: "DESC"
 		}
 	},
 	
