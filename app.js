@@ -22,8 +22,11 @@ Ext.application({
 	],
 	
 	views: [
-		'SiteEdit',
-		"LogActionSheet"
+		"LogActionSheet",
+		"BodyList",
+		"LogViewer",
+		"Settings",
+		"SiteEdit"
 	],
 	
 	models: [
@@ -49,7 +52,8 @@ Ext.application({
 	settings: function() {
 		this.settingsStore = Ext.data.StoreManager.get("Settings");
 		var settings = this.settingsStore.first();
-		if (!settings || [settings.data.pumplasts, settings.data.cgmlasts, settings.data.usezoom].indexOf(null) > -1) {
+		if (this.firstLoad && (!settings || settings.data.version  < 2)) {
+			var application = this;
 			if (!settings) {
 				var R = this.settingsStore.add({
 					usecgms: 1,
@@ -58,7 +62,12 @@ Ext.application({
 					cgmreuse: 14,
 					pumplasts: 2,
 					cgmlasts: 3,
-					usezoom: Ext.os.is.phone? 1: 0
+					carb_ratio: 15,
+					correction_factor: 50,
+					target_bg: 100,
+					usereminders: 1,
+					usezoom: Ext.os.is.phone? 1: 0,
+					version: 2.0
 				});
 				settings = R[0];
 			}
@@ -67,18 +76,30 @@ Ext.application({
 			if (Ext.os.is.phone) {
 				w_w = Ext.Viewport.windowWidth;
 				w_h = Ext.Viewport.windowHeight;
-			} else {
-				if (!settings.data.pumplasts) {
-					settings.data.pumplasts = 2;
-				}
-				if (!settings.data.cgmlasts) {
-					settings.data.cgmlasts = 3;
-				}
-				if (!settings.data.usezoom) {
-					settings.data.usezoom = Ext.os.is.phone? 1: 0;
-				}
-				msg = "New settings to check out: Reminders and Zoom. If you use reminders it's important to set the Pump and/or CGM's <i>lasts</i> length (in days).";
-				title = "Thanks for upgrading!";
+			}
+			switch (settings.data.version) {
+				case null: 
+				case 1.0:
+				case 1.1:
+					settings.set({
+						pumplasts: 2,
+						cgmlasts: 3,
+						usezoom: Ext.os.is.phone? 1: 0,
+						carb_ratio: 15,
+						correction_factor: 50,
+						target_bg: 100,
+						usereminders: 1,
+						version: 2.0
+					});
+					this.settingsStore.sync();
+					Ext.data.StoreManager.get("Sites").backport_logs();
+					Ext.data.StoreManager.get("Sites").recompute_locations();
+					msg = "New settings to check out: Reminders, Zoom, Blood Sugars and Insulin Needs. If you use reminders it's important to set the Pump and/or CGM's <i>lasts</i> length (in days).";
+					title = "Thanks for upgrading!";
+
+					break;
+				default:
+					/* this version */
 			}
 			var settingsView = Ext.Viewport.add({
 				modal: true,
@@ -113,6 +134,7 @@ Ext.application({
 					}
 				}
 			});
+			application.firstLoad = false;
 			settingsView.show();
 		}
 		return settings;

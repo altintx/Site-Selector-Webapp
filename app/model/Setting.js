@@ -54,6 +54,22 @@ Ext.define('SiteSelector.model.Setting', {
 			{
 				name: "infusion_sites_consent",
 				type: "int"
+			},
+			{
+				name: "target_bg",
+				type: "int"
+			},
+			{
+				name: "carb_ratio",
+				type: "int"
+			},
+			{
+				name: "correction_factor",
+				type: "int"
+			},
+			{
+				name: "version",
+				type: "float"
 			}
 	    ]
 	}

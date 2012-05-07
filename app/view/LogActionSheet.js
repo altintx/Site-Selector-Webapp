@@ -5,30 +5,31 @@ Ext.define('SiteSelector.view.LogActionSheet', {
 		items: [
 		{
 			text: 'Eat',
-			alias: "addfood"
+			action: "addfood",
+			disabled: true
 		},
 		{
 			text: 'Blood Sugar',
-			alias: "addbgnow"
+			action: "addbgnow"
 		},
 		{
 			text: 'Exercise',
-			alias: "addexercise",
+			action: "addexercise",
 			disabled: true
 		},
 		{
 			text: 'Sick',
-			alias: "addsick",
+			action: "addsick",
 			disabled: true
 		},
 		{
 			text: 'Insulin',
-			alias: "addinsulin",
+			action: "addinsulin",
 			disabled: true
 		},
 		{
 			text: 'Cancel',
-			alias: "cancel"
+			action: "cancel"
 		}
 		]
 	}

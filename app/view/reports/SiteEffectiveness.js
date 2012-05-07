@@ -1,15 +1,15 @@
 Ext.define("SiteSelector.view.reports.SiteEffectiveness", {
 	extend: "Ext.dataview.List",
 	config: {
-		itemTpl: new Ext.XTemplate('<table><tr><td rowspan="3"><div style="overflow-y:hidden;height:0.95in;margin-right:0.25in;"><div class="body-thumbnail-{side}" style="top:-{y*2.8}%;"><div class="circle" style="' + 
+		itemTpl: new Ext.XTemplate('<table><tr><td rowspan="2"><div style="overflow-y:hidden;height:0.75in;margin-right:0.1in;"><div class="body-thumbnail-{side}" style="top:-{y*2.25}%;"><div class="circle" style="' + 
 			'left:{x}%;' +
 			'top:{y}%;' +
 			'background:-webkit-linear-gradient(bottom, #4A094A 52%, #8C4FA6 76%);'+
 			'margin-left:-0.125in;' +
 			'margin-top:-0.125in;' +
 			'">+</div></div></div></td><td><strong>{location}</strong></td></tr>' +
-			'<tr><td>eAG: {eag} StDev: {standard_dev}</td></tr>' +
-			'<tr><td>Max Decrease: {max_dec} Max Increase: {max_inc}</td></tr></table>'),
+			'<tr><td>eAG: {eag}<br />({[parseInt((values.eag-values.standard_dev)*100)/100]} - {[parseInt((values.eag+values.standard_dev)*100)/100]})</td></tr>' +
+			'<tr><td colspan="2">Fastest Rise: {max_dec}<br />Fastest Fall: {max_inc}</td></tr></table>'),
 		items: [
 			{
 				xtype: "button",
@@ -19,8 +19,8 @@ Ext.define("SiteSelector.view.reports.SiteEffectiveness", {
 					Ext.create('Ext.Panel', {
 						html: "<ul>" +
 							"<li>The standard deviation indicates that 68% of the time, your logged blood sugars are within <em>StDev</em> mg/dL of <em>eAG</em>. Lower is better.</li>" +
-							"<li>Max Decrease is the fastest observed decrease in blood sugar. A higher number may suggest good insulin absorbtion, or you might have just taken too much insulin.</li>" +
-							"<li>Max increase is the fastest observed increase in blood sugar. A higher number may suggest poor insulin absorbtion, or, too little insulin for a meal.</li>" +
+							"<li>Max Decrease is the fastest observed decrease in blood sugar. A higher number may suggest good insulin absorption, or you might have just taken too much insulin.</li>" +
+							"<li>Max increase is the fastest observed increase in blood sugar. A higher number may suggest poor insulin absorption, or, too little insulin for a meal.</li>" +
 							"</ul>",
 						overlay: true,
 						modal: true,
@@ -97,7 +97,8 @@ Ext.define("SiteSelector.view.reports.SiteEffectiveness", {
 			plot.max_inc = parseInt(plot.max_inc * 100) / 100 + " mg/dl per Min";
 			plot.max_dec = parseInt(plot.max_dec * 100) / 100 + " mg/dl per Min";
 			
-			data.push(plot);
+			if (readings.length)
+				data.push(plot);
 		});
 		
 		config.store = Ext.create("Ext.data.Store", {

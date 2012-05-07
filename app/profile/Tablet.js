@@ -1,11 +1,8 @@
 Ext.define('SiteSelector.profile.Tablet', {
 	extend: 'Ext.app.Profile',
-	requires: [
-		'SiteSelector.view.phone.Main',
-		'SiteSelector.view.tablet.Main'
-	],
 	config: {
-		name: 'Tablet'
+		name: 'Tablet',
+		views: ["Main"]
 	},
 
 	isActive: function() {

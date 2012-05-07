@@ -1,7 +1,7 @@
 Ext.define("SiteSelector.view.BodyList", {
     extend: 'Ext.Container',
 	alias: "widget.BodyList",
-	requires: ["Ext.Img", "Ext.ActionSheet", "Ext.field.Slider", "SiteSelector.view.Body"],
+	requires: ["Ext.Img", "Ext.ActionSheet", "Ext.field.Slider", "SiteSelector.view.Body", "Ext.ux.ComboButton"],
 	stores: ['Sites'],
 	
     config: {
@@ -9,7 +9,7 @@ Ext.define("SiteSelector.view.BodyList", {
 		layout: "fit",
 		store: null,
 		sites: [],
-		alias: "",
+		side: "",
 		bodyConfig: null,
 		_sliders: []
 	},
@@ -17,7 +17,7 @@ Ext.define("SiteSelector.view.BodyList", {
 	constructor: function(config) {
 		this.store = config.store;
 		this.sites = [];
-		this.alias = config.alias;
+		this.side = config.side;
 		this._sliders = [];
 		
 		config.items = [
@@ -56,39 +56,48 @@ Ext.define("SiteSelector.view.BodyList", {
 					{
 						text: "Add Site",
 						align: "right",
-						handler: function() {
-							var help = Ext.Viewport.add({
-								xtype: "panel",
-								html: "Temporarily hiding existing sites. Long-tap to place a site, or short-tap to zoom first.",
-								overlay: true,
-								top: "1in",
-								hideOnMaskTap: true,
-							});
-							help.showBy(this);
-							// expire help after 5s
-							Ext.Anim.run(help, 'fade', {
-								after: function() {
-									help.destroy();
-								},
-								out: true,
-								delay: 5000
-							})
-							var bl = this.up("BodyList");
-							bl.clearSites();
-							var t = setTimeout(function() {
-								bl.drawSites();
-							}, 5000);
-							bl.down("body").on("tap", function() {
-								bl.drawSites();
-								clearTimeout(t);
-							})
+						xtype: "combobutton",
+						listeners: {
+							tap: function(button, e) {
+								console.log(e);
+								var help = Ext.Viewport.add({
+									xtype: "panel",
+									html: "Temporarily hiding existing sites. Long-tap to place a site, or short-tap to zoom first.",
+									overlay: true,
+									top: "1in",
+									hideOnMaskTap: true,
+								});
+								help.showBy(this);
+								// expire help after 5s
+								Ext.Anim.run(help, 'fade', {
+									after: function() {
+										help.destroy();
+									},
+									out: true,
+									delay: 5000
+								})
+								var bl = this.up("BodyList");
+								bl.clearSites();
+								var t = setTimeout(function() {
+									bl.drawSites();
+								}, 5000);
+								bl.down("body").on("tap", function() {
+									bl.drawSites();
+									clearTimeout(t);
+								})
+							},
+							longtap: function() {
+								var menu = Ext.create('SiteSelector.view.LogActionSheet');
+								Ext.Viewport.add(menu);
+								menu.show();
+							}
 						}
 					}
 				]
 			},
 			{
 				xtype: "body",
-				alias: config.alias
+				side: config.side
 			}
 		];
 		
@@ -105,7 +114,7 @@ Ext.define("SiteSelector.view.BodyList", {
 		var fn = function(store, records, index) {
 			humanBodyMap = $this.down("body");
 			if (humanBodyMap.element) {
-				records.filter(function(r) { return r.data.side == $this.alias; }).forEach(function(r) { 
+				records.filter(function(r) { return r.data.side == $this.side; }).forEach(function(r) { 
 					if ($this.drawSites == $this.drawSitesDefault)
 						humanBodyMap.drawSite(r, r.decays()); 
 					else
@@ -140,7 +149,10 @@ Ext.define("SiteSelector.view.BodyList", {
 					xtype: "container",
 					layout: "vbox",
 					alias: "vbox",
-					style: "background-color: #282020;",
+					style: "background-color:" +
+						"#323844;" + 
+						"background:" +
+						"-webkit-gradient(linear, left top, left bottom, color-stop(0%,#323844), color-stop(36%,#272b2f), color-stop(100%,#0d1013))",
 					scrollable: {
 						direction: "vertical",
 						initialOffset: {
@@ -159,7 +171,7 @@ Ext.define("SiteSelector.view.BodyList", {
 							xtype: "body",
 							width: w,
 							height: h + 1,
-							alias: $this.alias,
+							side: $this.side,
 							listeners: {
 								tap: function(x, y, node) {
 									if (!$this.long_tap_active) {
@@ -190,7 +202,7 @@ Ext.define("SiteSelector.view.BodyList", {
 		var body = $this.down("body");
 		
 		$this.getStore().each(function(record) {
-			if (record.data.side == $this.alias) {
+			if (record.data.side == $this.side) {
 				try {
 					body.drawSite(record, record.decays());
 				} 
@@ -253,7 +265,7 @@ Ext.define("SiteSelector.view.BodyList", {
 		var body = $this.down("body");
 
 		$this.getStore().each(function(record) {
-			if (record.data.side == $this.alias) {
+			if (record.data.side == $this.side) {
 				try {
 					body.drawSite(record, daysBack);
 				} 

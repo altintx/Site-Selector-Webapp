@@ -16,7 +16,8 @@ Ext.define("SiteSelector.controller.Log", {
 		refs: {
 			'Log': 'LogViewer',
 			'AddLog': 'LogViewer button[action=addevent]',
-			'AddEvent': 'LogActionSheet button'
+			'AddEvent': 'LogActionSheet button',
+			'menu': 'LogActionSheet'
 		}
 	},
 	
@@ -42,8 +43,6 @@ Ext.define("SiteSelector.controller.Log", {
 					},
 					centered: true,
 					scrollable: true,
-					width: Ext.Viewport.windowWidth * 0.8,
-					height: Ext.Viewport.windowHeight * 0.8,
 					listeners: {
 						hide: function() {
 							overlay.destroy();
@@ -69,8 +68,6 @@ Ext.define("SiteSelector.controller.Log", {
 					},
 					centered: true,
 					scrollable: true,
-					width: Ext.Viewport.windowWidth * 0.8,
-					height: Ext.Viewport.windowHeight * 0.8,
 					listeners: {
 						hide: function() {
 							overlay.destroy();
@@ -92,9 +89,8 @@ Ext.define("SiteSelector.controller.Log", {
 	},
 	
 	addEvent_onTap: function (button, event) {
-		this.menu.destroy();
-
-		switch (button.alias) {
+		this.getMenu().destroy();
+		switch (button.config.action) {
 			case "addfood":
 				// photo food
 				// geolocate for nearby restaurants. let user pick.
@@ -156,7 +152,8 @@ Ext.define("SiteSelector.controller.Log", {
 					xtype: "AddBloodSugar",
 					modal: true,
 					record: new SiteSelector.model.BloodSugar({
-						when: new Date()
+						when: new Date(),
+						reading: SiteSelector.app.settings().get("target_bg")
 					}),
 					hideOnMaskTap: true,
 					showAnimation: {
@@ -171,8 +168,6 @@ Ext.define("SiteSelector.controller.Log", {
 					},
 					centered: true,
 					scrollable: true,
-					width: Ext.Viewport.windowWidth * 0.8,
-					height: Ext.Viewport.windowHeight * 0.8,
 					listeners: {
 						hide: function() {
 							overlay.destroy();

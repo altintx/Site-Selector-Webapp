@@ -9,10 +9,23 @@ Ext.define("SiteSelector.store.Logs", {
 	        type: 'localstorage',
 	        id: 'rotator-app-store-Log',
 	    },
-		sorters: 'when',
 		listeners: {
 			write: 'exportFile'
-		}
+		},
+		grouper: {
+			groupFn: function(record) {
+				return record.get("when").toLocaleDateString();
+			},
+			sortProperty: "when",
+			direction: "DESC"
+		},
+		sorters: [
+			{
+				sorterFn: function(a,b) {
+					return a.data.when.getTime() > b.data.when.getTime();
+				}
+			}
+		]
 	},
 	
 	record: function(record, title, description, options) {

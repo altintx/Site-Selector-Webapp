@@ -5,19 +5,14 @@ Ext.define("SiteSelector.view.Body", {
 		style: "background-size:100% 100%;",
 		layout: "fit",
 		side: "front",
-		alias: "front",
 		resolution: 480,
 		skin: "body",
 		sites: []
 	},
 	
 	constructor: function(config) {
-		if (!("alias" in config)) {
-			config.alias = "front";
-		}
-
 		if (!("side" in config)) {
-			config.side = config.alias;
+			config.side = "front";
 		}
 		
 		
@@ -33,11 +28,9 @@ Ext.define("SiteSelector.view.Body", {
 				config.resolution = availableResolutions[availableResolutions.length - 1];
 			}
 		} else {
-			config.resolution = 480;
-		
-			if (Ext.Viewport.windowHeight > 1024) {
+			if (Ext.Viewport.windowHeight > 480) {
 				config.resolution = 2048;
-			} else if (Ext.Viewport.windowHeight > 480) {
+			} else {
 				config.resolution = 1024;
 			}
 		}
@@ -50,7 +43,7 @@ Ext.define("SiteSelector.view.Body", {
 			("resources/images/body/" + config.resolution + "-front.png"): 
 			("resources/images/body/" + config.resolution + "-back.png");
 		
-		return this.callParent([config]);
+		this.callParent([config]);
 	},
 	
 	initialize: function() {
@@ -58,7 +51,6 @@ Ext.define("SiteSelector.view.Body", {
 		this.sites = [];
 		
 		var touches = {};
-		
 		this.element.on("tap", function(event, node, options, eOpts) {
 			var T = touches[event.touch.identifier];
 			delete touches[event.touch.identifier]
@@ -66,13 +58,11 @@ Ext.define("SiteSelector.view.Body", {
 			
 			$this.fireEvent("tap", T.x, T.y, node);
 		});
-		
 		this.element.on("longpress", function(event) {
 			touches[event.touch.identifier].is_long = true;
 
 			$this.fireEvent("longtap", event, $this.element);
 		});
-		
 		this.element.on("touchstart", function(event) {
 			touches[event.touch.identifier] = {
 				x: event.browserEvent.layerX,
@@ -80,8 +70,7 @@ Ext.define("SiteSelector.view.Body", {
 				is_long: false
 			};
 		});
-		
-		this.element.on("swipe", this.onSwipe.bind(this))
+		this.element.on("swipe", function(e) { $this.onSwipe(e) })
 	},
 	
 	drawSite: function(record, regenerate_time) {
@@ -139,6 +128,36 @@ Ext.define("SiteSelector.view.Body", {
 	
 	onSwipe: function(e) {
 		var $this = this;
+		if (this.config.resolution < 1024) {
+			console.log("Shaded assets not available at low resolutions");
+			return;
+		};
+		
+		// // highlight body regions (for debugging)
+		// var newCanvas = document.createElement('canvas');
+		// newCanvas.height = this.getHeight();
+		// newCanvas.width = this.getWidth();
+		// this.element.dom.appendChild(newCanvas);
+		// 
+		// var ctx = newCanvas.getContext("2d");
+		// var drawTriangle = function(t) {
+		// 	ctx.beginPath();
+		// 	ctx.moveTo(newCanvas.width * t.a[0] / 100, newCanvas.height * t.a[1] / 100);
+		// 	ctx.lineTo(newCanvas.width * t.b[0] / 100, newCanvas.height * t.b[1] / 100);
+		// 	ctx.lineTo(newCanvas.width * t.c[0] / 100, newCanvas.height * t.c[1] / 100);
+		// 	ctx.fillStyle = "#ff9999";
+		// 	ctx.strokeStyle = "#000000";
+		// 	ctx.fill();
+		// }
+		// new SiteSelector.model.BodyRegion().regions("back").forEach(function(r) {
+		// 	r.container.forEach(function(t) {
+		// 		drawTriangle(t);
+		// 	})
+		// 	
+		// });
+		// return;
+		
+		
 		var toggler = function() {
 			if ($this.config.skin == "body") {
 				$this.config.skin = "body-shaded-ambiguous";
@@ -147,7 +166,6 @@ Ext.define("SiteSelector.view.Body", {
 			}
 			$this.setSrc("resources/images/" + $this.config.skin + "/" + $this.config.resolution + "-" + $this.config.side + ".png");
 		};
-		console.log(SiteSelector.app.settings().get("infusion_sites_consent"));
 		if (SiteSelector.app.settings().get("infusion_sites_consent")) {
 			toggler();
 		} else {

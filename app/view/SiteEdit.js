@@ -3,6 +3,20 @@ Ext.define("SiteSelector.view.SiteEdit", {
 	alias: "widget.SiteEdit",
 	requires: ['Ext.field.DatePicker', 'Ext.field.Select', 'Ext.ux.field.DateTimePicker', 'Ext.field.Toggle'],
 	config: {
+		width: (function(phone) {
+			if (phone) {
+				return "100%";
+			} else {
+				return "80%";
+			}
+		})(Ext.os.is.Phone),
+		height: (function(phone) {
+			if (phone) {
+				return "100%";
+			} else {
+				return "50%";
+			}
+		})(Ext.os.is.Phone),
 		items: [
 			{
 				xtype: "fieldset",

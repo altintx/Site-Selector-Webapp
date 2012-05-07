@@ -3,6 +3,21 @@ Ext.define("SiteSelector.view.bloodsugar.Add", {
 	alias: "widget.AddBloodSugar",
 	requires: ['Ext.field.Spinner', 'Ext.field.Select', 'Ext.ux.field.DateTimePicker', 'Ext.field.Toggle'],
 	config: {
+		width: (function(phone) {
+			if (phone) {
+				return "100%";
+			} else {
+				return "80%";
+			}
+		})(Ext.os.is.Phone),
+		height: (function(phone) {
+			if (phone) {
+				return "100%";
+			} else {
+				return "50%";
+			}
+		})(Ext.os.is.Phone),
+		
 		items: [
 			{
 				xtype: "titlebar",
@@ -44,7 +59,7 @@ Ext.define("SiteSelector.view.bloodsugar.Add", {
 						listeners: {
 							change: function(select) {
 								var label = "";
-								if (select.getValue() == "bgnow") {
+								if (select.getValue() == "meter") {
 									label="CGM";
 								} else {
 									label="Meter";
@@ -81,8 +96,20 @@ Ext.define("SiteSelector.view.bloodsugar.Add", {
 						minValue: 0,
 						maxValue: 1000,
 						increment: 1,
-						cycle: false
+						cycle: false,
+						listeners: {
+							spin: function(spinner) {
+								if ("parity_set" in spinner.up("AddBloodSugar")) return;
+								
+								spinner.up("AddBloodSugar").down("spinnerfield[name=parity_reading]").setValue(spinner.getValue())
+							}
+						}
 					},
+				],
+			},
+			{
+				xtype: "fieldset",
+				items: [
 					{
 						xtype: "container",
 						layout: "hbox",
@@ -91,6 +118,7 @@ Ext.define("SiteSelector.view.bloodsugar.Add", {
 								xtype: "togglefield",
 								name: "parity",
 								label: false,
+								ui: "small",
 								flex: 1
 							},
 							{
@@ -103,11 +131,18 @@ Ext.define("SiteSelector.view.bloodsugar.Add", {
 								maxValue: 1000,
 								increment: 1,
 								cycle: false,
-								flex: 3
+								flex: 3,
+								listeners: {
+									spin: function(spinner) {
+										this.up("AddBloodSugar").parity_set = true;
+										this.up("container").down("togglefield").setValue(1);
+									}
+								}
 							}
 						]
 					}
-				]
+				],
+				instructions: "This will be saved only if selected"
 			}
 		]
 	}
