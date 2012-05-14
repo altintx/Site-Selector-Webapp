@@ -15,11 +15,11 @@ Ext.define("SiteSelector.store.Sites", {
 			beforesync: 'onBeforeSync'
 		}
 	},
-	lastSite: function(side, kind) {
+	lastSite: function(kind) {
 		var $this = this;
 		var last_record = false;
 		this.findBy(function(record, id) {
-			if (record.get("side") == side && record.get("kind") == kind && record.get("removed") == null) {
+			if (record.get("kind") == kind && record.get("removed") == null) {
 				last_record = record;
 			}
 		});
