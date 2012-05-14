@@ -22,7 +22,7 @@ Ext.define("SiteSelector.store.Logs", {
 		sorters: [
 			{
 				sorterFn: function(a,b) {
-					return a.data.when.getTime() < b.data.when.getTime();
+					return a.data.when.getTime() > b.data.when.getTime();
 				}
 			}
 		]
