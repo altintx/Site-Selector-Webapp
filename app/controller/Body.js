@@ -116,7 +116,7 @@ Ext.define("SiteSelector.controller.Body", {
 					    y = event.browserEvent.layerY,
 					    store = Ext.data.StoreManager.get("Sites"),
 					    kind = (this.getText() == "Pump"? "pump": "cgm");
-					var lastSite = store.lastSite($this.config.side, kind);
+					var lastSite = store.lastSite(kind);
 					var usage = store.add({
 						kind: kind,
 						when: new Date(),
