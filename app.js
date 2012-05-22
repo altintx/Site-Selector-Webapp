@@ -33,14 +33,16 @@ Ext.application({
 		"Site",
 		"Setting",
 		"BodyRegion",
-		"Log"
+		"Log",
+		"Restaurant"
 	],
 	
 	stores: [
 		"Sites",
 		"Settings",
 		"Logs",
-		"BloodSugars"
+		"BloodSugars",
+		"Nearby"
 	],
 	
 	profiles: [

@@ -6,7 +6,7 @@ Ext.define('SiteSelector.view.LogActionSheet', {
 		{
 			text: 'Eat',
 			action: "addfood",
-			disabled: true
+			disabled: false
 		},
 		{
 			text: 'Blood Sugar',

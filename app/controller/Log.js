@@ -97,50 +97,7 @@ Ext.define("SiteSelector.controller.Log", {
 					// restaurant: check for menu
 						// pick meal from menu
 				// fod details 
-				var show = function(record) {
-					overlay = Ext.Viewport.add({
-						xtype: "AddFood",
-						modal: true,
-						record: record,
-						hideOnMaskTap: true,
-						showAnimation: {
-							type: "popIn",
-							duration: 250,
-							easing: "ease-out"
-						},
-						hideAnimation: {
-							type: "popOut",
-							duration: 250,
-							easing: "ease-out"
-						},
-						centered: true,
-						scrollable: true,
-						width: Ext.Viewport.windowWidth * 0.8,
-						height: Ext.Viewport.windowHeight * 0.8,
-						listeners: {
-							hide: function() {
-								overlay.destroy();
-							}
-						}
-					});
-				};
-				var r = new SiteSelector.model.Food({
-					when: new Date(),
-					description: "Description of food"
-				});
-				if (navigator.camera) {
-					navigator.camera.getPicture(function /* success */(file_uri) {
-						r.set({
-							file_uri: file_uri
-						});
-					}, function /* fail */(message) {
-						alert(message);
-					}, {
-						quality: 40,
-						destinationType: Camera.DestinationType.FILE_URI
-					});
-				}
-				show(r);
+				this.getApplication().getController("Food").add();
 				break;
 			case "addinsulin":
 			case "addexercise":
