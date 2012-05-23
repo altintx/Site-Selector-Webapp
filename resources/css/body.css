@@ -33,3 +33,8 @@
 	margin-left: 5px;
 	top: -4px;
 }
+
+body.x-chrome .site .x-button-label {
+	margin-left: 0;
+	top: 0;
+}
