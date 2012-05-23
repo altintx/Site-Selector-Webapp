@@ -16,7 +16,7 @@ Ext.define("SiteSelector.store.Nearby", {
 				oauth_token: "",
 				v: 20120521,
 				intent: "browse",
-				radius: 20000
+				radius: 2000
 		    },
 			reader: {
 				type: "json",
@@ -25,31 +25,38 @@ Ext.define("SiteSelector.store.Nearby", {
 			model: "SiteSelector.model.FoursquareVenue",
 			url : 'https://api.foursquare.com/v2/venues/search',
 		},
-		model: 'SiteSelector.model.Restaurant',
+		model: 'SiteSelector.model.FoursquareVenue',
 	},
 	
 	getNearby: function() {
 		var store = this;
-		store.removeAll();
 		var onSuccess = function(position) {
-			store.add({
-				name: "Homemade",
-				friendly_location: "Homemade",
-				longitude: position.coords.longitude,
-				latitude:  position.coords.latitude,
-				foursquare_id: null,
-				distance: 0
-			});
-			store.add({
-				name: "Other",
-				friendly_location: "Other",
-				longitude: position.coords.longitude,
-				latitude:  position.coords.latitude,
-				foursquare_id: null,
-				distance: 0
-			});
 			store.getProxy().getExtraParams().ll = [position.coords.latitude,position.coords.longitude].join(",");
-			store.load();
+			store.load(function(records) {
+				records.forEach(function(r) {
+					r.set("distance", r.raw.location.distance);
+				});
+				store.add({
+					name: "Homemade",
+					id: "homemade-11111111",
+					location: {
+						longitude: position.coords.longitude,
+						latitude:  position.coords.latitude,
+						distance: 0						
+					},
+					distance: 0						
+				});
+				store.add({
+					name: "Other",
+					id: "other-11111111",
+					location: {
+						longitude: position.coords.longitude,
+						latitude:  position.coords.latitude,
+						distance: 0
+					},
+					distance: 0	
+				});
+			});
 		};
 		
 		navigator.geolocation.getCurrentPosition(onSuccess, function() { console.log("Fail"); });	

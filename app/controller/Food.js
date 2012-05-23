@@ -25,44 +25,17 @@ Ext.define("SiteSelector.controller.Food", {
 			// get location
 			var overlay = Ext.Viewport.add({
 				xtype: "panel",
-				width: (function(phone) {
-					if (phone) {
-						return "100%";
-					} else {
-						return "80%";
-					}
-				})(Ext.os.is.Phone),
-				height: (function(phone) {
-					if (phone) {
-						return "100%";
-					} else {
-						return "50%";
-					}
-				})(Ext.os.is.Phone),
+				width: "80%",
+				layout: "fit",
+				height: "80%",
 				items: [
 					{
-						xtype: "geolocator",
-						listeners: {
-							show: function(list) {
-								list.getStore().getNearby();
-							}
-						}
+						xtype: "geolocator"
 					}
 				],
 				modal: true,
 				hideOnMaskTap: true,
-				showAnimation: {
-					type: "popIn",
-					duration: 250,
-					easing: "ease-out"
-				},
-				hideAnimation: {
-					type: "popOut",
-					duration: 250,
-					easing: "ease-out"
-				},
 				centered: true,
-				title: "Nearby Restaurants",
 				listeners: {
 					hide: function() {
 						overlay.destroy();
