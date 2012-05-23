@@ -124,6 +124,7 @@ Ext.define("SiteSelector.controller.Body", {
 						y: y / h,
 						side: $this.config.side,
 						removed: null,
+						orientation: "+",
 						location: new SiteSelector.model.BodyRegion().regionName(100 * x/w, 100 * y/h, $this.config.side)
 					});
 					if (lastSite) {

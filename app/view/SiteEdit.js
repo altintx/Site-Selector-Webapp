@@ -78,6 +78,33 @@ Ext.define("SiteSelector.view.SiteEdit", {
 								value: "cgm"
 							}
 						]
+					},
+					{
+						xtype: "selectfield",
+						name: "orientation",
+						label: "Orientation",
+						options: [
+							{
+								text: "+ Default",
+								value: "+"
+							},
+							{
+								text: "↑ Up",
+								value: "↑"
+							},
+							{
+								text: "↓ Down",
+								value: "↓"
+							},
+							{
+								text: "← Left",
+								value: "←"
+							},
+							{
+								text: "→ Right",
+								value: "→"
+							}
+						]
 					}
 				]
 			},
