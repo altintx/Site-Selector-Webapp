@@ -25,4 +25,11 @@
 }
 .site {
 	background-image: -webkit-linear-gradient(bottom, #8f0508 52%, #c51e0f 76%);
+	position: relative;
+}
+
+.site .x-button-label {
+	position: absolute;
+	margin-left: 5px;
+	top: -4px;
 }
