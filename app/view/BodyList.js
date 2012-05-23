@@ -54,11 +54,11 @@ Ext.define("SiteSelector.view.BodyList", {
 						}
 					},
 					{
-						text: "Add Site",
+						text: "Add Event",
 						align: "right",
 						xtype: "combobutton",
 						listeners: {
-							tap: function(button, e) {
+							longtap: function(button, e) {
 								console.log(e);
 								var help = Ext.Viewport.add({
 									xtype: "panel",
@@ -86,7 +86,7 @@ Ext.define("SiteSelector.view.BodyList", {
 									clearTimeout(t);
 								})
 							},
-							longtap: function() {
+							tap: function() {
 								var menu = Ext.create('SiteSelector.view.LogActionSheet');
 								Ext.Viewport.add(menu);
 								menu.show();

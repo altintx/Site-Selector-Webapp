@@ -1,13 +1,13 @@
 Ext.define("SiteSelector.view.food.Add", {
 	extend: "Ext.form.Panel",
-	alias: "widget.AddFood",
+	alias: "widget.addfood",
 	requires: ['Ext.field.Spinner', 'Ext.field.Select', 'Ext.ux.field.DateTimePicker', 'Ext.field.Toggle'],
 	config: {
 		items: [
 			{
 				xtype: "titlebar",
 				docked: "top",
-				title: "Add Food",
+				title: "Eat Food",
 				items: [
 					{
 						align: "left",
@@ -27,26 +27,6 @@ Ext.define("SiteSelector.view.food.Add", {
 			{
 				xtype: "fieldset",
 				items: [
-					(function(config) {
-						if (Ext.os.is.Phone) {
-							config.picker.slotOrder.push("ampm");
-							config.dateTimeFormat = 'm/d/Y gA';
-						} else {
-							config.picker.slotOrder.push("minute");
-							config.picker.slotOrder.push("ampm");
-							config.dateTimeFormat = 'm/d/Y h:i:A';
-						}
-						return config;
-					})({
-						xtype: 'datetimepickerfield',
-						name : 'when',
-						label: "Placed",
-						picker: {
-							yearFrom: 2012,
-							ampm : true,
-							slotOrder: ['month', 'day', 'year','hour'] // append more fields depending on device type
-						}
-					}),
 					{
 						xtype: "textfield",
 						name: "description",
@@ -54,7 +34,7 @@ Ext.define("SiteSelector.view.food.Add", {
 					},
 					{
 						xtype: "numberfield",
-						name: "carbs",
+						name: "carb_count",
 						label: "Carbs"
 					},
 					{

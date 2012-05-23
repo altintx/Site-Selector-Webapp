@@ -13,7 +13,7 @@ Ext.define("SiteSelector.store.Nearby", {
 			type: 'jsonp',
 			extraParams: {
 				ll: "",
-				oauth_token: "",
+				oauth_token: "JH1LE0RJHQ1LLNHHIFN4RVBJEDM1YVS05FHCQET33LQLTWAE",
 				v: 20120521,
 				intent: "browse",
 				radius: 2000
@@ -59,6 +59,8 @@ Ext.define("SiteSelector.store.Nearby", {
 			});
 		};
 		
-		navigator.geolocation.getCurrentPosition(onSuccess, function() { console.log("Fail"); });	
+		navigator.geolocation.getCurrentPosition(onSuccess, function() {
+			console.log("Fail"); 
+		});	
 	}
 })

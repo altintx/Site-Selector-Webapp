@@ -5,6 +5,12 @@ Ext.define("SiteSelector.view.Geolocator", {
 	config: {
 		itemTpl: "<div>{name}</div>",
 		store: "Nearby",
+		listeners: {
+			itemtap: function(list, ix, dataitem, record_venue, ev) {
+				var meal = list.meal;
+				list.fireEvent("checkin", list, record_venue, meal);
+			}
+		},
 		items: [
 			{
 				xtype: "container",
@@ -49,6 +55,7 @@ Ext.define("SiteSelector.view.Geolocator", {
 	},
 	constructor: function(config) {
 		this.callParent([config]);
+		this.meal = config.meal;
 		this.getStore().getNearby();
 		this.down("checkboxfield").on({
 			check: this.filterRestaurantsOnly,

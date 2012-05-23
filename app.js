@@ -42,7 +42,8 @@ Ext.application({
 		"Settings",
 		"Logs",
 		"BloodSugars",
-		"Nearby"
+		"Nearby",
+		"Meals"
 	],
 	
 	profiles: [

@@ -19,16 +19,16 @@ Ext.define("SiteSelector.model.Food", {
 				type: "string"
 			},
 			{
-				name: "longitude",
-				type: "float"
-			},
-			{
-				name: "latitude",
-				type: "float"
-			},
-			{
 				name: "friendly_location",
 				type: "string"
+			},
+			{
+				name: "foursquare_id",
+				type: "string"
+			},
+			{
+				name: "carb_count",
+				type: "int"
 			}
 		]
 	}
