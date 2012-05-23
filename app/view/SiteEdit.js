@@ -59,7 +59,7 @@ Ext.define("SiteSelector.view.SiteEdit", {
 						name : 'removed',
 						label: "Removed",
 						picker: {
-							yearFrom: 2022,
+							yearFrom: 2012,
 							ampm : true,
 							slotOrder: ['month', 'day', 'year','hour']
 						}
@@ -82,7 +82,13 @@ Ext.define("SiteSelector.view.SiteEdit", {
 					{
 						xtype: "selectfield",
 						name: "orientation",
-						label: "Orientation",
+						label: (function(phone) {
+							if (phone) {
+								return "Orient";
+							} else {
+								return "Orientation";
+							}
+						})(Ext.os.is.Phone),
 						options: [
 							{
 								text: "+ Default",

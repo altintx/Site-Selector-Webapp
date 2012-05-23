@@ -65,6 +65,6 @@ Ext.define('SiteSelector.model.Site', {
 	},
 	
 	text: function() {
-		return this.get("orientation") || "+";
+		return this.get("orientation") || "･";
 	}
 });
