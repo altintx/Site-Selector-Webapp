@@ -102,7 +102,7 @@ Ext.define("SiteSelector.view.Body", {
 				style: {
 					opacity: opacity
 				},
-				text: "+",
+				text: record.text(),
 				renderTo: placeHolder,
 				handler: function(button, event) {
 					$this.fireEvent("editsite", {
