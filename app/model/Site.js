@@ -36,6 +36,10 @@ Ext.define('SiteSelector.model.Site', {
 			{
 				name: "location",
 				type: "string"
+			},
+			{
+				name: "orientation",
+				type: "string"
 			}
 		]
 	},
@@ -58,5 +62,9 @@ Ext.define('SiteSelector.model.Site', {
 				return SiteSelector.app.settings().get("cgmlasts");
 		}
 		return 0;
+	},
+	
+	text: function() {
+		return this.get("orientation") || "+";
 	}
 });

@@ -51,7 +51,7 @@ Ext.application({
 	settings: function() {
 		this.settingsStore = Ext.data.StoreManager.get("Settings");
 		var settings = this.settingsStore.first();
-		if (this.firstLoad && (!settings || settings.data.version  < 2)) {
+		if (this.firstLoad && (!settings || settings.data.version  < 2.1)) {
 			var application = this;
 			if (!settings) {
 				var R = this.settingsStore.add({
@@ -66,7 +66,7 @@ Ext.application({
 					target_bg: 100,
 					usereminders: 1,
 					usezoom: Ext.os.is.phone? 1: 0,
-					version: 2.0
+					version: 2.1
 				});
 				settings = R[0];
 			}
@@ -88,7 +88,7 @@ Ext.application({
 						correction_factor: 50,
 						target_bg: 100,
 						usereminders: 1,
-						version: 2.0
+						version: 2.1
 					});
 					this.settingsStore.sync();
 					Ext.data.StoreManager.get("Sites").backport_logs();
@@ -96,6 +96,14 @@ Ext.application({
 					msg = "New settings to check out: Reminders, Zoom, Blood Sugars and Insulin Needs. If you use reminders it's important to set the Pump and/or CGM's <i>lasts</i> length (in days).";
 					title = "Thanks for upgrading!";
 
+					break;
+				case 2.0:
+					settings.set({
+						version: 2.1
+					});
+					this.settingsStore.sync();
+					msg = "Sites can now specify an orientation. Tap on a placed site, and you'll be prompted for the direction it was inserted";
+					title = "Thanks for upgrading!";
 					break;
 				default:
 					/* this version */
