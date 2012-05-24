@@ -31,5 +31,22 @@ Ext.define("SiteSelector.store.Meals", {
 			}
 		}, this);
 		return last_meals;
+	},
+	
+	getLikeRecords: function(filters) {
+		var past_meals = [
+		];
+
+		this.each(function(meal) {
+			var add = true;
+			for (key in filters) {
+				add = add & (meal.data[key] == filters[key]);
+			}
+			if (add) {
+				past_meals.push(meal);
+			}
+		})
+		
+		return past_meals;
 	}
 });

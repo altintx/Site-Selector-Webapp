@@ -9,7 +9,10 @@ Ext.define("SiteSelector.store.BloodSugars", {
 			type: 'localstorage',
 			id: 'rotator-app-store-bloodsugar',
 		},
-		sorters: 'when',
+		sorters: {
+			property: 'when',
+			direction: "desc"
+		} ,
 		listeners: {
 			beforesync: 'onBeforeSync'
 		}
@@ -47,7 +50,14 @@ Ext.define("SiteSelector.store.BloodSugars", {
 	},
 	
 	mostRecent: function(kind) {
-		var r = this.findRecord("kind", kind);
+		var r;
+		debugger;
+		if (kind)
+			r = this.findRecord("kind", kind);
+		else
+			r = this.first();
+		console.log(r);
+			
 		return r.get("reading");
 	}
 });

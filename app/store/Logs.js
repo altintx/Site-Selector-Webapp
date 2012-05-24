@@ -54,5 +54,13 @@ Ext.define("SiteSelector.store.Logs", {
 		setTimeout(function() {
 			$this.sync();
 		}, 150);
+	},
+	
+	getTimeRange: function (startDtTm, endDtTm) {
+		var matches = [];
+		this.each(function(record) {
+			if (record.data.when >= startDtTm && record.data.when <= endDtTm) matches.push(record)
+		});
+		return matches;
 	}
 });

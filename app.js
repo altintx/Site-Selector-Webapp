@@ -18,7 +18,8 @@ Ext.application({
 		"Log",
 		"BloodSugar",
 		"Reports",
-		"Food"
+		"Food",
+		"Insulin"
 	],
 	
 	views: [
@@ -34,7 +35,8 @@ Ext.application({
 		"Setting",
 		"BodyRegion",
 		"Log",
-		"Restaurant"
+		"Restaurant",
+		"Bolus"
 	],
 	
 	stores: [
@@ -52,7 +54,7 @@ Ext.application({
 	],
 	firstLoad: true,
 	
-	settings: function() {
+	settings: function(property) {
 		this.settingsStore = Ext.data.StoreManager.get("Settings");
 		var settings = this.settingsStore.first();
 		if (this.firstLoad && (!settings || settings.data.version  < 2.1)) {
@@ -97,10 +99,6 @@ Ext.application({
 					this.settingsStore.sync();
 					Ext.data.StoreManager.get("Sites").backport_logs();
 					Ext.data.StoreManager.get("Sites").recompute_locations();
-					msg = "New settings to check out: Reminders, Zoom, Blood Sugars and Insulin Needs. If you use reminders it's important to set the Pump and/or CGM's <i>lasts</i> length (in days).";
-					title = "Thanks for upgrading!";
-
-					break;
 				case 2.0:
 					settings.set({
 						version: 2.1
@@ -148,7 +146,12 @@ Ext.application({
 			application.firstLoad = false;
 			settingsView.show();
 		}
-		return settings;
+		if (property) {
+			return settings.get(property);
+		} else {
+			return settings;
+		}
+		
 	},
 	
 	showHelp: false,

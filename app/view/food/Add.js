@@ -14,13 +14,18 @@ Ext.define("SiteSelector.view.food.Add", {
 						text: "Cancel",
 						action: "cancel",
 						handler: function() {
-							this.up("AddFood").destroy();
+							this.up("addfood").destroy();
 						}
 					},
 					{
 						align: "right",
 						text: "Done",
-						action: "save"
+						action: "save",
+						handler: function() {
+							debugger;
+							var form = this.up("addfood");
+							form.fireEvent("save", form.getValues(), form.getRecord());
+						}
 					}
 				],
 			},
@@ -45,7 +50,8 @@ Ext.define("SiteSelector.view.food.Add", {
 								xtype: "togglefield",
 								name: "use_bgnow",
 								label: false,
-								flex: 1
+								flex: 1,
+								ui: "small"
 							},
 							{
 								xtype: "spinnerfield",
@@ -69,7 +75,8 @@ Ext.define("SiteSelector.view.food.Add", {
 								xtype: "togglefield",
 								name: "use_cgmgnow",
 								label: false,
-								flex: 1
+								flex: 1,
+								ui: "small"
 							},
 							{
 								xtype: "spinnerfield",
@@ -80,30 +87,6 @@ Ext.define("SiteSelector.view.food.Add", {
 								minValue: 0,
 								maxValue: 1000,
 								increment: 1,
-								cycle: false,
-								flex: 3
-							}
-						]
-					},
-					{
-						xtype: "container",
-						layout: "hbox",
-						items: [
-							{
-								xtype: "togglefield",
-								name: "use_insulin",
-								label: false,
-								flex: 1
-							},
-							{
-								xtype: "spinnerfield",
-								name: "Insulin",
-								label: "Insulin",
-								labelCls: "transparent_label",
-								labelWidth: "40%",
-								minValue: 0,
-								maxValue: 100,
-								increment: 0.1,
 								cycle: false,
 								flex: 3
 							}

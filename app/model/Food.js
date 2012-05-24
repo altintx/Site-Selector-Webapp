@@ -31,5 +31,43 @@ Ext.define("SiteSelector.model.Food", {
 				type: "int"
 			}
 		]
+	},
+	
+	getEffected: function() {
+		var start = this.get("when");
+		var end = new Date(start.getTime() + 6 * 60 * 60 * 1000);
+		var record = {
+			meal: meal,
+			bolus: null,
+			wave: null,
+			blood_sugars: []
+		};
+		
+		Ext.data.StoreManager.get("Logs").getTimeRange(start, end).some(function(log_entry) {
+			switch (log_entry.data.model) {
+				case "SiteSelector.model.BloodSugar":
+					record.blood_sugars.push(log_entry.getOwner());
+					return false;
+				case "SiteSelector.model.Insulin":
+					var i = log_entry.getOwner();
+					if (i.data.type == "bolus") {
+						if (record.bolus) {
+							return true;
+						} else {
+							record.bolus = i;
+						}
+					} else if (i.data.type == "wave") {
+						if (record.wave) {
+							return true;
+						} else {
+							record.wave = i;
+						}
+					}
+					return false;
+				case "SiteSelector.model.Food":
+					return true;
+			}
+		});
+		return record;
 	}
 })
