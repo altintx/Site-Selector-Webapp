@@ -19,9 +19,6 @@
      */
 	"js": [
 		{
-			path: "cordova-1.5.0.js"
-		},
-		{
 			"path": "sdk/sencha-touch.js"
 		},
 		{
@@ -29,6 +26,9 @@
 		},
 		{
 			path: "triangle.js"
+		},
+		{
+			path: "ext.ux.Sparkline.js" // https://github.com/altintx/Ext.ux.Sparkline
 		},
 		{
 			"path": "app.js"
