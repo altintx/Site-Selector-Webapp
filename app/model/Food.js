@@ -33,11 +33,11 @@ Ext.define("SiteSelector.model.Food", {
 		]
 	},
 	
-	getEffected: function() {
+	getAffected: function() {
 		var start = this.get("when");
 		var end = new Date(start.getTime() + 6 * 60 * 60 * 1000);
 		var record = {
-			meal: meal,
+			meal: this,
 			bolus: null,
 			wave: null,
 			blood_sugars: []

@@ -18,14 +18,42 @@ Ext.define("SiteSelector.store.Meals", {
 		]
 	},
 	
+	onBeforeSync: function (store) {
+		var field;
+		var logStore = Ext.data.StoreManager.get("Logs");
+		store.getUpdatedRecords().forEach(function(m) {
+			var ix = logStore.findBy(function(r) {
+				return (r.get("fk") == m.getId() && r.get("model") == "SiteSelector.model.Food");
+			})
+			var r = logStore.getAt(ix);
+			r.set({
+				description: m.data.description
+			});
+		});
+		store.getNewRecords().forEach(function(m) {
+			logStore.record(m, "Ate", m.get("description"));
+		});
+		store.getRemovedRecords().forEach(function(m) {
+			logStore.each(function(r) {
+				if (r.get("fk") == m.getId() && r.get("model") == "SiteSelector.model.Food") {
+					console.log("removing", r);
+					logStore.remove(r);
+				}
+			});
+		});
+		logStore.sync();			
+	},
+		
 	getMealsFromRestaurant: function(foursquare_id) {
 		var last_meals = Ext.create("Ext.data.Store", {
 			model: "SiteSelector.model.Food"
 		});
 		this.each(function(meal) {
-			if (!last_meals.some(function(prior_meal) {
-				return (meal.data.foursquare_id == foursquare_id && meal.data.description == prior_meal.data.description);
-			})) { // isn't in the last_meals list
+			var present = false;
+			last_meals.each(function(prior_meal) {
+				present |= (meal.data.foursquare_id == foursquare_id && meal.data.description == prior_meal.data.description);
+			})
+			if (!present) { // isn't in the last_meals list
 				last_meals.add(meal);
 				if (last_meals.length == 10) return false;
 			}

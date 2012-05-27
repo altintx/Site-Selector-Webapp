@@ -1,12 +1,39 @@
 Ext.define("SiteSelector.view.insulin.Add", {
 	extend: "Ext.form.Panel",
 	alias: "widget.addinsulin",
+	requires: ["SiteSelector.view.insulin.Prior"],
 	config: {
 		items: [
 			{
 				xtype: "titlebar",
 				title: "Insulin",
-				docked: "top"
+				docked: "top",
+				items: [
+					{
+						text: "Cancel",
+						handler: function() {
+							var view = this.up("addinsulin");
+							view.fireEvent("cancel", view);
+							view.hide();
+							setTimeout(function() {
+								view.destroy();
+							}, 10);
+						},
+						align: "left"
+					},
+					{
+						text: "Save",
+						handler: function() {
+							var view = this.up("addinsulin");
+							view.fireEvent("save", view);
+							view.hide();
+							setTimeout(function() {
+								view.destroy();
+							}, 10);
+						},
+						align: "right"
+					}
+				]
 			},
 			{
 				xtype: "fieldset",
@@ -15,6 +42,9 @@ Ext.define("SiteSelector.view.insulin.Add", {
 					{
 						xtype: "container",
 						layout: "hbox",
+						defaults: {
+							labelAlign: "top"
+						},
 						items: [
 							{
 								xtype: "spinnerfield",
@@ -23,7 +53,8 @@ Ext.define("SiteSelector.view.insulin.Add", {
 								minValue: 0,
 								maxValue: 50,
 								increment: 0.1,
-								cycle: false
+								cycle: false,
+								flex: 1
 							},
 							{
 								xtype: "spinnerfield",
@@ -32,12 +63,13 @@ Ext.define("SiteSelector.view.insulin.Add", {
 								minValue: 0,
 								maxValue: 50,
 								increment: 0.1,
-								cycle: false
+								cycle: false,
+								flex: 1
 							}
 						]
 					}
 				]
-			}			
+			}
 		]
 	},
 	
@@ -45,10 +77,11 @@ Ext.define("SiteSelector.view.insulin.Add", {
 		var priors = config.priors;
 		delete config.priors;
 		this.callParent([config]);
-		
 		this.add({
 			xtype: "dataview",
-			
+			useComponents: true,
+			defaultType: "insulinprior"	,
+			store: priors
 		})
 	},
 })

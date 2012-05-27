@@ -51,12 +51,10 @@ Ext.define("SiteSelector.store.BloodSugars", {
 	
 	mostRecent: function(kind) {
 		var r;
-		debugger;
 		if (kind)
 			r = this.findRecord("kind", kind);
 		else
 			r = this.first();
-		console.log(r);
 			
 		return r.get("reading");
 	}

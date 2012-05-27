@@ -12,19 +12,23 @@ Ext.define("SiteSelector.view.food.Add", {
 					{
 						align: "left",
 						text: "Cancel",
-						action: "cancel",
 						handler: function() {
-							this.up("addfood").destroy();
+							var view = this.up("addfood");
+							setTimeout(function() {
+								view.destroy();
+							}, 10);
 						}
 					},
 					{
 						align: "right",
 						text: "Done",
-						action: "save",
 						handler: function() {
-							debugger;
 							var form = this.up("addfood");
 							form.fireEvent("save", form.getValues(), form.getRecord());
+							form.hide();
+							setTimeout(function() {
+								form.destroy();
+							}, 10);
 						}
 					}
 				],

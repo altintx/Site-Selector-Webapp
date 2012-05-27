@@ -9,6 +9,10 @@ Ext.define("SiteSelector.view.Geolocator", {
 			itemtap: function(list, ix, dataitem, record_venue, ev) {
 				var meal = list.meal;
 				list.fireEvent("checkin", list, record_venue, meal);
+				list.hide();
+				setTimeout(function() { 
+					list.destroy();
+				}, 10);				
 			}
 		},
 		items: [

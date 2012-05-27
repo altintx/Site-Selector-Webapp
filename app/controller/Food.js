@@ -4,7 +4,8 @@ Ext.define("SiteSelector.controller.Food", {
 	config: {
 		views: [
 			"SiteSelector.view.food.Add",
-			"SiteSelector.view.Geolocator"
+			"SiteSelector.view.Geolocator",
+			"SiteSelector.view.MealGallery"
 		],
 		models: [
 			"Food",
@@ -12,14 +13,19 @@ Ext.define("SiteSelector.controller.Food", {
 		],
 		refs: {
 			'Geolocator': "geolocator",
-			"AddScreen": "addfood"
+			"AddScreen": "addfood",
+			"MealGallery": "meal_gallery"
 		},
 		control: {
 			'Geolocator': {
 				checkin: 'checkin'
 			},
 			'AddScreen': {
-				save: 'showPastTrends'
+				save: 'savemeal'
+			},
+			"MealGallery": {
+				skip: "collectFoodDetails",
+				repeat: "collectFoodDetails"
 			}
 		}
 	},
@@ -35,16 +41,10 @@ Ext.define("SiteSelector.controller.Food", {
 		getLocation = function(meal) {
 			// get location
 			var overlay = Ext.Viewport.add({
-				xtype: "panel",
+				xtype: "geolocator",
 				width: "80%",
-				layout: "fit",
 				height: "80%",
-				items: [
-					{
-						xtype: "geolocator",
-						meal: meal						
-					}
-				],
+				meal: meal,					
 				modal: true,
 				hideOnMaskTap: true,
 				centered: true
@@ -67,8 +67,7 @@ Ext.define("SiteSelector.controller.Food", {
 	},
 	
 	checkin: function(view, venue, meal) {
-		var overlay = null,
-			meals_store = Ext.data.StoreManager.get("Meals"),
+		var meals_store = Ext.data.StoreManager.get("Meals"),
 			blood_sugar = Ext.data.StoreManager.get("BloodSugars");
 
 		meal.set({
@@ -84,59 +83,96 @@ Ext.define("SiteSelector.controller.Food", {
 		var prior_meals = meals_store.getMealsFromRestaurant(venue.data.id);
 		
 		if (prior_meals.getCount()) {
-			overlay = Ext.Viewport.add({
-				xtype: "panel",
+			Ext.Viewport.add({
+				xtype: "meal_gallery",
+				store: prior_meals,
+				meal: meal,
 				width: "80%",
-				layout: "fit",
 				height: "80%",
-				items: [
-					{
-						xtype: "meal_gallery",
-						store: prior_meals
-					}
-				],
 				modal: true,
 				hideOnMaskTap: true,
 				centered: true
-			});
+			}).show();
 		} else {
-			overlay = Ext.Viewport.add({
-				xtype: "addfood",
-				width: "80%",
-				layout: "fit",
-				height: "80%",
-				modal: true,
-				hideOnMaskTap: true,
-				centered: true,
-				record: meal
-			});
+			this.collectFoodDetails(meal);
 		}
-		
-		overlay.show();
-		
-		setTimeout(function() { view.up("panel").destroy(); }, 1);
 	},
 	
-	showPastTrends: function(values, meal) {
-		var meal_store = Ext.data.StoreManager.get("Meals"), overlay = null;
-		meal.set({
-			description: values.description
-		});
+	collectFoodDetails: function(meal) {
+		Ext.Viewport.add({
+			xtype: "addfood",
+			width: "80%",
+			layout: "fit",
+			height: "80%",
+			modal: true,
+			hideOnMaskTap: true,
+			centered: true,
+			record: meal
+		}).show();
+	},
+	
+	savemeal: function(values, meal) {
+		var meal_store = Ext.data.StoreManager.get("Meals"),
+			blood_sugar = 0,
+			bgnow_store = Ext.data.StoreManager.get("BloodSugars");
 		
+		meal.set({
+			description: values.description,
+			carb_count: values.carb_count
+		});
+		meal_store.add(meal);
+		meal_store.sync();
+		
+		if (values.use_cgmnow) {
+			bgnow_store.add({
+				when: meal.get("when"),
+				kind: "cgm",
+				reading: values.cgmnow
+			});
+			blood_sugar = values.bgnow
+		}
+		
+		if (values.use_bgnow) {
+			bgnow_store.add({
+				when: meal.get("when"),
+				kind: "meter",
+				reading: values.bgnow
+			});
+			blood_sugar = values.bgnow
+		} else {
+			blood_sugar = 0;
+		}
+		
+		this.showPastTrends(meal, blood_sugar);
+		
+	},
+	
+	showPastTrends: function(meal, blood_sugar) {
+		var meal_store = Ext.data.StoreManager.get("Meals"), overlay = null;
 		var prior_consumption = meal_store.getLikeRecords({
 			friendly_location: meal.get("friendly_location"),
 			description: meal.get("description")
 		});
 		
 		var settings = SiteSelector.app.settings();
-		var insulin = new SiteSelector.model.Bolus({
-			blood_sugar: values.blood_sugar,
-			carbs: values.carb_count,
-			normal: (values.blood_sugar - settings.get("target_bg")) / settings.get("correction_factor") +
-				values.carb_count / settings.get("carb_ratio"),
-			wave: 0
-		});
-		
+		var insulin;
+		if (blood_sugar > 0) {
+			insulin = new SiteSelector.model.Bolus({
+				blood_sugar: blood_sugar,
+				carbs: meal.get("carb_count"),
+				normal: (blood_sugar - settings.get("target_bg")) / settings.get("correction_factor") +
+					meal.get("carb_count") / settings.get("carb_ratio"),
+				wave: 0
+			});
+		} else {
+			insulin = new SiteSelector.model.Bolus({
+				blood_sugar: null,
+				carbs: meal.get("carb_count"),
+				normal: meal.get("carb_count") / settings.get("carb_ratio"),
+				wave: 0
+			});
+			
+		}
 		overlay = Ext.Viewport.add({
 			xtype: "panel",
 			width: "80%",
@@ -146,7 +182,9 @@ Ext.define("SiteSelector.controller.Food", {
 				{
 					xtype: "addinsulin",
 					record: insulin,
-					priors: prior_consumption.map(function(m) { return m.getEffected() })
+					priors: prior_consumption.map(function(m) { 
+						return m.getAffected() 
+					})
 				}
 			],
 			modal: true,

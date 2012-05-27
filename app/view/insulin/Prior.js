@@ -5,7 +5,7 @@ Ext.define("SiteSelector.view.insulin.Prior", {
 		dateAndQty: {
 			flex: 1
 		},
-		sparkLine: {
+		sparlLine: {
 			flex: 4,
 			type: "line",
 			width: "100%",
