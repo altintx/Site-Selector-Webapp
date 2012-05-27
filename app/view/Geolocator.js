@@ -5,6 +5,7 @@ Ext.define("SiteSelector.view.Geolocator", {
 	config: {
 		itemTpl: "<div>{name}</div>",
 		store: "Nearby",
+		border: 4,
 		listeners: {
 			itemtap: function(list, ix, dataitem, record_venue, ev) {
 				var meal = list.meal;

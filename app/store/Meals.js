@@ -15,12 +15,16 @@ Ext.define("SiteSelector.store.Meals", {
 					return a.data.when.getTime() > b.data.when.getTime();
 				}
 			}
-		]
+		],
+		listeners: {
+			beforesync: 'onBeforeSync'
+		}
 	},
 	
 	onBeforeSync: function (store) {
 		var field;
 		var logStore = Ext.data.StoreManager.get("Logs");
+		debugger;
 		store.getUpdatedRecords().forEach(function(m) {
 			var ix = logStore.findBy(function(r) {
 				return (r.get("fk") == m.getId() && r.get("model") == "SiteSelector.model.Food");

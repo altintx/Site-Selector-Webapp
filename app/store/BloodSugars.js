@@ -56,6 +56,6 @@ Ext.define("SiteSelector.store.BloodSugars", {
 		else
 			r = this.first();
 			
-		return r.get("reading");
+		return r? r.get("reading"): SiteSelector.app.settings("target_bg");
 	}
 });

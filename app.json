@@ -27,8 +27,14 @@
 		{
 			path: "triangle.js"
 		},
+		// {
+		// 	path: "ext.ux.Sparkline.js" // https://github.com/altintx/Ext.ux.Sparkline
+		// },
 		{
-			path: "ext.ux.Sparkline.js" // https://github.com/altintx/Ext.ux.Sparkline
+			path: "jquery.js"
+		},
+		{
+			path: "jquery.sparkline.js"
 		},
 		{
 			"path": "app.js"

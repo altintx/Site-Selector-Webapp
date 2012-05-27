@@ -2,7 +2,8 @@ Ext.define("SiteSelector.view.MealGallery", {
 	extend: "Ext.List",
 	alias: "widget.meal_gallery",
 	config: {
-		itemTpl: '<div><img src="{file_uri}" style="width: 0.75in; height: 1in" float="left" />{when}<br />{description}</div>',
+		itemTpl: '<div><img src="{file_uri}" style="width: 0.75in; height: 1in" float="left" />{description}</div>',
+		border: 4,
 		items: [
 			{
 				xtype: "titlebar",
@@ -39,6 +40,7 @@ Ext.define("SiteSelector.view.MealGallery", {
 					carb_count: record.get("carb_count")
 				})
 				view.fireEvent("repeat", view.meal);
+				view.hide();
 				setTimeout(function() {
 					view.destroy();
 				}, 10);

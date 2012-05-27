@@ -1,7 +1,6 @@
 Ext.define("SiteSelector.view.insulin.Add", {
 	extend: "Ext.form.Panel",
 	alias: "widget.addinsulin",
-	requires: ["SiteSelector.view.insulin.Prior"],
 	config: {
 		items: [
 			{
@@ -74,14 +73,57 @@ Ext.define("SiteSelector.view.insulin.Add", {
 	},
 	
 	constructor: function(config) {
-		var priors = config.priors;
+		var $this = this,
+			priors = config.priors;
 		delete config.priors;
 		this.callParent([config]);
-		this.add({
-			xtype: "dataview",
-			useComponents: true,
-			defaultType: "insulinprior"	,
-			store: priors
-		})
+		debugger;
+		priors.sort(function(a, b) {
+			var c = a.meal.data.when.getTime() - b.meal.data.when.getTime();
+			if (c < 0) {
+				return -1
+			} else if (c > 0) {
+				return 1;
+			} else {
+				return 0;
+			}
+		});
+		debugger;
+		priors.forEach(function(prior) {
+			var when = prior.meal.get("when");
+			$this.add({
+				xtype: "container",
+				layout: "hbox",
+				height: "1in",
+				items: [
+					{
+						xtype: "component",
+						html: (["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"])[when.getMonth()] + " " + when.getDate() + ", " + when.getFullYear() + "<br />" + 
+							(((prior.meal.get("when").getHours()-1)%12+1)||12) + ":" + (('0'+when.getMinutes()).substr(-2)) + ((when.getHours()>11)? 'PM': 'AM') + "<br />" +
+							parseFloat(prior.bolus || 0) + "U / " + parseFloat(prior.wave || 0) + "U",
+						flex: 1
+					},
+					{
+						xtype: "component",
+						html: prior.blood_sugars.map(function(b) { return b.data.reading }).join(","),
+						cls: "sparkline line"
+					}
+				]
+			});
+		});
+		setTimeout(function() {
+			jQuery(".sparkline.line").each(function(ix) { 
+				$(this).html( $(this).contents().map(function() { 
+					return $(this).html();
+				}).get().join("")); 
+			}).sparkline("html", {
+				type: "line",
+				width: '2.5in',
+				height: "0.75in",
+				fillColor: false,
+			    normalRangeMin: 70,
+				normalRangeMax: 180
+			});
+		}, 100);
 	},
 })
