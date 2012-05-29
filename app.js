@@ -54,10 +54,12 @@ Ext.application({
 	],
 	firstLoad: true,
 	
-	settings: function(property) {
+	bgStep: 1,
+	
+	settings: function() {
 		this.settingsStore = Ext.data.StoreManager.get("Settings");
 		var settings = this.settingsStore.first();
-		if (this.firstLoad && (!settings || settings.data.version  < 2.1)) {
+		if (this.firstLoad && (!settings || settings.data.version  < 2.2)) {
 			var application = this;
 			if (!settings) {
 				var R = this.settingsStore.add({
@@ -65,14 +67,18 @@ Ext.application({
 					usepump: 1,
 					pumpreuse: 28,
 					cgmreuse: 14,
+					bolusreuse: 24,
+					basalreuse: 48,
 					pumplasts: 2,
 					cgmlasts: 3,
+					basallasts: 24,
 					carb_ratio: 15,
 					correction_factor: 50,
 					target_bg: 100,
 					usereminders: 1,
 					usezoom: Ext.os.is.phone? 1: 0,
-					version: 2.1
+					version: 2.2,
+					bgunits: "mgdl"
 				});
 				settings = R[0];
 			}
@@ -94,22 +100,36 @@ Ext.application({
 						correction_factor: 50,
 						target_bg: 100,
 						usereminders: 1,
-						version: 2.1
+						version: 2.0
 					});
-					this.settingsStore.sync();
 					Ext.data.StoreManager.get("Sites").backport_logs();
 					Ext.data.StoreManager.get("Sites").recompute_locations();
 				case 2.0:
 					settings.set({
 						version: 2.1
 					});
+				case 2.1:
+					settings.set({
+						bolusreuse: 24,
+						basalreuse: 48,
+						basallasts: 24,
+						bgunits: "mgdl",
+						version: 2.2
+					});
+					(function(bgstore) {
+						bgstore.each(function(r) {
+							r.set("unit", "mgdl");
+						});
+						bgstore.sync();
+					})(Ext.data.StoreManager.get("BloodSugars"))
+					
 					this.settingsStore.sync();
-					msg = "Sites can now specify an orientation. Tap on a placed site, and you'll be prompted for the direction it was inserted";
-					title = "Thanks for upgrading!";
-					break;
+					msg = "Shot tracking is now available. Configure your healing time for each of basal and bolus. Also, blood sugar units can now be set to mmol/L";
+					title = "Thanks for upgrading!";				
 				default:
 					/* this version */
 			}
+			// message box call is inside of the initialize() callback below
 			var settingsView = Ext.Viewport.add({
 				modal: true,
 				record: settings,
@@ -131,6 +151,8 @@ Ext.application({
 				xtype: "Settings",
 				listeners: {
 					initialize: function() {
+						debugger;
+						console.log(settings);
 						window.setTimeout(function() {
 							Ext.Msg.alert(
 								title,
@@ -143,15 +165,19 @@ Ext.application({
 					}
 				}
 			});
-			application.firstLoad = false;
 			settingsView.show();
 		}
+		
+		if (this.firstLoad) {
+			settings.updateUserBloodSugarUnits();
+			this.firstLoad = false;
+		}
+		
 		if (property) {
 			return settings.get(property);
 		} else {
 			return settings;
 		}
-		
 	},
 	
 	showHelp: false,

@@ -23,6 +23,12 @@
 .site.cgm {
 	background-image: -webkit-linear-gradient(top, #D18023 52%, #8F4411 76%);
 }
+.site.shot_bolus {
+	background-image: -webkit-linear-gradient(bottom, rgb(45,158,187) 16%, rgb(72,190,225) 58%, rgb(101,228,255) 79%);
+}
+.site.shot_basal {
+	background-image: -webkit-linear-gradient(bottom, rgb(10,88,35) 25%, rgb(65,150,95) 65%);
+}
 .site {
 	background-image: -webkit-linear-gradient(bottom, #8f0508 52%, #c51e0f 76%);
 	position: relative;

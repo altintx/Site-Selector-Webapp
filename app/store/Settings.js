@@ -8,6 +8,15 @@ Ext.define("SiteSelector.store.Settings", {
 	    proxy: {
 	        type: 'localstorage',
 	        id: 'rotator-app-store-settings'
-	    }
+	    },
+		listeners: {
+			beforesync: 'onBeforeSync'
+		}
+	},
+	
+	onBeforeSync: function(store) {
+		store.getUpdatedRecords().forEach(function(m) {
+			m.updateUserBloodSugarUnits()
+		});
 	}
 });

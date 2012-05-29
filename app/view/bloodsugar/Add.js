@@ -95,7 +95,6 @@ Ext.define("SiteSelector.view.bloodsugar.Add", {
 						label: "Reading",
 						minValue: 0,
 						maxValue: 1000,
-						increment: 1,
 						cycle: false,
 						listeners: {
 							spin: function(spinner) {
@@ -129,7 +128,6 @@ Ext.define("SiteSelector.view.bloodsugar.Add", {
 								id: "parity_type",
 								minValue: 0,
 								maxValue: 1000,
-								increment: 1,
 								cycle: false,
 								flex: 3,
 								listeners: {
@@ -145,5 +143,11 @@ Ext.define("SiteSelector.view.bloodsugar.Add", {
 				instructions: "This will be saved only if selected"
 			}
 		]
+	},
+	
+	constructor: function(config) {
+		this.callParent([config]);
+		this.down("spinnerfield[name=parity_reading]").setIncrement(SiteSelector.app.bgStep);
+		this.down("spinnerfield[name=reading]").setIncrement(SiteSelector.app.bgStep);
 	}
 });

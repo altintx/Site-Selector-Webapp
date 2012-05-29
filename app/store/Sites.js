@@ -91,16 +91,20 @@ Ext.define("SiteSelector.store.Sites", {
 			if (SiteSelector.app.settings().get("usereminders")) {
 				var nice = "";
 				if (m.get("kind") == "pump") {
-					nice = "pump";
+					nice = "It's time to change your pump";
+				} else if (m.get("kind") == "cgm") {
+					nice = "It's time to change your CGM";
+				} else if (m.get("kind") == "shot_basal") {
+					nice = "It's time to take a basal shot"
 				} else {
-					nice = "CGM";
+					return; // no reminders for bolus
 				}
 				var slave = function() {
 					if (m.phantom) {
 						setTimeout(slave, 500);
 						return;
 					}
-					(new LocalNotification()).add({ date: Date.now() / 1000 +  m.lasts() * 86400, message: 'It\'s time to change your ' + nice, badge: 0, id: m.getId().toString() });
+					(new LocalNotification()).add({ date: Date.now() / 1000 +  m.lasts() * 86400, message: nice, badge: 0, id: m.getId().toString() });
 				}
 				slave();
 			}
