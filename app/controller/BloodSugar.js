@@ -25,17 +25,21 @@ Ext.define("SiteSelector.controller.BloodSugar", {
 		var form = button.up("formpanel");
 		var value = form.getValues();
 		var store = Ext.data.StoreManager.get("BloodSugars");
+		var settings = SiteSelector.app.settings();
+		var u = settings.get("bgunits");
 
 		store.add({
 			when: value.when,
 			kind: value.kind,
-			reading: value.reading
+			reading: value.reading,
+			unit: u
 		});
 		if (value.parity) {
 			store.add({
 				when: value.when,
 				kind: value.kind  == "meter"? "cgm": "meter",
-				reading: value.parity_reading
+				reading: value.parity_reading,
+				unit: u
 			});
 		}
 		store.sync();

@@ -53,7 +53,8 @@ Ext.define("SiteSelector.view.Settings", {
 						minValue: 0,
 						maxValue: 100
 					}
-				]
+				],
+				instructions: "Heals and lasts are in days",
 			},
 			{
 				xtype: "fieldset",
@@ -79,21 +80,67 @@ Ext.define("SiteSelector.view.Settings", {
 					{
 						xtype: "selectfield",
 						label: "Units",
+						name: "bgunits",
 						options: [
 							{
 								text: "mg/dL",
-								value: "us"
+								value: "mgdl"
+							},
+							{
+								text: "mmol/L",
+								value: "mmoll"
 							}
-						]
+						],
+						listeners: {
+							change: function(select, record) {
+								var v = select.up("formpanel").down("numberfield[name=target_bg]");
+								if (record.get("value") == "mmoll") {
+									v.setValue(parseInt(0.555 * v.getValue()) / 10);
+								} else {
+									v.setValue(parseInt(18.0182 * v.getValue()));
+								}
+							}
+						}
 					},
 					{
 						xtype: "numberfield",
 						label: "Target BG",
 						name: "target_bg"
 					}
-				]
+				],
+				instructions: "Heals and Lasts are in days.",
 			},
-
+			{
+				xtype: "fieldset",
+				title: "Shots",
+				defaults: {
+					labelWidth: "60%"
+				},
+				items: [
+					{
+						xtype: 'numberfield',
+						label: 'Bolus Heals',
+						name: "bolusreuse",
+						minValue: 0,
+						maxValue: 336
+					},
+					{
+						xtype: "numberfield",
+						label: "Basal Heals",
+						name: "basalreuse",
+						minValue: 0,
+						maxValue: 336
+					},
+					{
+						xtype: "numberfield",
+						label: "Basal Lasts",
+						name: "basallasts",
+						minValue: 0,
+						maxValue: 48
+					}
+				],
+				instructions: "Heals and Lasts are in hours."
+			},
 			{
 				xtype: "fieldset",
 				title: "Reminders",

@@ -86,6 +86,16 @@ Ext.define("SiteSelector.controller.Body", {
 				},
 				{
 					xtype: "button",
+					text: "Shot (Bolus)",
+					handler: this.actionMenuClick(event, body)
+				},
+				{
+					xtype: "button",
+					text: "Shot (Basal)",
+					handler: this.actionMenuClick(event, body)
+				},
+				{
+					xtype: "button",
 					text: "Cancel",
 					ui: "decline",
 					handler: this.actionMenuClick(event, body)
@@ -107,40 +117,44 @@ Ext.define("SiteSelector.controller.Body", {
 		
 		var humanBodyMap = $this.down? $this.down("img"): $this;
 		return function() {
-			switch (this.getText()) {
-				case "Pump":
-				case "CGM":
-					var w = humanBodyMap.element.getWidth(),
-					    h = humanBodyMap.element.getHeight(),
-					    x = event.browserEvent.layerX,
-					    y = event.browserEvent.layerY,
-					    store = Ext.data.StoreManager.get("Sites"),
-					    kind = (this.getText() == "Pump"? "pump": "cgm");
-					var lastSite = store.lastSite(kind);
-					var usage = store.add({
-						kind: kind,
-						when: new Date(),
-						x: x / w,
-						y: y / h,
-						side: $this.config.side,
-						removed: null,
-						orientation: "+",
-						location: new SiteSelector.model.BodyRegion().regionName(100 * x/w, 100 * y/h, $this.config.side)
-					});
-					if (lastSite) {
-						Ext.Msg.confirm("Remove old site", "Would you like to mark the site you inserted " + lastSite.get("when").toLocaleDateString() + " as removed?", function(button) {
-							if (button == "yes") {
-								lastSite.set("removed", new Date());
-								lastSite.dirty = true;
-							}
-							store.sync();
-							
-						});
-					} else {
-						store.sync();
-					}
-			}
+			var $kinds = {
+				"Pump": "pump",
+				"CGM": "cgm",
+				"Shot (Bolus)": "shot_bolus",
+				"Shot (Basal)": "shot_basal"
+			}, remains_inserted = ["pump", "cgm"];
 			this.up("actionsheet").hide();
+			if (this.getText() == "Cancel") return;
+			var w = humanBodyMap.element.getWidth(),
+			    h = humanBodyMap.element.getHeight(),
+			    x = event.browserEvent.layerX,
+			    y = event.browserEvent.layerY,
+			    store = Ext.data.StoreManager.get("Sites"),
+			    kind = $kinds[this.getText()],
+				when = new Date();
+			var lastSite = remains_inserted.indexOf(kind) > -1? store.lastSite(kind): false;
+			var usage = store.add({
+				kind: kind,
+				when: when,
+				x: x / w,
+				y: y / h,
+				side: $this.config.side,
+				removed: (remains_inserted.indexOf(kind) > -1)? null: when,
+				orientation: "+",
+				location: new SiteSelector.model.BodyRegion().regionName(100 * x/w, 100 * y/h, $this.config.side)
+			});
+			if (lastSite) {
+				Ext.Msg.confirm("Remove old site", "Would you like to mark the site you inserted " + lastSite.get("when").toLocaleDateString() + " as removed?", function(button) {
+					if (button == "yes") {
+						lastSite.set("removed", new Date());
+						lastSite.dirty = true;
+					}
+					store.sync();
+					
+				});
+			} else {
+				store.sync();
+			}
 		}
 	},
 	
@@ -245,6 +259,16 @@ Ext.define("SiteSelector.controller.Body", {
 											{
 												xtype: "button",
 												text: "CGM",
+												handler: $this.actionMenuClick(event, body)
+											},
+											{
+												xtype: "button",
+												text: "Shot (Bolus)",
+												handler: $this.actionMenuClick(event, body)
+											},
+											{
+												xtype: "button",
+												text: "Shot (Basal)",
 												handler: $this.actionMenuClick(event, body)
 											},
 											{

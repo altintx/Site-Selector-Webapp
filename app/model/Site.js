@@ -50,6 +50,10 @@ Ext.define('SiteSelector.model.Site', {
 				return 1000 * 60 * 60 * 24 * SiteSelector.app.settings().get("pumpreuse");
 			case "cgm":
 				return 1000 * 60 * 60 * 24 * SiteSelector.app.settings().get("cgmreuse");
+			case "shot_bolus":
+				return 1000 * 60 * 60 * SiteSelector.app.settings().get("bolusreuse");
+			case "shot_basal":
+				return 1000 * 60 * 60 * SiteSelector.app.settings().get("basalreuse");
 		}
 		return 0;
 	},
