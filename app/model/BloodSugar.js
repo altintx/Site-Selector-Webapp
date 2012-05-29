@@ -18,7 +18,11 @@ Ext.define('SiteSelector.model.BloodSugar', {
 			},
 			{
 				name: "reading",
-				type: "int"
+				type: "float"
+			},
+			{
+				name: "unit",
+				type: "string"
 			}
 		]
 	}

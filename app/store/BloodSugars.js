@@ -49,5 +49,21 @@ Ext.define("SiteSelector.store.BloodSugars", {
 	mostRecent: function(kind) {
 		var r = this.findRecord("kind", kind);
 		return r.get("reading");
+	},
+	
+	changeAllReadings: function(targetUnit, algorithms) {
+		this.each(function(r) {
+			var u = r.get("unit");
+			if (u == targetUnit) {
+				// done
+			} else {
+				r.set({
+					reading: algorithms[u](r.get("reading")),
+					unit: targetUnit
+				});
+			}
+			
+		});
+		this.sync();
 	}
 });

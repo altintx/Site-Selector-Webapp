@@ -76,6 +76,14 @@ Ext.define("SiteSelector.view.SiteEdit", {
 							{
 								text: "CGMS",
 								value: "cgm"
+							},
+							{
+								text: "Shot (Bolus)",
+								value: "shot_bolus"
+							},
+							{
+								text: "Shot (Basal)",
+								value: "shot_basal"
 							}
 						]
 					},
@@ -154,6 +162,9 @@ Ext.define("SiteSelector.view.SiteEdit", {
 					form.updateRecord(r);
 					r.dirty = true;
 					var siteStore = Ext.data.StoreManager.get("Sites");
+					if (["shot_bolus", "shot_basal"].indexOf(r.data.kind) > -1) {
+						r.set("removed", r.get("when"));
+					}
 					siteStore.sync();
 					siteStore.sort(siteStore.sorters);
 					form.destroy();

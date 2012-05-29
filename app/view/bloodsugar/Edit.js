@@ -83,11 +83,15 @@ Ext.define("SiteSelector.view.bloodsugar.Edit", {
 						label: "Reading",
 						minValue: 0,
 						maxValue: 1000,
-						increment: 1,
 						cycle: false
 					}
 				]
 			}
 		]
+	},
+
+	constructor: function(config) {
+		this.callParent([config]);
+		this.down("spinnerfield[name=reading]").setIncrement(SiteSelector.app.bgStep);
 	}
 });
