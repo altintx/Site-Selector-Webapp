@@ -77,7 +77,6 @@ Ext.define("SiteSelector.view.insulin.Add", {
 			priors = config.priors;
 		delete config.priors;
 		this.callParent([config]);
-		debugger;
 		priors.sort(function(a, b) {
 			var c = a.meal.data.when.getTime() - b.meal.data.when.getTime();
 			if (c < 0) {
@@ -88,9 +87,9 @@ Ext.define("SiteSelector.view.insulin.Add", {
 				return 0;
 			}
 		});
-		debugger;
 		priors.forEach(function(prior) {
 			var when = prior.meal.get("when");
+			if (prior.blood_sugars.length > 1) // only show if we can get meaninful data
 			$this.add({
 				xtype: "container",
 				layout: "hbox",
@@ -106,7 +105,8 @@ Ext.define("SiteSelector.view.insulin.Add", {
 					{
 						xtype: "component",
 						html: prior.blood_sugars.map(function(b) { return b.data.reading }).join(","),
-						cls: "sparkline line"
+						cls: "sparkline line",
+						flex: 4
 					}
 				]
 			});
@@ -118,7 +118,7 @@ Ext.define("SiteSelector.view.insulin.Add", {
 				}).get().join("")); 
 			}).sparkline("html", {
 				type: "line",
-				width: '2.5in',
+				width: '100%',
 				height: "0.75in",
 				fillColor: false,
 			    normalRangeMin: 70,

@@ -56,7 +56,7 @@ Ext.application({
 	
 	bgStep: 1,
 	
-	settings: function() {
+	settings: function(property) {
 		this.settingsStore = Ext.data.StoreManager.get("Settings");
 		var settings = this.settingsStore.first();
 		if (this.firstLoad && (!settings || settings.data.version  < 2.2)) {

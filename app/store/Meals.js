@@ -24,7 +24,6 @@ Ext.define("SiteSelector.store.Meals", {
 	onBeforeSync: function (store) {
 		var field;
 		var logStore = Ext.data.StoreManager.get("Logs");
-		debugger;
 		store.getUpdatedRecords().forEach(function(m) {
 			var ix = logStore.findBy(function(r) {
 				return (r.get("fk") == m.getId() && r.get("model") == "SiteSelector.model.Food");

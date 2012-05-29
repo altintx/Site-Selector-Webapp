@@ -120,8 +120,6 @@ Ext.define("SiteSelector.controller.Food", {
 			description: values.description,
 			carb_count: values.carb_count
 		});
-		meal_store.add(meal);
-		meal_store.sync();
 		
 		if (values.use_cgmnow) {
 			bgnow_store.add({
@@ -142,9 +140,10 @@ Ext.define("SiteSelector.controller.Food", {
 		} else {
 			blood_sugar = 0;
 		}
+		meal_store.add(meal);
+		meal_store.sync();
 		
 		this.showPastTrends(meal, blood_sugar);
-		
 	},
 	
 	showPastTrends: function(meal, blood_sugar) {

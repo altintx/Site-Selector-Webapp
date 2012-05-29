@@ -34,7 +34,6 @@ Ext.define("SiteSelector.model.Food", {
 	},
 	
 	getAffected: function() {
-		debugger;
 		var start = this.get("when");
 		var end = new Date(start.getTime() + 6 * 60 * 60 * 1000);
 		var record = {
