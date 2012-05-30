@@ -67,7 +67,7 @@ Ext.application({
 					usepump: 1,
 					pumpreuse: 28,
 					cgmreuse: 14,
-					bolusreuse: 24,
+					bolusreuse: 48,
 					basalreuse: 48,
 					pumplasts: 2,
 					cgmlasts: 3,
@@ -110,7 +110,7 @@ Ext.application({
 					});
 				case 2.1:
 					settings.set({
-						bolusreuse: 24,
+						bolusreuse: 48,
 						basalreuse: 48,
 						basallasts: 24,
 						bgunits: "mgdl",
