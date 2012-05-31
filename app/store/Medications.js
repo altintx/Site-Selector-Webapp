@@ -31,7 +31,7 @@ Ext.define("SiteSelector.store.Medications", {
 			if (m.get("normal"))
 				types.push(m.get("normal") + "U bolus")
 			if (m.get("wave"))
-				types.push(m.get("wave") + "U wave");
+				types.push(m.get("wave") + "U extended");
 			if (m.get("blood_sugar"))
 				explain.push("#bgnow " + m.get("blood_sugar"));
 			if (m.get("carbs"))
@@ -47,7 +47,7 @@ Ext.define("SiteSelector.store.Medications", {
 			if (m.get("normal"))
 				types.push(m.get("normal") + "U bolus")
 			if (m.get("wave"))
-				types.push(m.get("wave") + "U wave");
+				types.push(m.get("wave") + "U extended");
 			if (m.get("blood_sugar"))
 				explain.push("#bgnow " + m.get("blood_sugar"));
 			if (m.get("carbs"))
