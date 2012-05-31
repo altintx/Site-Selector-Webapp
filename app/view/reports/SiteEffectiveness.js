@@ -18,7 +18,7 @@ Ext.define("SiteSelector.view.reports.SiteEffectiveness", {
 				handler: function() {
 					Ext.create('Ext.Panel', {
 						html: "<ul>" +
-							"<li>The standard deviation indicates that 68% of the time, your logged blood sugars are within <em>StDev</em> mg/dL of <em>eAG</em>. Lower is better.</li>" +
+							"<li>The standard deviation indicates that 68% of the time, your logged blood sugars are within <em>StDev</em> points of <em>eAG</em>. Lower is better.</li>" +
 							"<li>Max Decrease is the fastest observed decrease in blood sugar. A higher number may suggest good insulin absorption, or you might have just taken too much insulin.</li>" +
 							"<li>Max increase is the fastest observed increase in blood sugar. A higher number may suggest poor insulin absorption, or, too little insulin for a meal.</li>" +
 							"</ul>",
@@ -94,8 +94,8 @@ Ext.define("SiteSelector.view.reports.SiteEffectiveness", {
 			plot.eag /= (readings.length - 1);
 			plot.eag = parseInt(plot.eag * 100) / 100;
 			plot.standard_dev = parseInt(plot.standard_dev * 100) / 100;
-			plot.max_inc = parseInt(plot.max_inc * 100) / 100 + " mg/dl per Min";
-			plot.max_dec = parseInt(plot.max_dec * 100) / 100 + " mg/dl per Min";
+			plot.max_inc = parseInt(plot.max_inc * 100) / 100 + " pts per Min";
+			plot.max_dec = parseInt(plot.max_dec * 100) / 100 + " pts per Min";
 			
 			if (readings.length)
 				data.push(plot);
