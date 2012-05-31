@@ -30,13 +30,30 @@ Ext.define("SiteSelector.controller.Food", {
 		}
 	},
 	
+	persistPhoto: function(imageURI, callback) {
+		window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fs) {
+			window.resolveLocalFileSystemURI(imageURI, function(fe) {
+				fe.moveTo(fs.root, "meal-" + Date.now() + ".jpg", function(f) {
+					callback(f.toURL())
+				}, function(error) {
+					// fail
+				});
+				
+			}, function (e) {
+				
+			});
+		}, function(event) {
+			// fail
+		});
+	},
+	
 	add: function() {
-		var meal = new SiteSelector.model.Food({
+		var meal = (Ext.data.StoreManager.get("Meals").add({
 			when: new Date(),
 			file_uri: "",
 			description: "",
 			friendly_location: "other"
-		}),
+		}))[0],
 		$this = this,
 		getLocation = function(meal) {
 			// get location
@@ -53,9 +70,11 @@ Ext.define("SiteSelector.controller.Food", {
 		}
 		Ext.data.StoreManager.get("Meals").add(meal);
 		if (navigator.camera) {
-			navigator.camera.getPicture(function(imageURI) {
-				meal.set("file_uri", imageURI);
-				getLocation(meal);
+			navigator.camera.getPicture(function(temporaryImageURI) {
+				$this.persistPhoto(temporaryImageURI, function(persistentURL) {
+					meal.set("file_uri", persistentURL);
+					getLocation(meal);
+				});
 			}, function(message) {
 				getLocation();
 			}, { 
@@ -75,6 +94,8 @@ Ext.define("SiteSelector.controller.Food", {
 			foursquare_id: venue.data.id,
 			friendly_name: venue.data.name
 		});
+		
+		Ext.data.StoreManager.get("Meals"); // save what we know, don't save what we assume
 		
 		meal.set({
 			cgmnow: blood_sugar.mostRecent("cgm"),
@@ -140,7 +161,6 @@ Ext.define("SiteSelector.controller.Food", {
 		} else {
 			blood_sugar = 0;
 		}
-		meal_store.add(meal);
 		meal_store.sync();
 		
 		this.showPastTrends(meal, blood_sugar);
@@ -174,7 +194,6 @@ Ext.define("SiteSelector.controller.Food", {
 		}
 		
 		Ext.data.StoreManager.get("Medications").add(insulin);
-		
 		
 		overlay = Ext.Viewport.add({
 			xtype: "addinsulin",
