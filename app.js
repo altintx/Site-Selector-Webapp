@@ -45,7 +45,8 @@ Ext.application({
 		"Logs",
 		"BloodSugars",
 		"Nearby",
-		"Meals"
+		"Meals",
+		"Medications"
 	],
 	
 	profiles: [
@@ -151,14 +152,12 @@ Ext.application({
 				xtype: "Settings",
 				listeners: {
 					initialize: function() {
-						debugger;
-						console.log(settings);
 						window.setTimeout(function() {
 							Ext.Msg.alert(
 								title,
 								msg
 							);
-						}, 1);
+						}, 100);
 					},
 					saved: function() {
 						settingsView.destroy();

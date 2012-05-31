@@ -41,16 +41,17 @@ Ext.define("SiteSelector.controller.Food", {
 		getLocation = function(meal) {
 			// get location
 			var overlay = Ext.Viewport.add({
-				xtype: "geolocator",
 				width: "80%",
 				height: "80%",
-				meal: meal,					
 				modal: true,
 				hideOnMaskTap: true,
-				centered: true
+				centered: true,
+				xtype: "geolocator",
+				meal: meal			
 			});
 			overlay.show();
 		}
+		Ext.data.StoreManager.get("Meals").add(meal);
 		if (navigator.camera) {
 			navigator.camera.getPicture(function(imageURI) {
 				meal.set("file_uri", imageURI);
@@ -101,9 +102,6 @@ Ext.define("SiteSelector.controller.Food", {
 	collectFoodDetails: function(meal) {
 		Ext.Viewport.add({
 			xtype: "addfood",
-			width: "80%",
-			layout: "fit",
-			height: "80%",
 			modal: true,
 			hideOnMaskTap: true,
 			centered: true,
@@ -125,7 +123,8 @@ Ext.define("SiteSelector.controller.Food", {
 			bgnow_store.add({
 				when: meal.get("when"),
 				kind: "cgm",
-				reading: values.cgmnow
+				reading: values.cgmnow,
+				unit: SiteSelector.app.settings("bgunit")
 			});
 			blood_sugar = values.bgnow
 		}
@@ -134,7 +133,8 @@ Ext.define("SiteSelector.controller.Food", {
 			bgnow_store.add({
 				when: meal.get("when"),
 				kind: "meter",
-				reading: values.bgnow
+				reading: values.bgnow,
+				unit: SiteSelector.app.settings("bgunit")
 			});
 			blood_sugar = values.bgnow
 		} else {
@@ -172,20 +172,19 @@ Ext.define("SiteSelector.controller.Food", {
 			});
 			
 		}
+		
+		Ext.data.StoreManager.get("Medications").add(insulin);
+		
+		
 		overlay = Ext.Viewport.add({
-			xtype: "panel",
+			xtype: "addinsulin",
 			width: "80%",
 			layout: "fit",
 			height: "80%",
-			items: [
-				{
-					xtype: "addinsulin",
-					record: insulin,
-					priors: prior_consumption.map(function(m) { 
-						return m.getAffected() 
-					})
-				}
-			],
+			record: insulin,
+			priors: prior_consumption.map(function(m) { 
+				return m.getAffected() 
+			}),
 			modal: true,
 			hideOnMaskTap: true,
 			centered: true

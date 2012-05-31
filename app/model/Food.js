@@ -34,38 +34,34 @@ Ext.define("SiteSelector.model.Food", {
 	},
 	
 	getAffected: function() {
-		var start = this.get("when");
+		var start = this.get("when"), $this = this;
 		var end = new Date(start.getTime() + 6 * 60 * 60 * 1000);
 		var record = {
 			meal: this,
-			bolus: null,
-			wave: null,
+			insulin: null,
 			blood_sugars: []
 		};
 		
+		// get everything in time range
+		// exclude self (first item)
+		// iterate until true
 		Ext.data.StoreManager.get("Logs").getTimeRange(start, end).some(function(log_entry) {
-			switch (log_entry.data.model) {
-				case "SiteSelector.model.BloodSugar":
-					record.blood_sugars.push(log_entry.getOwner());
-					return false;
-				case "SiteSelector.model.Insulin":
-					var i = log_entry.getOwner();
-					if (i.data.type == "bolus") {
-						if (record.bolus) {
+			var d = log_entry.getOwner();
+			if (d != $this) {
+				switch (log_entry.data.model) {
+					case "SiteSelector.model.BloodSugar":
+						record.blood_sugars.push(d);
+						return false;
+					case "SiteSelector.model.Bolus":
+						if (record.insulin) {
 							return true;
 						} else {
-							record.bolus = i;
+							record.insulin = d;
 						}
-					} else if (i.data.type == "wave") {
-						if (record.wave) {
-							return true;
-						} else {
-							record.wave = i;
-						}
-					}
-					return false;
-				case "SiteSelector.model.Food":
-					return true;
+						return false;
+					case "SiteSelector.model.Food":
+						return true;
+				}
 			}
 		});
 		return record;

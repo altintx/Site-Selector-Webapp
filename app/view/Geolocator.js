@@ -1,22 +1,51 @@
 Ext.define("SiteSelector.view.Geolocator", {
 	alias: "widget.geolocator",
-	extend: "Ext.List",
+	extend: "Ext.Panel",
 	requires: ["SiteSelector.store.Nearby"],
 	config: {
-		itemTpl: "<div>{name}</div>",
-		store: "Nearby",
-		border: 4,
-		listeners: {
-			itemtap: function(list, ix, dataitem, record_venue, ev) {
-				var meal = list.meal;
-				list.fireEvent("checkin", list, record_venue, meal);
-				list.hide();
-				setTimeout(function() { 
-					list.destroy();
-				}, 10);				
-			}
-		},
+		layout: "fit",
 		items: [
+			{
+				xtype: "component",
+				style: "background-color: #222;color: #eee; font-size:120%; text-align:center;",
+				height: "1.5em",
+				docked: "top",
+				html: "Where are you eating?"
+			},
+			{
+				xtype: "list",
+				itemTpl: "<div>{name}</div>",
+				store: "Nearby",
+				border: 4,
+				listeners: {
+					itemtap: function(list, ix, dataitem, record_venue, ev) {
+						var geolocator = list.up("geolocator");
+						var meal = geolocator.meal;
+						geolocator.fireEvent("checkin", list, record_venue, meal);
+						geolocator.hide();
+						setTimeout(function() { 
+							geolocator.destroy();
+						}, 10);				
+					}
+				},
+				items: [
+					{
+						xtype: "fieldset",
+						defaults: {
+							labelWidth: "60%"
+						},
+						style: "margin-bottom: 0;",
+						items: [
+							{
+								xtype: 'checkboxfield',
+								label: 'Edible Categories Only',
+								name: "restaurants",
+								checked: true
+							}
+						]
+					}
+				]
+			},
 			{
 				xtype: "container",
 				style: "background-color: #222;",
@@ -29,30 +58,9 @@ Ext.define("SiteSelector.view.Geolocator", {
 						alt: "Powered by FourSquare",
 						src: "resources/images/foursquare.png",
 						top: -30,
-						right: "25%",
-						left: "25%",
-						bottom: 0
-					}
-				]
-			},
-			{
-				xtype: "component",
-				style: "background-color: #222;color: #eee; font-size:120%; text-align:center;",
-				height: "1.5em",
-				docked: "top",
-				html: "Where are you eating?"
-			},
-			{
-				xtype: "fieldset",
-				defaults: {
-					labelWidth: "60%"
-				},
-				items: [
-					{
-						xtype: 'checkboxfield',
-						label: 'Edible Categories Only',
-						name: "restaurants",
-						checked: true
+						bottom: 0,
+						width: 482,
+						height: 121
 					}
 				]
 			}
@@ -61,7 +69,8 @@ Ext.define("SiteSelector.view.Geolocator", {
 	constructor: function(config) {
 		this.callParent([config]);
 		this.meal = config.meal;
-		this.getStore().getNearby();
+		this.list = this.down("list");
+		this.list.getStore().getNearby();
 		this.down("checkboxfield").on({
 			check: this.filterRestaurantsOnly,
 			uncheck: this.clearFilter,
@@ -70,8 +79,8 @@ Ext.define("SiteSelector.view.Geolocator", {
 		this.filterRestaurantsOnly();
 	},
 	filterRestaurantsOnly: function() {
-		this.getStore().clearFilter();
-		this.getStore().filter(new Ext.util.Filter({
+		this.list.getStore().clearFilter();
+		this.list.getStore().filter(new Ext.util.Filter({
 		    filterFn: function(item) {
 				return ((item.raw.categories || []).filter(function(cat) {
 					return (cat.icon.prefix.toString().indexOf("food") > -1) || 
@@ -83,6 +92,6 @@ Ext.define("SiteSelector.view.Geolocator", {
 
 	},
 	clearFilter: function() {
-		this.getStore().clearFilter();
+		this.list.getStore().clearFilter();
 	}
 });
