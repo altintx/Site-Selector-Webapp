@@ -4,7 +4,7 @@ Ext.define("SiteSelector.store.Meals", {
 	alias: "store.Meals",
 	config: {
 		model: "SiteSelector.model.Food",
-		autoLoad: true,
+		autoLoad: false,
 	    proxy: {
 	        type: 'localstorage',
 	        id: 'rotator-app-store-meals',

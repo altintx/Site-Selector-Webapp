@@ -4,7 +4,7 @@ Ext.define("SiteSelector.store.BloodSugars", {
 	alias: "store.bloodsugars",
 	config: {
 		model: "SiteSelector.model.BloodSugar",
-		autoLoad: true,
+		autoLoad: false,
 		proxy: {
 			type: 'localstorage',
 			id: 'rotator-app-store-bloodsugar',

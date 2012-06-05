@@ -4,7 +4,7 @@ Ext.define("SiteSelector.store.Medications", {
 	alias: "store.medications",
 	config: {
 		model: "SiteSelector.model.Bolus",
-		autoLoad: true,
+		autoLoad: false,
 		proxy: {
 			type: 'localstorage',
 			id: 'rotator-app-store-medications',

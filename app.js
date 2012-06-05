@@ -196,6 +196,13 @@ Ext.application({
 		Ext.fly('appLoadingIndicator').destroy();
 		
 		var stub = this.settings();
+		
+		setTimeout(function() {
+			Ext.data.StoreManager.get("BloodSugars").load();
+			Ext.data.StoreManager.get("Logs").load();
+			Ext.data.StoreManager.get("Meals").load();
+			Ext.data.StoreManager.get("Medications").load();
+		}, 100);
 	},
 
 	onUpdated: function() {

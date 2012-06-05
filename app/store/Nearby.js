@@ -3,6 +3,7 @@ Ext.define("SiteSelector.store.Nearby", {
 	extend: 'Ext.data.Store',
 	requires: ["SiteSelector.model.FoursquareVenue", "Ext.data.proxy.JsonP"],
 	config: {
+		autoload: false,
 		sorters: [
 			{
 				property: "distance",

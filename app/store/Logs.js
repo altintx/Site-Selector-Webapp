@@ -4,7 +4,7 @@ Ext.define("SiteSelector.store.Logs", {
 	alias: "store.Logs",
 	config: {
 		model: "SiteSelector.model.Log",
-		autoLoad: true,
+		autoLoad: false,
 	    proxy: {
 	        type: 'localstorage',
 	        id: 'rotator-app-store-Log',
