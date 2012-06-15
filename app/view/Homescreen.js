@@ -68,11 +68,6 @@ Ext.define("SiteSelector.view.Homescreen", {
 						}
 					},
 					{
-						text: "Blood Sugar",
-						flex: 1,
-						xtype: "button"
-					},
-					{
 						text: "Log",
 						xtype: "button",
 						flex: 1,
