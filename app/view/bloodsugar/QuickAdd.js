@@ -9,7 +9,7 @@ Ext.define("SiteSelector.view.bloodsugar.QuickAdd", {
 				items: [
 					{
 						xtype: "numberfield",
-						label: "What is your #bgnow right now?",
+						label: "What is your blood sugar right now?",
 						labelAlign: "top",
 						name: "reading",
 						flex: 1

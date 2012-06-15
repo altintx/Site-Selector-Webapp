@@ -17,9 +17,11 @@ Ext.define("SiteSelector.controller.Insulin", {
 	},
 	
 	doAdd: function(form) {
+		var meds = Ext.data.StoreManager.get("Medications");
 		var bolus = form.getRecord();
 		form.updateRecord(bolus);
 		bolus.dirty = true;
-		Ext.data.StoreManager.get("Medications").sync();
+		meds.add(bolus);
+		meds.sync();
 	}
 });

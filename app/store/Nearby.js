@@ -29,7 +29,7 @@ Ext.define("SiteSelector.store.Nearby", {
 		model: 'SiteSelector.model.FoursquareVenue',
 	},
 	
-	getNearby: function() {
+	getNearby: function(callback) {
 		var store = this;
 		var onSuccess = function(position) {
 			store.getProxy().getExtraParams().ll = [position.coords.latitude,position.coords.longitude].join(",");
@@ -57,11 +57,30 @@ Ext.define("SiteSelector.store.Nearby", {
 					},
 					distance: 0	
 				});
+				if (callback) callback(store);
 			});
 		};
 		
 		navigator.geolocation.getCurrentPosition(onSuccess, function() {
 			console.log("Fail"); 
 		});	
-	}
+	},
+	
+	getNearbyRestaurants: function(callback) {
+		this.getNearby(function(store) {
+			store.clearFilter();
+			store.filter(new Ext.util.Filter({
+			    filterFn: function(item) {
+					return ((item.raw.categories || []).filter(function(cat) {
+						return (cat.icon.prefix.toString().indexOf("food") > -1) || 
+						/restaurant/i.test(cat.name) 
+					}).length > 0) ||
+					/-11111111/.test(item.data.id);
+			    }
+			}));
+			var nearest = store.getAt(2); // first non-zero
+			if (callback) callback(store, nearest);
+		});
+	},
+	
 })

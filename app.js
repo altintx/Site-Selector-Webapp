@@ -133,40 +133,26 @@ Ext.application({
 					/* this version */
 			}
 			// message box call is inside of the initialize() callback below
-			var settingsView = Ext.Viewport.add({
-				modal: true,
-				record: settings,
-				centered: true,
-				scrollable: true,
-				width: w_w,
-				height: w_h,
-				showAnimation: {
-					type: "popIn",
-					duration: 250,
-					easing: "ease-out"
-				},
-				hideAnimation: {
-					type: "popOut",
-					duration: 250,
-					easing: "ease-out"
-				},
-
-				xtype: "Settings",
-				listeners: {
-					initialize: function() {
-						window.setTimeout(function() {
-							Ext.Msg.alert(
-								title,
-								msg
-							);
-						}, 100);
-					},
-					saved: function() {
-						settingsView.destroy();
+			setTimeout(function() {
+				var settingsView = Ext.Viewport.down("navigationview").push({
+					record: settings,
+					scrollable: true,
+					xtype: "Settings",
+					listeners: {
+						initialize: function() {
+							window.setTimeout(function() {
+								Ext.Msg.alert(
+									title,
+									msg
+								);
+							}, 100);
+						},
+						saved: function() {
+							settingsView.destroy();
+						}
 					}
-				}
-			});
-			settingsView.show();
+				});
+			}, 250);
 		}
 		
 		if (this.firstLoad) {

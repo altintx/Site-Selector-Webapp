@@ -34,9 +34,9 @@ Ext.define("SiteSelector.view.Homescreen", {
 						flex: 1,
 						xtype: "button",
 						handler: function() {
-							this.up("navigationview").push({
-								xtype: "addfood"
-							})
+							(function(view) {
+								view.fireEvent("eat", view);
+							})(this.up("navigationview"))
 						}
 					},
 					{

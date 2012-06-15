@@ -14,22 +14,26 @@ Ext.define("SiteSelector.controller.Food", {
 		refs: {
 			'Geolocator': "geolocator",
 			"AddScreen": "addfood",
-			"MealGallery": "meal_gallery"
+			"MealGallery": "meal_gallery",
+			"Homescreen": "navigationview"
 		},
 		control: {
-			'Geolocator': {
-				checkin: 'checkin'
-			},
 			'AddScreen': {
-				save: 'savemeal'
+				save: 'savemeal',
+				addPic: "addPic",
+				repeat: 'checkin',
 			},
 			"MealGallery": {
-				skip: "collectFoodDetails",
-				repeat: "collectFoodDetails"
+				reusemealtemplate: "collectFoodDetails"
+			},
+			"Homescreen": {
+				eat: "add",
+				insulinforfood: "showPastTrends"
 			}
 		}
 	},
 	
+	/// user
 	persistPhoto: function(imageURI, callback) {
 		window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fs) {
 			window.resolveLocalFileSystemURI(imageURI, function(fe) {
@@ -47,125 +51,112 @@ Ext.define("SiteSelector.controller.Food", {
 		});
 	},
 	
-	add: function() {
-		var meal = (Ext.data.StoreManager.get("Meals").add({
-			when: new Date(),
-			file_uri: "",
-			description: "",
-			friendly_location: "other"
-		}))[0],
-		$this = this,
-		getLocation = function(meal) {
-			// get location
-			var overlay = Ext.Viewport.add({
-				width: "80%",
-				height: "80%",
-				modal: true,
-				hideOnMaskTap: true,
-				centered: true,
-				xtype: "geolocator",
-				meal: meal			
-			});
-			overlay.show();
-		}
-		Ext.data.StoreManager.get("Meals").add(meal);
+	
+	// used
+	add: function(navigation_view) {
+		var meal = new SiteSelector.model.Food({
+	    	when: new Date(),
+	    	file_uri: "",
+	    	description: "",
+	    	friendly_location: "other",
+	    });
+		meal.set({
+			bgnow: Ext.data.StoreManager.get("BloodSugars").mostRecent(),
+	    	cgmnow: Ext.data.StoreManager.get("BloodSugars").mostRecent()
+		})
+		navigation_view.push({
+			xtype: "addfood",
+			record: meal
+		});
+	},
+	
+	// used
+	addPic: function(meal) {
 		if (navigator.camera) {
 			navigator.camera.getPicture(function(temporaryImageURI) {
 				$this.persistPhoto(temporaryImageURI, function(persistentURL) {
 					meal.set("file_uri", persistentURL);
-					getLocation(meal);
 				});
 			}, function(message) {
+				Ext.Msg.alert("Failed to save the photo", message)
 				getLocation();
 			}, { 
 				quality: 50,
 				destinationType: Camera.DestinationType.FILE_URI
-			});			
+			});
 		} else {
-			getLocation(meal);
+			Ext.Msg.alert("Couldn't access the camera")
 		}
 	},
 	
-	checkin: function(view, venue, meal) {
+	
+	// used
+	checkin: function(view, venue_id, meal) {
 		var meals_store = Ext.data.StoreManager.get("Meals"),
-			blood_sugar = Ext.data.StoreManager.get("BloodSugars");
-
-		meal.set({
-			foursquare_id: venue.data.id,
-			friendly_name: venue.data.name
-		});
+		    blood_sugar = Ext.data.StoreManager.get("BloodSugars");
 		
-		Ext.data.StoreManager.get("Meals"); // save what we know, don't save what we assume
+		// Ext.data.StoreManager.get("Meals").sync(); // save what we know, don't save what we assume
 		
-		meal.set({
-			cgmnow: blood_sugar.mostRecent("cgm"),
-			bgnow: blood_sugar.mostRecent("meter")
-		});
+		// meal.set({
+		// 	cgmnow: blood_sugar.mostRecent("cgm"),
+		// 	bgnow: blood_sugar.mostRecent("meter")
+		// });
 		
-		var prior_meals = meals_store.getMealsFromRestaurant(venue.data.id);
+		var prior_meals = meals_store.getMealsFromRestaurant(venue_id);
 		
 		if (prior_meals.getCount()) {
-			Ext.Viewport.add({
+			view.up("navigationview").push({
 				xtype: "meal_gallery",
 				store: prior_meals,
 				meal: meal,
-				width: "80%",
-				height: "80%",
-				modal: true,
 				hideOnMaskTap: true,
-				centered: true
-			}).show();
+				title: meal.get("friendly_name")
+			})
 		} else {
-			this.collectFoodDetails(meal);
+			Ext.Msg.alert(meal.get("friendly_name"), "There are no previously logged meals from " + meal.get("friendly_name"));
 		}
 	},
 	
-	collectFoodDetails: function(meal) {
-		Ext.Viewport.add({
-			xtype: "addfood",
-			modal: true,
-			hideOnMaskTap: true,
-			centered: true,
-			record: meal
-		}).show();
+	// used
+	collectFoodDetails: function(prior_meal, current_meal) {
+		current_meal.set({
+			description: prior_meal.get("description"),
+			carb_count: prior_meal.get("carb_count"),
+		})
+		if (!current_meal.get("file_uri")) {
+			current_meal.set("file_uri", prior_meal.get("file_uri"));
+		}
+		Ext.Viewport.down("addfood").setRecord(current_meal);
 	},
 	
-	savemeal: function(values, meal) {
+	// used
+	savemeal: function(meal) {
 		var meal_store = Ext.data.StoreManager.get("Meals"),
-			blood_sugar = 0,
 			bgnow_store = Ext.data.StoreManager.get("BloodSugars");
 		
-		meal.set({
-			description: values.description,
-			carb_count: values.carb_count
-		});
-		
-		if (values.use_cgmnow) {
+		if (meal.get("use_cgmnow")) {
 			bgnow_store.add({
 				when: meal.get("when"),
 				kind: "cgm",
-				reading: values.cgmnow,
+				reading: meal.get("cgmnow"),
 				unit: SiteSelector.app.settings("bgunit")
 			});
-			blood_sugar = values.bgnow
 		}
 		
-		if (values.use_bgnow) {
+		if (meal.get("use_bgnow")) {
 			bgnow_store.add({
 				when: meal.get("when"),
 				kind: "meter",
-				reading: values.bgnow,
+				reading: meal.get("bgnow"),
 				unit: SiteSelector.app.settings("bgunit")
 			});
-			blood_sugar = values.bgnow
-		} else {
-			blood_sugar = 0;
 		}
+		meal_store.add(meal);
 		meal_store.sync();
-		
-		this.showPastTrends(meal, blood_sugar);
 	},
 	
+	
+	// used
 	showPastTrends: function(meal, blood_sugar) {
 		var meal_store = Ext.data.StoreManager.get("Meals"), overlay = null;
 		var prior_consumption = meal_store.getLikeRecords({
@@ -193,21 +184,13 @@ Ext.define("SiteSelector.controller.Food", {
 			
 		}
 		
-		Ext.data.StoreManager.get("Medications").add(insulin);
-		
-		overlay = Ext.Viewport.add({
+		Ext.Viewport.down("navigationview").push({
 			xtype: "addinsulin",
-			width: "80%",
-			layout: "fit",
-			height: "80%",
 			record: insulin,
+			title: "Insulin for Food",
 			priors: prior_consumption.map(function(m) { 
 				return m.getAffected() 
-			}),
-			modal: true,
-			hideOnMaskTap: true,
-			centered: true
+			})
 		});
-		
 	}
 })

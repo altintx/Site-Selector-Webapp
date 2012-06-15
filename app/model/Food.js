@@ -29,6 +29,10 @@ Ext.define("SiteSelector.model.Food", {
 			{
 				name: "carb_count",
 				type: "int"
+			},
+			{
+				name: "insulin_id",
+				type: "int"
 			}
 		]
 	},

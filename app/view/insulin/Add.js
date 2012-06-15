@@ -1,74 +1,38 @@
 Ext.define("SiteSelector.view.insulin.Add", {
-	extend: "Ext.Panel",
+	extend: "Ext.form.Panel",
 	alias: "widget.addinsulin",
 	config: {
 		items: [
 			{
-				xtype: "titlebar",
+				xtype: "fieldset",
 				title: "Insulin",
-				docked: "top",
 				items: [
 					{
-						text: "Cancel",
-						handler: function() {
-							var view = this.up("addinsulin");
-							view.fireEvent("cancel", view);
-							view.hide();
-							setTimeout(function() {
-								view.destroy();
-							}, 10);
+						xtype: "container",
+						layout: "hbox",
+						defaults: {
+							labelAlign: "top"
 						},
-						align: "left"
-					},
-					{
-						text: "Save",
-						handler: function() {
-							var view = this.up("addinsulin");
-							view.fireEvent("save", view.down("formpanel"));
-							view.hide();
-							setTimeout(function() {
-								view.destroy();
-							}, 10);
-						},
-						align: "right"
-					}
-				]
-			},
-			{
-				xtype: "formpanel",
-				items: [
-					{
-						xtype: "fieldset",
-						title: "Insulin",
 						items: [
 							{
-								xtype: "container",
-								layout: "hbox",
-								defaults: {
-									labelAlign: "top"
-								},
-								items: [
-									{
-										xtype: "spinnerfield",
-										name: "normal",
-										label: "Bolus",
-										minValue: 0,
-										maxValue: 50,
-										increment: 0.1,
-										cycle: false,
-										flex: 1
-									},
-									{
-										xtype: "spinnerfield",
-										name: "wave",
-										label: "Extended",
-										minValue: 0,
-										maxValue: 50,
-										increment: 0.1,
-										cycle: false,
-										flex: 1
-									}
-								]
+								xtype: "spinnerfield",
+								name: "normal",
+								label: "Bolus",
+								minValue: 0,
+								maxValue: 50,
+								increment: 0.1,
+								cycle: false,
+								flex: 1
+							},
+							{
+								xtype: "spinnerfield",
+								name: "wave",
+								label: "Extended",
+								minValue: 0,
+								maxValue: 50,
+								increment: 0.1,
+								cycle: false,
+								flex: 1
 							}
 						]
 					}
@@ -82,7 +46,7 @@ Ext.define("SiteSelector.view.insulin.Add", {
 			priors = config.priors;
 		delete config.priors;
 		this.callParent([config]);
-		var form = this.down("formpanel");
+		var form = this;
 		form.setRecord(config.record);
 		priors.sort(function(a, b) {
 			var c = a.meal.data.when.getTime() - b.meal.data.when.getTime();
@@ -142,4 +106,30 @@ Ext.define("SiteSelector.view.insulin.Add", {
 			});
 		}, 100);
 	},
+	
+	initialize: function() {
+		var $this = this;
+		setTimeout(function() {
+			var tb = $this.up("navigationview").getNavigationBar();
+			var done = tb.add({
+				text: "Save",
+				handler: function() {
+					var view = Ext.Viewport.down("addinsulin");
+					view.fireEvent("save", view);
+					view.up("navigationview").pop();
+				},
+				align: "right"
+			})
+			$this.on("destroy", function() {
+				done.destroy();
+			});
+			$this.on("hide", function() {
+				done.hide();
+			});
+			$this.on("show", function() {
+				done.show()
+			})
+		}, 10);
+	},
+	
 })
