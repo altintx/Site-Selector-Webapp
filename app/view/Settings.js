@@ -7,18 +7,6 @@ Ext.define("SiteSelector.view.Settings", {
 		iconCls: "settings",
 		items: [
 			{
-				title: "Settings",
-				xtype: "titlebar",
-				docked: "top",
-				items: [
-					{
-						text: "Save",
-						align: "right",
-						action: "save"
-					}
-				]
-			},
-			{
 				xtype: "fieldset",
 				title: "Pump & Insulin",
 				defaults: {
