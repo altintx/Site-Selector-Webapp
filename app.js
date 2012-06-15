@@ -27,7 +27,9 @@ Ext.application({
 		"BodyList",
 		"LogViewer",
 		"Settings",
-		"SiteEdit"
+		"SiteEdit",
+		"Homescreen",
+		"Viewport"
 	],
 	
 	models: [
@@ -203,6 +205,10 @@ Ext.application({
 			Ext.data.StoreManager.get("Meals").load();
 			Ext.data.StoreManager.get("Medications").load();
 		}, 100);
+		
+		Ext.Viewport.add({
+			xtype: "siteselectorviewport"
+		})
 	},
 
 	onUpdated: function() {

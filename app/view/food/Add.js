@@ -3,52 +3,9 @@ Ext.define("SiteSelector.view.food.Add", {
 	alias: "widget.addfood",
 	requires: ['Ext.field.Spinner', 'Ext.field.Select', 'Ext.ux.field.DateTimePicker', 'Ext.field.Toggle'],
 	config: {
-		width: (function(phone) {
-			if (phone) {
-				return "100%";
-			} else {
-				return "80%";
-			}
-		})(Ext.os.is.Phone),
-		height: (function(phone) {
-			if (phone) {
-				return "100%";
-			} else {
-				return "50%";
-			}
-		})(Ext.os.is.Phone),
 		layout: "fit",
+		title: "Eat Food",
 		items: [
-			{
-				xtype: "titlebar",
-				docked: "top",
-				title: "Eat Food",
-				items: [
-					{
-						align: "left",
-						text: "Cancel",
-						handler: function() {
-							var view = this.up("addfood");
-							setTimeout(function() {
-								view.destroy();
-							}, 10);
-						}
-					},
-					{
-						align: "right",
-						text: "Done",
-						handler: function() {
-							var panel = this.up("addfood");
-							var form = panel.down("formpanel");
-							panel.fireEvent("save", form.getValues(), form.getRecord());
-							panel.hide();
-							setTimeout(function() {
-								panel.destroy();
-							}, 10);
-						}
-					}
-				],
-			},
 			{
 				xtype: "formpanel",
 				items: [
@@ -117,6 +74,15 @@ Ext.define("SiteSelector.view.food.Add", {
 								]
 							}
 						]
+					},
+					{
+						xtype: "fieldset",
+						title: "Photo",
+						items: [
+							{
+								xtype: "textfield"
+							}
+						]
 					}
 				]					
 			}
@@ -128,6 +94,28 @@ Ext.define("SiteSelector.view.food.Add", {
 		this.down("formpanel").setRecord(config.record);
 		this.down("spinnerfield[name=bgnow]").setIncrement(SiteSelector.app.bgStep);
 		this.down("spinnerfield[name=cgmnow]").setIncrement(SiteSelector.app.bgStep);
-	}
+	},
+	initialize: function() {
+		var $this = this;
+		setTimeout(function() {
+			var tb = $this.up("navigationview").getNavigationBar();
+			var done = tb.add({
+				align: "right",
+				text: "Done",
+				handler: function() {
+					var panel = this.up("addfood");
+					var form = panel.down("formpanel");
+					panel.fireEvent("save", form.getValues(), form.getRecord());
+					panel.hide();
+					setTimeout(function() {
+						panel.destroy();
+					}, 10);
+				}
+			})
+			$this.on("destroy", function() {
+				done.destroy();
+			})
+		}, 10);
+	},
 	
 });

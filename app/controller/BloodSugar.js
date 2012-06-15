@@ -12,13 +12,19 @@ Ext.define("SiteSelector.controller.BloodSugar", {
 			},
 			editSaveButton: {
 				tap: 'doEdit'
+			},
+			quickformSave: {
+				tap: "doQuickAdd"
 			}
 		},
 		refs: {
 			addSaveButton: 'AddBloodSugar button[action=save]',
 			editSaveButton: 'EditBloodSugar button[action=save]',
-			addWindow: 'AddBloodSugar'
-		}
+			addWindow: 'AddBloodSugar',
+			quickform: 'quickbloodsugar',
+			quickformSave: 'quickbloodsugar button[action=save]'
+		},
+		stores: ["BloodSugars"]
 	},
 	
 	doAdd: function(button) {
@@ -44,6 +50,21 @@ Ext.define("SiteSelector.controller.BloodSugar", {
 		}
 		store.sync();
 		form.destroy();
+	},
+	
+	doQuickAdd: function(button) {
+		var form = button.up("formpanel");
+		var value = form.getValues();
+		var store = Ext.data.StoreManager.get("BloodSugars");
+
+		store.add({
+			when: new Date(), // TODO: This is borked
+			kind: "Quick",
+			reading: value.reading,
+			unit: SiteSelector.app.settings("bgunits")
+		});
+		store.sync();
+		form.reset();
 	},
 	
 	doEdit: function(button) {

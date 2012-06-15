@@ -22,80 +22,6 @@ Ext.define("SiteSelector.view.BodyList", {
 		
 		config.items = [
 			{
-				xtype: "titlebar",
-				docked: "top",
-				title: config.title,
-				items: [
-					{
-						text: "History",
-						align: "left",
-						handler: function() {
-							var container = this.up("BodyList").down("container[alias=vbox]");
-							container.getScrollable().getScroller().scrollTo(0,0);
-							var help = Ext.Viewport.add({
-								xtype: "panel",
-								html: "Swipe up to dismiss. You can also swipe down to reveal this panel.",
-								overlay: true,
-								top: "1in",
-								hideOnMaskTap: true,
-							});
-							help.showBy(container.down("sliderfield"));
-							// expire help after 5s
-							Ext.Anim.run(help, 'fade', {
-								after: function() {
-									help.destroy();
-								},
-								out: true,
-								delay: 5000
-							});
-							container.getScrollable().getScroller().on("scroll", function(event) {
-								help.destroy();
-							}, true);
-						}
-					},
-					{
-						text: "Add Event",
-						align: "right",
-						xtype: "combobutton",
-						listeners: {
-							longtap: function(button, e) {
-								console.log(e);
-								var help = Ext.Viewport.add({
-									xtype: "panel",
-									html: "Temporarily hiding existing sites. Long-tap to place a site, or short-tap to zoom first.",
-									overlay: true,
-									top: "1in",
-									hideOnMaskTap: true,
-								});
-								help.showBy(this);
-								// expire help after 5s
-								Ext.Anim.run(help, 'fade', {
-									after: function() {
-										help.destroy();
-									},
-									out: true,
-									delay: 5000
-								})
-								var bl = this.up("BodyList");
-								bl.clearSites();
-								var t = setTimeout(function() {
-									bl.drawSites();
-								}, 5000);
-								bl.down("body").on("tap", function() {
-									bl.drawSites();
-									clearTimeout(t);
-								})
-							},
-							tap: function() {
-								var menu = Ext.create('SiteSelector.view.LogActionSheet');
-								Ext.Viewport.add(menu);
-								menu.show();
-							}
-						}
-					}
-				]
-			},
-			{
 				xtype: "body",
 				side: config.side
 			}
@@ -106,10 +32,11 @@ Ext.define("SiteSelector.view.BodyList", {
 		this.drawSites = this.drawSitesDefault;
 	},
 	
-	
 	initialize: function() {
 		var $this = this;
 		var humanBodyMap = $this.down("body");
+		
+		if (typeof this.store == "string") this.setStore(Ext.data.StoreManager.get(this.store));
 		
 		var fn = function(store, records, index) {
 			humanBodyMap = $this.down("body");

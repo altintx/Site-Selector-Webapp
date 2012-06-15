@@ -1,20 +1,15 @@
-Ext.define("SiteSelector.view.tablet.Main", {
+Ext.define("SiteSelector.view.Viewport", {
     extend: 'Ext.navigation.View',
     requires: ["Ext.Anim", "SiteSelector.view.Homescreen"],
-    alias: "widget.Main",
+    alias: "widget.siteselectorviewport",
     config: {
 		root: true,
 		fullScreen: true,
 		items: [
 			{
-				title: "Diabetic Boss",
+				title: "Site Selector 3",
 				xtype: "homescreen"
 			}
-		],
-		listeners: {
-			back: function(navView, options) {
-				console.log(navView);
-			}
-		}
+		]
 	}
 });
