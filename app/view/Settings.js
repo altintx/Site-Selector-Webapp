@@ -42,7 +42,7 @@ Ext.define("SiteSelector.view.Settings", {
 						maxValue: 100
 					}
 				],
-				instructions: "Heals and lasts are in days",
+				instructions: "Heals and Lasts are in days. Carb Ratio is Grams of Food per Unit. Correction Factor is 1U for every designated points over your target blood sugar.",
 			},
 			{
 				xtype: "fieldset",

@@ -72,10 +72,9 @@ Ext.define("SiteSelector.view.Homescreen", {
 						xtype: "button",
 						flex: 1,
 						handler: function() {
-							this.up("navigationview").push({
-								xtype: "LogViewer",
-								title: "Log"
-							})
+							(function(view) {
+								view.fireEvent("showlog", view);
+							})(this.up("navigationview"))
 						}
 					},
 					{

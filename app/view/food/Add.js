@@ -8,6 +8,7 @@ Ext.define("SiteSelector.view.food.Add", {
 			{
 				xtype: "fieldset",
 				layout: "vbox",
+				instructions: "Locations provided by FourSquare",
 				items: [
 					{
 						xtype: "textfield",
@@ -135,7 +136,7 @@ Ext.define("SiteSelector.view.food.Add", {
 			(function(record) {
 				record.set({
 					foursquare_id: nearest.get("id"),
-					friendly_name: nearest.get("name")
+					friendly_location: nearest.get("name")
 				});
 				list.setValue(nearest.get("id"));
 			})(form.getRecord());
@@ -146,6 +147,7 @@ Ext.define("SiteSelector.view.food.Add", {
 	},
 	
 	initialize: function() {
+		this.callParent(arguments);
 		var $this = this;
 		setTimeout(function() {
 			var tb = $this.up("navigationview").getNavigationBar();

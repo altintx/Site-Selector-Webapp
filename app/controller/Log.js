@@ -6,26 +6,27 @@ Ext.define("SiteSelector.controller.Log", {
 				itemtap: 'log_onItemTap',
 				itemswipe: 'log_onItemSwipe'
 			},
-			AddLog: {
-				tap: 'addLogEvent_onTap'
-			},
-			AddEvent: {
-				tap: "addEvent_onTap"
+			Navigation: {
+				showlog: "showlog"
 			}
 		},
 		refs: {
-			'Log': 'LogViewer',
-			'AddLog': 'LogViewer button[action=addevent]',
-			'AddEvent': 'LogActionSheet button',
-			'menu': 'LogActionSheet'
+			'Log': 'logviewer',
+			'Navigation': "navigationview"
 		}
 	},
 	
 	log_onItemTap: function(list, ix, target, logrecord) {
 		var record = logrecord.getOwner();
+		var nv = Ext.Viewport.down("navigationview");
 		var overlay;
 		switch (logrecord.get("model")) {
 			case "SiteSelector.model.Site":
+				return nv.push({
+					xtype: "SiteEdit",
+					title: "Edit Site",
+					record: record
+				});
 				overlay = Ext.Viewport.add({
 					xtype: "SiteEdit",
 					modal: true,
@@ -51,6 +52,12 @@ Ext.define("SiteSelector.controller.Log", {
 				});
 				break;
 			case "SiteSelector.model.BloodSugar":
+				return nv.push({
+					xtype: "EditBloodSugar",
+					title: "Edit Blood Sugar",
+					record: record
+				});
+			
 				overlay = Ext.Viewport.add({
 					xtype: "EditBloodSugar",
 					modal: true,
@@ -75,64 +82,17 @@ Ext.define("SiteSelector.controller.Log", {
 					}
 				});
 				break;
+			case "SiteSelector.model.Food":
+				return nv.push({
+					xtype: "editfood",
+					title: "Edit Meal",
+					record: record
+				});
 			default:
 				alert("I don't know what to do with " + logrecord.get("model"));
 				return;
 		}
 		overlay.show();
-	},
-	
-	addLogEvent_onTap: function(button, event) {
-		this.menu = Ext.create('SiteSelector.view.LogActionSheet');
-		Ext.Viewport.add(this.menu);
-		this.menu.show();
-	},
-	
-	addEvent_onTap: function (button, event) {
-		this.getMenu().destroy();
-		switch (button.config.action) {
-			case "addfood":
-				// photo food
-				// geolocate for nearby restaurants. let user pick.
-					// restaurant: check for menu
-						// pick meal from menu
-				// fod details 
-				this.getApplication().getController("Food").add();
-				break;
-			case "addinsulin":
-			case "addexercise":
-			case "addsick":
-				alert("Still working on it. Patience.");
-				break;
-			case "addbgnow":
-				overlay = Ext.Viewport.add({
-					xtype: "AddBloodSugar",
-					modal: true,
-					record: new SiteSelector.model.BloodSugar({
-						when: new Date(),
-						reading: SiteSelector.app.settings().get("target_bg")
-					}),
-					hideOnMaskTap: true,
-					showAnimation: {
-						type: "popIn",
-						duration: 250,
-						easing: "ease-out"
-					},
-					hideAnimation: {
-						type: "popOut",
-						duration: 250,
-						easing: "ease-out"
-					},
-					centered: true,
-					scrollable: true,
-					listeners: {
-						hide: function() {
-							overlay.destroy();
-						}
-					}
-				});
-				
-		}
 	},
 	
 	log_onItemSwipe: function(dataview, ix, target, record, event, options) {
@@ -169,5 +129,12 @@ Ext.define("SiteSelector.controller.Log", {
 				touchstart: removeDeleteButton
 			});
 		}
+	},
+	
+	showlog: function(view) {
+		view.push({
+			xtype: "logviewer",
+			title: "Log"
+		})
 	}
 })

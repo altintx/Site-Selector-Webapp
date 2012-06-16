@@ -108,6 +108,7 @@ Ext.define("SiteSelector.view.insulin.Add", {
 	},
 	
 	initialize: function() {
+		this.callParent(arguments);
 		var $this = this;
 		setTimeout(function() {
 			var tb = $this.up("navigationview").getNavigationBar();

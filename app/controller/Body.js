@@ -22,31 +22,10 @@ Ext.define("SiteSelector.controller.Body", {
 	},
 	editSite: function(options) {
 		var $this = this;
-		this.overlay = Ext.Viewport.add({
+		Ext.Viewport.down("navigationview").push({
 			xtype: "SiteEdit",
-			modal: true,
-			hideOnMaskTap: true,
-			record: options.record,
-			showAnimation: {
-				type: "popIn",
-				duration: 250,
-				easing: "ease-out"
-			},
-			hideAnimation: {
-				type: "popOut",
-				duration: 250,
-				easing: "ease-out"
-			},
-			centered: true,
-			scrollable: true,
-			listeners: {
-				hide: function() {
-					$this.overlay.destroy();
-					delete $this.overlay;
-				}
-			}
+			record: options.record
 		});
-		this.overlay.show();
 	},
 	
 	addSite: function(event, target, body) {

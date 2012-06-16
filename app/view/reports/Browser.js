@@ -1,8 +1,8 @@
 Ext.define('SiteSelector.view.reports.Browser', {
-	extend: "Ext.NestedList",
-	alias: "widget.ReportBrowser",
+	extend: "Ext.dataview.List",
+	alias: "widget.reportbrowser",
 	config: {
-		displayField: 'name',
+		itemTpl: "<div>{name}</div>",
 		store: 'Reports'
 	}
  });

@@ -1,8 +1,9 @@
 Ext.define("SiteSelector.view.LogViewer", {
-	alias: "widget.LogViewer",
+	alias: "widget.logviewer",
 	extend: "Ext.dataview.List",
 	config: {
 		iconCls: "bookmarks",
+		store: "Logs",
 		itemTpl: new Ext.XTemplate(
 			'<div class="deleteplaceholder"></div><table width=\"100%\"><tr>' +
 			'<td width=\"50%\">{title}</td>' +
@@ -12,7 +13,10 @@ Ext.define("SiteSelector.view.LogViewer", {
 		),
 		grouped: true,
 	},
+	
 	initialize: function(v) {
+		this.callParent(arguments);
+		
 		var $this = this;
 		setTimeout(function() {
 			var tb = $this.up("navigationview").getNavigationBar();
@@ -39,8 +43,27 @@ Ext.define("SiteSelector.view.LogViewer", {
 					help.showBy(this);
 				}
 			})
+			var btnReports = tb.add({
+				align: "right",
+				text: "Reports",
+				handler: function() {
+					$this.up("navigationview").push({
+						xtype: "reportbrowser",
+						title: "Reports"
+					});
+				}
+			})
 			$this.on("destroy", function() {
 				btnExport.destroy();
+				btnReports.destroy();
+			});
+			$this.on("hide", function() {
+				btnExport.hide();
+				btnReports.hide();
+			});
+			$this.on("show", function() {
+				btnExport.show();
+				btnReports.show();
 			});
 		}, 10);	
 	}

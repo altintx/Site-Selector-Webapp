@@ -1,6 +1,8 @@
 Ext.define("SiteSelector.view.reports.SiteLog", {
 	extend: "Ext.dataview.List",
+	alias: "widget.sitelogreport",
 	config: {
+		title: "Site Log",
 		itemTpl: new Ext.XTemplate('<table><tr><td rowspan="3"><div style="overflow-y:hidden;height:0.65in;margin-right:0.1in;"><div class="body-thumbnail-{side}" style="top:-{y*3.3}%;"><div class="circle site {kind}" style="' + 
 			'left:{x}%;' +
 			'top:{y}%;' +

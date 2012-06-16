@@ -12,18 +12,17 @@ Ext.define("SiteSelector.controller.Reports", {
 		
 		control: {
 			ListNav: {
-				leafitemtap: 'ListNav_onLeafItemTap'
+				itemtap: 'ListNav_onLeafItemTap'
 			}
 		},
 		refs: {
-			ListNav: 'ReportBrowser'
+			ListNav: 'reportbrowser'
 		}
 	},
 	
-	ListNav_onLeafItemTap: function(tree, list, ix, domTarget, record, event) {
-		tree.setDetailCard(Ext.create(
-			record.get("xtype"),
-			{}
-		));
+	ListNav_onLeafItemTap: function(view, ix, domTarget, record, event) {
+		Ext.Viewport.down("navigationview").push({
+			xtype: record.get("xtype")
+		})
 	}
 });

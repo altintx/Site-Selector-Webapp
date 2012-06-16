@@ -4,15 +4,16 @@ Ext.define("SiteSelector.controller.Food", {
 	config: {
 		views: [
 			"SiteSelector.view.food.Add",
-			"SiteSelector.view.Geolocator",
-			"SiteSelector.view.MealGallery"
+			"SiteSelector.view.food.Edit"
+			// "SiteSelector.view.Geolocator",
+			// "SiteSelector.view.MealGallery"
 		],
 		models: [
 			"Food",
 			"Restaurant"
 		],
 		refs: {
-			'Geolocator': "geolocator",
+			// 'Geolocator': "geolocator",
 			"AddScreen": "addfood",
 			"MealGallery": "meal_gallery",
 			"Homescreen": "navigationview"
@@ -110,10 +111,10 @@ Ext.define("SiteSelector.controller.Food", {
 				store: prior_meals,
 				meal: meal,
 				hideOnMaskTap: true,
-				title: meal.get("friendly_name")
+				title: meal.get("friendly_location")
 			})
 		} else {
-			Ext.Msg.alert(meal.get("friendly_name"), "There are no previously logged meals from " + meal.get("friendly_name"));
+			Ext.Msg.alert(meal.get("friendly_location"), "There are no previously logged meals from " + meal.get("friendly_location"));
 		}
 	},
 	

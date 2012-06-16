@@ -1,25 +1,21 @@
 Ext.define("SiteSelector.store.Reports", {
-	extend: "Ext.data.TreeStore",
+	extend: "Ext.data.Store",
 	requires: ["SiteSelector.model.Report", "Ext.data.proxy.LocalStorage"],
 	alias: "store.reports",
 	config: {
 		model: "SiteSelector.model.Report",
 		autoLoad: true,
-		defaultRootProperty: "items",
-		root: {
-			name: "Reports",
-			items: [
-				{
-					name: "Site Effectiveness",
-					xtype: "SiteSelector.view.reports.SiteEffectiveness",
-					leaf: true
-				},
-				{
-					name: "Site Log",
-					xtype: "SiteSelector.view.reports.SiteLog",
-					leaf: true
-				}
-			]
-		}
+		data: [
+			{
+				name: "Site Effectiveness",
+				xtype: "siteeffectivenessreport",
+				leaf: true
+			},
+			{
+				name: "Site Log",
+				xtype: "sitelogreport",
+				leaf: true
+			}
+		]
 	}
 });

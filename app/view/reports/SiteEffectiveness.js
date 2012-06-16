@@ -1,6 +1,8 @@
 Ext.define("SiteSelector.view.reports.SiteEffectiveness", {
 	extend: "Ext.dataview.List",
+	alias: "widget.siteeffectivenessreport",
 	config: {
+		title: "Site Effectiveness",
 		itemTpl: new Ext.XTemplate('<table><tr><td rowspan="2"><div style="overflow-y:hidden;height:0.75in;margin-right:0.1in;"><div class="body-thumbnail-{side}" style="top:-{y*2.25}%;"><div class="circle" style="' + 
 			'left:{x}%;' +
 			'top:{y}%;' +

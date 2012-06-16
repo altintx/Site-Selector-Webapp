@@ -5,24 +5,9 @@ Ext.define("SiteSelector.view.food.Edit", {
 	config: {
 		items: [
 			{
-				xtype: "titlebar",
-				docked: "top",
-				title: "Edit Meal",
-				items: [
-					{
-						align: "left",
-						text: "Cancel",
-						action: "cancel",
-						handler: function() {
-							this.up("AddFood").destroy();
-						}
-					},
-					{
-						align: "right",
-						text: "Done",
-						action: "save"
-					}
-				],
+				xtype: "image",
+				src: "",
+				name: "photo"
 			},
 			{
 				xtype: "fieldset",
@@ -40,7 +25,7 @@ Ext.define("SiteSelector.view.food.Edit", {
 					})({
 						xtype: 'datetimepickerfield',
 						name : 'when',
-						label: "Placed",
+						label: "When",
 						picker: {
 							yearFrom: 2012,
 							ampm : true,
@@ -49,88 +34,42 @@ Ext.define("SiteSelector.view.food.Edit", {
 					}),
 					{
 						xtype: "textfield",
+						name: "friendly_location",
+						label: "Ate At",
+						readonly: true
+					},
+					{
+						xtype: "textfield",
 						name: "description",
-						label: false
+						label: "Description"
 					},
 					{
 						xtype: "numberfield",
-						name: "carbs",
+						name: "carb_count",
 						label: "Carbs"
 					},
-					{
-						xtype: "container",
-						layout: "hbox",
-						items: [
-							{
-								xtype: "togglefield",
-								name: "use_bgnow",
-								label: false,
-								flex: 1
-							},
-							{
-								xtype: "spinnerfield",
-								name: "bgnow",
-								label: "#bgnow",
-								labelCls: "transparent_label",
-								labelWidth: "40%",
-								minValue: 0,
-								maxValue: 1000,
-								increment: 1,
-								cycle: false,
-								flex: 3
-							}
-						]
-					},
-					{
-						xtype: "container",
-						layout: "hbox",
-						items: [
-							{
-								xtype: "togglefield",
-								name: "use_cgmgnow",
-								label: false,
-								flex: 1
-							},
-							{
-								xtype: "spinnerfield",
-								name: "cgmnow",
-								label: "#cgmnow",
-								labelCls: "transparent_label",
-								labelWidth: "40%",
-								minValue: 0,
-								maxValue: 1000,
-								increment: 1,
-								cycle: false,
-								flex: 3
-							}
-						]
-					},
-					{
-						xtype: "container",
-						layout: "hbox",
-						items: [
-							{
-								xtype: "togglefield",
-								name: "use_insulin",
-								label: false,
-								flex: 1
-							},
-							{
-								xtype: "spinnerfield",
-								name: "Insulin",
-								label: "Insulin",
-								labelCls: "transparent_label",
-								labelWidth: "40%",
-								minValue: 0,
-								maxValue: 100,
-								increment: 0.1,
-								cycle: false,
-								flex: 3
-							}
-						]
-					}
 				]
 			}
 		]
+	},
+	
+	initialize: function() {
+		this.callParent();
+		
+		var $this = this;
+		setTimeout(function() {
+			var nv = $this.up("navigationview");
+			nv.getNavigationBar().add({
+				text: "Save",
+				align: "right",
+				handler: function() {
+					$this.updateRecord($this.getRecord());
+					$this.getRecord().dirty = true;
+					Ext.data.StoreManager.get("Meals").sync();
+					nv.pop();
+				}
+			});
+			$this.down("image[name=photo]").setSrc($this.getRecord().get("file_uri"));
+		});
 	}
 });

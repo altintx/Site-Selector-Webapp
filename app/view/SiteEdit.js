@@ -3,21 +3,16 @@ Ext.define("SiteSelector.view.SiteEdit", {
 	alias: "widget.SiteEdit",
 	requires: ['Ext.field.DatePicker', 'Ext.field.Select', 'Ext.ux.field.DateTimePicker', 'Ext.field.Toggle'],
 	config: {
-		width: (function(phone) {
-			if (phone) {
-				return "100%";
-			} else {
-				return "80%";
-			}
-		})(Ext.os.is.Phone),
-		height: (function(phone) {
-			if (phone) {
-				return "100%";
-			} else {
-				return "50%";
-			}
-		})(Ext.os.is.Phone),
 		items: [
+			{
+				xtype: "component",
+				tpl: new Ext.XTemplate('<div style="overflow-y:hidden;height:0.65in;margin-right:0.1in;"><div class="body-thumbnail-{side}" style="top:-{y*3.3}%;"><div class="circle site {kind}" style="' + 
+				'left:{x}%;' +
+				'top:{y}%;' +
+				'margin-left:-0.125in;' +
+				'margin-top:-0.125in;' +
+				'">+</div></div></div>')
+			},
 			{
 				xtype: "fieldset",
 				defaults: {
@@ -134,30 +129,37 @@ Ext.define("SiteSelector.view.SiteEdit", {
 					var $this = this;
 					Ext.Msg.confirm("Remove this site", "Are you sure you want to remove this site?", function(button) {
 						if (button == "yes") {
-							var form = $this.parent;
+							var form = $this.up("formpanel");
 							var store = Ext.data.StoreManager.get("Sites");
 							store.remove(form.getRecord());
 							store.sync();
-							form.destroy();
-							Ext.ComponentQuery.query("BodyList").map(function(list) {
-								list.clearSites();
-								list.drawSites(); 
-							});
+							$this.up("navigationview").pop();
 						}
 					});
 				}
-			},
-			{
-				xtype: "button",
+			}
+		]
+	},
+	
+	constructor: function(config) {
+		var site = Ext.clone(config.record.data);
+		site.x *= 100;
+		site.y *= 100;
+		this.config.items[0].data = site;
+		this.callParent(arguments)
+	},
+	
+	initialize: function() {
+		this.callParent();
+		var $this = this;
+		setTimeout(function (args) {
+			var tb = $this.up("navigationview").getNavigationBar();
+			var done = tb.add({
+				align: "right",
 				text: "Save",
-				ui: "confirm",
-				docked: "bottom",
-				style: {
-					margin: "0.125in"
-				},
 				handler: function() {
 					// save
-					var form = this.parent;
+					var form = $this;
 					var r = form.getRecord();
 					form.updateRecord(r);
 					r.dirty = true;
@@ -167,13 +169,12 @@ Ext.define("SiteSelector.view.SiteEdit", {
 					}
 					siteStore.sync();
 					siteStore.sort(siteStore.sorters);
-					form.destroy();
-					Ext.ComponentQuery.query("BodyList").map(function(list) {
-						list.clearSites();
-						list.drawSites(); 
-					});
+					Ext.Viewport.down("navigationview").pop();
 				}
-			}
-		]
+			})
+			$this.on("destroy", function() {
+				done.destroy();
+			});
+		}, 1)
 	}
 });

@@ -3,42 +3,7 @@ Ext.define("SiteSelector.view.bloodsugar.Edit", {
 	alias: "widget.EditBloodSugar",
 	requires: ['Ext.field.DatePicker', 'Ext.field.Select', 'Ext.ux.field.DateTimePicker', 'Ext.field.Toggle'],
 	config: {
-		width: (function(phone) {
-			if (phone) {
-				return "100%";
-			} else {
-				return "80%";
-			}
-		})(Ext.os.is.Phone),
-		height: (function(phone) {
-			if (phone) {
-				return "100%";
-			} else {
-				return "50%";
-			}
-		})(Ext.os.is.Phone),
-		
 		items: [
-			{
-				xtype: "titlebar",
-				docked: "top",
-				title: "Edit Blood Sugar",
-				items: [
-					{
-						align: "left",
-						text: "Cancel",
-						action: "cancel",
-						handler: function() {
-							this.up("EditBloodSugar").destroy();
-						}
-					},
-					{
-						align: "right",
-						text: "Done",
-						action: "save"
-					}
-				],
-			},
 			{
 				xtype: "fieldset",
 				items: [
@@ -93,5 +58,22 @@ Ext.define("SiteSelector.view.bloodsugar.Edit", {
 	constructor: function(config) {
 		this.callParent([config]);
 		this.down("spinnerfield[name=reading]").setIncrement(SiteSelector.app.bgStep);
+		var nv = Ext.Viewport.down("navigationview"), $this = this;
+		setTimeout(function() {
+			var save = nv.getNavigationBar().add({
+				text: "Save",
+				align: "right",
+				handler: function() {
+					$this.updateRecord($this.getRecord());
+					$this.getRecord().dirty = true;
+					Ext.data.StoreManager.get("BloodSugars").sync();
+					nv.pop();
+					save.destroy();
+				}
+			})
+			$this.on("destroy", function() {
+				save.destroy();
+			})
+		}, 1)
 	}
 });

@@ -23,7 +23,6 @@ Ext.application({
 	],
 	
 	views: [
-		"LogActionSheet",
 		"BodyList",
 		"LogViewer",
 		"Settings",

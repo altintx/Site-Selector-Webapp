@@ -12,7 +12,8 @@ Ext.define("SiteSelector.store.Sites", {
 		sorters: 'when',
 		listeners: {
 			write: 'exportFile',
-			beforesync: 'onBeforeSync'
+			beforesync: 'onBeforeSync',
+			sync: 'redrawSites'
 		}
 	},
 	lastSite: function(kind) {
@@ -24,6 +25,13 @@ Ext.define("SiteSelector.store.Sites", {
 			}
 		});
 		return last_record;
+	},
+	
+	redrawSites: function() {
+		Ext.ComponentQuery.query("BodyList").map(function(list) {
+			list.clearSites();
+			list.drawSites(); 
+		});
 	},
 	
 	exportFile: function(store) {
