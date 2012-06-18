@@ -63,7 +63,11 @@ Ext.define("SiteSelector.view.Homescreen", {
 						xtype: "button",
 						handler: function() {
 							this.up("navigationview").push({
-								xtype: "addexercise"
+								xtype: "addexercise",
+								title: "Exercise",
+								record: new SiteSelector.model.Exercise({
+									when: new Date()
+								})
 							})
 						}
 					},

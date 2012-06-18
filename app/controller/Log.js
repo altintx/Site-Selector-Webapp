@@ -60,9 +60,13 @@ Ext.define("SiteSelector.controller.Log", {
 				style: "position:absolute;right:0.125in;",
 				handler: function() {
 					var owner = record.getOwner();
-					var ownerStore = owner.stores[0];
-					ownerStore.remove(owner);
-					ownerStore.sync();
+					if (owner) {
+						var ownerStore = owner.stores[0];
+						ownerStore.remove(owner);
+						ownerStore.sync();
+					} else {
+						record.stores[0].remove(record);
+					}
 				}
 			});
 			var removeDeleteButton = function() {

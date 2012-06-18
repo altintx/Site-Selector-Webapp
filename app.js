@@ -19,7 +19,8 @@ Ext.application({
 		"BloodSugar",
 		"Reports",
 		"Food",
-		"Insulin"
+		"Insulin",
+		"Exercises"
 	],
 	
 	views: [
@@ -28,7 +29,7 @@ Ext.application({
 		"Settings",
 		"SiteEdit",
 		"Homescreen",
-		"Viewport"
+		"Viewport",
 	],
 	
 	models: [
@@ -37,6 +38,7 @@ Ext.application({
 		"BodyRegion",
 		"Log",
 		"Restaurant",
+		"Exercise",
 		"Bolus"
 	],
 	
@@ -47,7 +49,8 @@ Ext.application({
 		"BloodSugars",
 		"Nearby",
 		"Meals",
-		"Medications"
+		"Medications",
+		"Exercises"
 	],
 	
 	profiles: [

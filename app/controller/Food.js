@@ -34,7 +34,6 @@ Ext.define("SiteSelector.controller.Food", {
 		}
 	},
 	
-	/// user
 	persistPhoto: function(imageURI, callback) {
 		window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fs) {
 			window.resolveLocalFileSystemURI(imageURI, function(fe) {
@@ -52,8 +51,6 @@ Ext.define("SiteSelector.controller.Food", {
 		});
 	},
 	
-	
-	// used
 	add: function(navigation_view) {
 		var meal = new SiteSelector.model.Food({
 	    	when: new Date(),
@@ -71,7 +68,6 @@ Ext.define("SiteSelector.controller.Food", {
 		});
 	},
 	
-	// used
 	addPic: function(meal) {
 		if (navigator.camera) {
 			navigator.camera.getPicture(function(temporaryImageURI) {
@@ -90,18 +86,9 @@ Ext.define("SiteSelector.controller.Food", {
 		}
 	},
 	
-	
-	// used
 	checkin: function(view, venue_id, meal) {
 		var meals_store = Ext.data.StoreManager.get("Meals"),
 		    blood_sugar = Ext.data.StoreManager.get("BloodSugars");
-		
-		// Ext.data.StoreManager.get("Meals").sync(); // save what we know, don't save what we assume
-		
-		// meal.set({
-		// 	cgmnow: blood_sugar.mostRecent("cgm"),
-		// 	bgnow: blood_sugar.mostRecent("meter")
-		// });
 		
 		var prior_meals = meals_store.getMealsFromRestaurant(venue_id);
 		
@@ -118,7 +105,6 @@ Ext.define("SiteSelector.controller.Food", {
 		}
 	},
 	
-	// used
 	collectFoodDetails: function(prior_meal, current_meal) {
 		current_meal.set({
 			description: prior_meal.get("description"),
@@ -130,7 +116,6 @@ Ext.define("SiteSelector.controller.Food", {
 		Ext.Viewport.down("addfood").setRecord(current_meal);
 	},
 	
-	// used
 	savemeal: function(meal) {
 		var meal_store = Ext.data.StoreManager.get("Meals"),
 			bgnow_store = Ext.data.StoreManager.get("BloodSugars");
@@ -152,12 +137,13 @@ Ext.define("SiteSelector.controller.Food", {
 				unit: SiteSelector.app.settings("bgunit")
 			});
 		}
+		
+		bgnow_store.sync();
+		
 		meal_store.add(meal);
 		meal_store.sync();
 	},
 	
-	
-	// used
 	showPastTrends: function(meal, blood_sugar) {
 		var meal_store = Ext.data.StoreManager.get("Meals"), overlay = null;
 		var prior_consumption = meal_store.getLikeRecords({
@@ -182,7 +168,6 @@ Ext.define("SiteSelector.controller.Food", {
 				normal: meal.get("carb_count") / settings.get("carb_ratio"),
 				wave: 0
 			});
-			
 		}
 		
 		Ext.Viewport.down("navigationview").push({
