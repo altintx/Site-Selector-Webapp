@@ -36,7 +36,11 @@ Ext.define("SiteSelector.store.Medications", {
 				explain.push("#bgnow " + m.get("blood_sugar"));
 			if (m.get("carbs"))
 				explain.push(m.get("carbs") + "g of carbs");
-				
+			
+			if (explain.length == 0) {
+				explain.push("just because");
+			}
+			
 			r.set({
 				title: ("Took " + (m.data.wave + m.data.normal) + "U insulin"),
 				description: "Took " + [types.join(" and "), explain.join(" and ")].join (" for ")
@@ -52,6 +56,11 @@ Ext.define("SiteSelector.store.Medications", {
 				explain.push("#bgnow " + m.get("blood_sugar"));
 			if (m.get("carbs"))
 				explain.push(m.get("carbs") + "g of carbs");
+			
+			if (explain.length == 0) {
+				explain.push("just because");
+			}
+			
 			
 			logStore.record(m, ("Took " + (m.data.wave + m.data.normal) + "U insulin"), "Took " + [types.join(" and "), explain.join(" and ")].join (" for "))
 		});

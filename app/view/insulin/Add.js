@@ -45,9 +45,12 @@ Ext.define("SiteSelector.view.insulin.Add", {
 		var $this = this,
 			priors = config.priors;
 		delete config.priors;
+		if (!config.record) {
+			config.record = new SiteSelector.model.Bolus();
+		}
 		this.callParent([config]);
+		if (!priors) return;
 		var form = this;
-		form.setRecord(config.record);
 		priors.sort(function(a, b) {
 			var c = a.meal.data.when.getTime() - b.meal.data.when.getTime();
 			if (c < 0) {
