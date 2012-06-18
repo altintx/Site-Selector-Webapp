@@ -59,7 +59,7 @@ Ext.define("SiteSelector.view.food.Edit", {
 		var $this = this;
 		setTimeout(function() {
 			var nv = $this.up("navigationview");
-			nv.getNavigationBar().add({
+			var saveButton = nv.getNavigationBar().add({
 				text: "Save",
 				align: "right",
 				handler: function() {
@@ -70,6 +70,9 @@ Ext.define("SiteSelector.view.food.Edit", {
 				}
 			});
 			$this.down("image[name=photo]").setSrc($this.getRecord().get("file_uri"));
+			$this.on("destroy", function() {
+				saveButton.destroy();
+			})
 		});
 	}
 });

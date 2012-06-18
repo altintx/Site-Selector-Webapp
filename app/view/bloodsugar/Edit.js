@@ -68,7 +68,6 @@ Ext.define("SiteSelector.view.bloodsugar.Edit", {
 					$this.getRecord().dirty = true;
 					Ext.data.StoreManager.get("BloodSugars").sync();
 					nv.pop();
-					save.destroy();
 				}
 			})
 			$this.on("destroy", function() {

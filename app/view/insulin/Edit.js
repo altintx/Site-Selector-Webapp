@@ -45,7 +45,6 @@ Ext.define("SiteSelector.view.insulin.Edit", {
 		this.callParent(arguments);
 		var $this = this;
 		setTimeout(function() {
-			debugger;
 			var tb = $this.up("navigationview").getNavigationBar();
 			var done = tb.add({
 				text: "Save",
