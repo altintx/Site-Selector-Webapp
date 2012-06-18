@@ -7,11 +7,15 @@ Ext.define("SiteSelector.controller.Insulin", {
 			"SiteSelector.view.insulin.Edit"
 		],
 		refs: {
-			"addinsulin": "addinsulin"
+			"addinsulin": "addinsulin",
+			"editinsulin": "editinsulin"
 		},
 		control: {
 			"addinsulin": {
 				save: "doAdd"
+			},
+			"editinsulin": {
+				save: "doEdit"
 			}
 		}
 	},
@@ -22,6 +26,14 @@ Ext.define("SiteSelector.controller.Insulin", {
 		form.updateRecord(bolus);
 		bolus.dirty = true;
 		meds.add(bolus);
+		meds.sync();
+	},
+	
+	doEdit: function(form) {
+		var meds = Ext.data.StoreManager.get("Medications");
+		var bolus = form.getRecord();
+		form.updateRecord(bolus);
+		bolus.dirty = true;
 		meds.sync();
 	}
 });

@@ -17,7 +17,7 @@ Ext.define("SiteSelector.view.Homescreen", {
 			{
 				xtype: "container",
 				layout: "hbox",
-				flex: 2,
+				flex: 1,
 				items: [
 					{
 						text: "Insulin",
@@ -54,7 +54,7 @@ Ext.define("SiteSelector.view.Homescreen", {
 			},
 			{
 				xtype: "container",
-				flex: 2,
+				flex: 1,
 				layout: "hbox",
 				items: [
 					{

@@ -27,65 +27,22 @@ Ext.define("SiteSelector.controller.Log", {
 					title: "Edit Site",
 					record: record
 				});
-				overlay = Ext.Viewport.add({
-					xtype: "SiteEdit",
-					modal: true,
-					hideOnMaskTap: true,
-					record: record,
-					showAnimation: {
-						type: "popIn",
-						duration: 250,
-						easing: "ease-out"
-					},
-					hideAnimation: {
-						type: "popOut",
-						duration: 250,
-						easing: "ease-out"
-					},
-					centered: true,
-					scrollable: true,
-					listeners: {
-						hide: function() {
-							overlay.destroy();
-						}
-					}
-				});
-				break;
 			case "SiteSelector.model.BloodSugar":
 				return nv.push({
 					xtype: "EditBloodSugar",
 					title: "Edit Blood Sugar",
 					record: record
 				});
-			
-				overlay = Ext.Viewport.add({
-					xtype: "EditBloodSugar",
-					modal: true,
-					hideOnMaskTap: true,
-					record: record,
-					showAnimation: {
-						type: "popIn",
-						duration: 250,
-						easing: "ease-out"
-					},
-					hideAnimation: {
-						type: "popOut",
-						duration: 250,
-						easing: "ease-out"
-					},
-					centered: true,
-					scrollable: true,
-					listeners: {
-						hide: function() {
-							overlay.destroy();
-						}
-					}
-				});
-				break;
 			case "SiteSelector.model.Food":
 				return nv.push({
 					xtype: "editfood",
 					title: "Edit Meal",
+					record: record
+				});
+			case "SiteSelector.model.Bolus":
+				return nv.push({
+					xtype: "editinsulin",
+					title: "Edit Insulin",
 					record: record
 				});
 			default:

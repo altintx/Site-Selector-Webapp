@@ -39,7 +39,7 @@ Ext.define("SiteSelector.store.Medications", {
 				
 			r.set({
 				title: ("Took " + (m.data.wave + m.data.normal) + "U insulin"),
-				description: "Took" + [types.join(" and "), explain.join(" and ")].join (" for ")
+				description: "Took " + [types.join(" and "), explain.join(" and ")].join (" for ")
 			});
 		});
 		store.getNewRecords().forEach(function(m) {

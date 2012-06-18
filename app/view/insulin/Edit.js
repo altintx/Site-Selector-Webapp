@@ -4,18 +4,62 @@ Ext.define("SiteSelector.view.insulin.Edit", {
 	config: {
 		items: [
 			{
-				xtype: "titlebar",
+				xtype: "fieldset",
 				title: "Insulin",
-				docked: "top"
+				items: [
+					{
+						xtype: "container",
+						layout: "hbox",
+						defaults: {
+							labelAlign: "top"
+						},
+						items: [
+							{
+								xtype: "spinnerfield",
+								name: "normal",
+								label: "Bolus",
+								minValue: 0,
+								maxValue: 50,
+								increment: 0.1,
+								cycle: false,
+								flex: 1
+							},
+							{
+								xtype: "spinnerfield",
+								name: "wave",
+								label: "Extended",
+								minValue: 0,
+								maxValue: 50,
+								increment: 0.1,
+								cycle: false,
+								flex: 1
+							}
+						]
+					}
+				]
 			}
 		]
 	},
 	
-	constructor: function(config) {
-		var priors = config.priors;
-		delete config.priors;
-		this.callParent([config]);
-		
-		
-	}
+	initialize: function() {
+		this.callParent(arguments);
+		var $this = this;
+		setTimeout(function() {
+			debugger;
+			var tb = $this.up("navigationview").getNavigationBar();
+			var done = tb.add({
+				text: "Save",
+				handler: function() {
+					var view = Ext.Viewport.down("editinsulin");
+					view.fireEvent("save", view);
+					view.up("navigationview").pop();
+				},
+				align: "right"
+			})
+			$this.on("destroy", function() {
+				done.destroy();
+			});
+		}, 10);
+	},
+	
 })
