@@ -34,6 +34,9 @@ Ext.define("SiteSelector.store.BloodSugars", {
 			})((m.get("kind") == "meter"? "#bgnow" : "#cgmow") + " " + m.get("reading"));
 		});
 		store.getNewRecords().forEach(function(m) {
+			if (!m.get("unit")) {
+				m.set("unit", SiteSelector.app.settings("bgunits"));
+			};
 			(function(expr) {
 				logStore.record(m, expr, expr);
 			})((m.get("kind") == "meter"? "#bgnow" : "#cgmow") + " " + m.get("reading"));
