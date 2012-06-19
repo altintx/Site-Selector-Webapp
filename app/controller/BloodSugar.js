@@ -58,8 +58,8 @@ Ext.define("SiteSelector.controller.BloodSugar", {
 		var store = Ext.data.StoreManager.get("BloodSugars");
 
 		store.add({
-			when: new Date(), // TODO: This is borked
-			kind: "Quick",
+			when: new Date(),
+			kind: "meter",
 			reading: value.reading,
 			unit: SiteSelector.app.settings("bgunits")
 		});
