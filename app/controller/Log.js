@@ -17,6 +17,7 @@ Ext.define("SiteSelector.controller.Log", {
 	},
 	
 	log_onItemTap: function(list, ix, target, logrecord) {
+		debugger;
 		var record = logrecord.getOwner();
 		var nv = Ext.Viewport.down("navigationview");
 		var overlay;
@@ -43,6 +44,12 @@ Ext.define("SiteSelector.controller.Log", {
 				return nv.push({
 					xtype: "editinsulin",
 					title: "Edit Insulin",
+					record: record
+				});
+			case "SiteSelector.model.Exercise":
+				return nv.push({
+					xtype: "editexercise",
+					title: "Edit Exercise",
 					record: record
 				});
 			default:

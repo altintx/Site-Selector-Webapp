@@ -76,7 +76,7 @@ Ext.define("SiteSelector.view.food.Add", {
 						items: [
 							{
 								xtype: "togglefield",
-								name: "use_cgmgnow",
+								name: "use_cgmnow",
 								label: false,
 								flex: 1,
 								ui: "small"

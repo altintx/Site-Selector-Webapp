@@ -47,5 +47,11 @@ Ext.define("SiteSelector.controller.Exercises", {
 		
 		bgnowstore.sync();
 		Ext.data.StoreManager.get("Exercises").sync();
+	},
+	
+	edit: function($this) {
+		$this.updateRecord($this.getRecord());
+		$this.getRecord().dirty = true;
+		Ext.data.StoreManager.get("Exercises").sync();
 	}
 })

@@ -42,57 +42,8 @@ Ext.define("SiteSelector.view.exercise.Edit", {
 						increment: 5
 					}
 				]
-			},
-			{
-				xtype: "container",
-				layout: "hbox",
-				items: [
-					{
-						xtype: "togglefield",
-						name: "use_bgnow",
-						label: false,
-						flex: 1,
-						ui: "small"
-					},
-					{
-						xtype: "spinnerfield",
-						name: "bgnow",
-						label: "#bgnow",
-						labelCls: "transparent_label",
-						labelWidth: "40%",
-						minValue: 0,
-						maxValue: 1000,
-						increment: 1,
-						cycle: false,
-						flex: 3
-					}
-				]
-			},
-			{
-				xtype: "container",
-				layout: "hbox",
-				items: [
-					{
-						xtype: "togglefield",
-						name: "use_cgmgnow",
-						label: false,
-						flex: 1,
-						ui: "small"
-					},
-					{
-						xtype: "spinnerfield",
-						name: "cgmnow",
-						label: "#cgmnow",
-						labelCls: "transparent_label",
-						labelWidth: "40%",
-						minValue: 0,
-						maxValue: 1000,
-						increment: 1,
-						cycle: false,
-						flex: 3
-					}
-				]
-			}		]
+			}
+		]
 	},
 	
 	initialize: function() {
@@ -102,7 +53,7 @@ Ext.define("SiteSelector.view.exercise.Edit", {
 				text: "Save",
 				align: "right",
 				handler: function() {
-					$this.fireEvent("add", $this);
+					$this.fireEvent("edit", $this);
 					nv.pop();
 				}
 			})

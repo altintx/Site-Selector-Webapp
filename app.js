@@ -192,6 +192,7 @@ Ext.application({
 			Ext.data.StoreManager.get("Logs").load();
 			Ext.data.StoreManager.get("Meals").load();
 			Ext.data.StoreManager.get("Medications").load();
+			Ext.data.StoreManager.get("Exercises").load();
 		}, 100);
 		
 		Ext.Viewport.add({
