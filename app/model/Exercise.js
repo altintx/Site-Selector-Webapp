@@ -16,6 +16,10 @@ Ext.define("SiteSelector.model.Exercise", {
 				type: "int"
 			},
 			{
+				name: "carb_load",
+				type: "int"
+			},
+			{
 				name: 'when',
 				type: 'date',
 				dateFormat: "c"

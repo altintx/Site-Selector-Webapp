@@ -6,7 +6,7 @@ Ext.define("SiteSelector.view.exercise.Add", {
 		items: [
 			{
 				xtype: "fieldset",
-				instructions: "Duration in minutes",
+				instructions: "Duration in minutes, Carb Load in grams",
 				items: [
 					(function(config) {
 						if (Ext.os.is.Phone) {
@@ -40,6 +40,14 @@ Ext.define("SiteSelector.view.exercise.Add", {
 						minValue: 0,
 						maxValue: 480,
 						increment: 5
+					},
+					{
+						xtype: "spinnerfield",
+						name: "carb_load",
+						label: "Carb Load",
+						minValue: 0,
+						maxValue: 200,
+						increment: 1
 					}
 				]
 			},
