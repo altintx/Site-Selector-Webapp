@@ -46,54 +46,15 @@ Ext.define("SiteSelector.view.food.Add", {
 						]
 					},
 					{
-						xtype: "container",
-						layout: "hbox",
-						items: [
-							{
-								xtype: "togglefield",
-								name: "use_bgnow",
-								label: false,
-								flex: 1,
-								ui: "small"
-							},
-							{
-								xtype: "spinnerfield",
-								name: "bgnow",
-								label: "#bgnow",
-								labelCls: "transparent_label",
-								labelWidth: "40%",
-								minValue: 0,
-								maxValue: 1000,
-								increment: 1,
-								cycle: false,
-								flex: 3
-							}
-						]
+						xtype: "bloodsugar",
+						name: "bgnow",
+						label: "Meter",
 					},
 					{
-						xtype: "container",
-						layout: "hbox",
-						items: [
-							{
-								xtype: "togglefield",
-								name: "use_cgmnow",
-								label: false,
-								flex: 1,
-								ui: "small"
-							},
-							{
-								xtype: "spinnerfield",
-								name: "cgmnow",
-								label: "#cgmnow",
-								labelCls: "transparent_label",
-								labelWidth: "40%",
-								minValue: 0,
-								maxValue: 1000,
-								increment: 1,
-								cycle: false,
-								flex: 3
-							}
-						]
+						xtype: "bloodsugar",
+						name: "cgmnow",
+						label: "CGM",
+						subordinateTo: "bloodsugar[name=bgnow]"
 					}
 				]
 			},
@@ -142,8 +103,8 @@ Ext.define("SiteSelector.view.food.Add", {
 			})(form.getRecord());
 		});
 		
-		this.down("spinnerfield[name=bgnow]").setIncrement(SiteSelector.app.bgStep);
-		this.down("spinnerfield[name=cgmnow]").setIncrement(SiteSelector.app.bgStep);
+		// this.down("spinnerfield[name=bgnow]").setIncrement(SiteSelector.app.bgStep);
+		// this.down("spinnerfield[name=cgmnow]").setIncrement(SiteSelector.app.bgStep);
 	},
 	
 	initialize: function() {

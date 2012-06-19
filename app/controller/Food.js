@@ -1,6 +1,9 @@
 Ext.define("SiteSelector.controller.Food", {
 	extend: "Ext.app.Controller",
-	requires: ["SiteSelector.view.Geolocator"],
+	requires: [
+		// "SiteSelector.view.Geolocator"
+		"SiteSelector.ux.BloodSugarSlider"
+	],
 	config: {
 		views: [
 			"SiteSelector.view.food.Add",

@@ -52,60 +52,22 @@ Ext.define("SiteSelector.view.exercise.Add", {
 				]
 			},
 			{
-				xtype: "container",
-				layout: "hbox",
-				items: [
-					{
-						xtype: "togglefield",
-						name: "use_bgnow",
-						label: false,
-						flex: 1,
-						ui: "small"
-					},
-					{
-						xtype: "spinnerfield",
-						name: "bgnow",
-						label: "#bgnow",
-						labelCls: "transparent_label",
-						labelWidth: "40%",
-						minValue: 0,
-						maxValue: 1000,
-						increment: 1,
-						cycle: false,
-						flex: 3
-					}
-				]
+				xtype: "bloodsugar",
+				name: "bgnow",
+				label: "Meter",
 			},
 			{
-				xtype: "container",
-				layout: "hbox",
-				items: [
-					{
-						xtype: "togglefield",
-						name: "use_cgmnow",
-						label: false,
-						flex: 1,
-						ui: "small"
-					},
-					{
-						xtype: "spinnerfield",
-						name: "cgmnow",
-						label: "#cgmnow",
-						labelCls: "transparent_label",
-						labelWidth: "40%",
-						minValue: 0,
-						maxValue: 1000,
-						increment: 1,
-						cycle: false,
-						flex: 3
-					}
-				]
-			}		]
+				xtype: "bloodsugar",
+				name: "cgmnow",
+				label: "CGM",
+				subordinateTo: "bloodsugar[name=bgnow]"
+			}
+		]
 	},
 	
 	initialize: function() {
-		var nv = Ext.Viewport.down("navigationview"), $this = this;
-		setTimeout(function() {
+		var nv = Ext.Viewport.down("navigationview");
+		this.on("painted", function($this) { 
 			var save = nv.getNavigationBar().add({
 				text: "Save",
 				align: "right",

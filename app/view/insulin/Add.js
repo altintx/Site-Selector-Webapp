@@ -35,6 +35,45 @@ Ext.define("SiteSelector.view.insulin.Add", {
 								flex: 1
 							}
 						]
+					},
+					{
+						xtype: "container",
+						layout: "hbox",
+						items: [
+							{
+								xtype: "sliderfield",
+								name: "duration",
+								label: "Extended",
+								minValue: 0,
+								maxValue: 8,
+								increment: 0.25,
+								flex: 4
+							},
+							{
+								xtype: "component",
+								itemId: "time_display",
+								flex: 1,
+								html: "0:00"
+							}
+						]
+					}
+				],
+				instruction: "If using an extended wave, for how long it is set"
+			},
+			{
+				xtype: "fieldset",
+				title: "Blood Sugar",
+				items: [
+					{
+						xtype: "bloodsugar",
+						name: "bgnow",
+						label: "Meter",
+					},
+					{
+						xtype: "bloodsugar",
+						name: "cgmnow",
+						label: "CGM",
+						subordinateTo: "bloodsugar[name=bgnow]"
 					}
 				]
 			}
@@ -112,8 +151,7 @@ Ext.define("SiteSelector.view.insulin.Add", {
 	
 	initialize: function() {
 		this.callParent(arguments);
-		var $this = this;
-		setTimeout(function() {
+		this.on("painted", function($this) {
 			var tb = $this.up("navigationview").getNavigationBar();
 			var done = tb.add({
 				text: "Save",
@@ -132,7 +170,17 @@ Ext.define("SiteSelector.view.insulin.Add", {
 			});
 			$this.on("show", function() {
 				done.show()
-			})
+			});
+			var sliderfield = $this.down("sliderfield[name=duration]");
+			setTimeout(function() {
+				var val = $this.getRecord().get("duration");
+				sliderfield.up("container").down("#time_display").setHtml(Math.floor(val) + ":" + ("00" + (60 * (val-Math.floor(val)))).substr(-2))
+				
+				Ext.ComponentQuery.query("slider[baseCls=x-slider]")[0].on("drag", function(slider, thumb, values) {
+					val = values[0];
+					sliderfield.up("container").down("#time_display").setHtml(Math.floor(val) + ":" + ("00" + (60 * (val-Math.floor(val)))).substr(-2));
+				});
+			}, 100)
 		}, 10);
 	},
 	

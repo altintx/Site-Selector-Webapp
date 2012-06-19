@@ -22,6 +22,10 @@ Ext.define("SiteSelector.model.Bolus", {
 			{
 				name: "wave",
 				type: "float"
+			},
+			{
+				name: "duration",
+				type: "float"
 			}
 		]
 	}

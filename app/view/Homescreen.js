@@ -24,10 +24,9 @@ Ext.define("SiteSelector.view.Homescreen", {
 						xtype: "button",
 						flex: 1,
 						handler: function() {
-							this.up("navigationview").push({
-								xtype: "addinsulin",
-								title: "Add Insulin"
-							})
+							(function(view) {
+								view.fireEvent("bolus", view);
+							})(this.up("navigationview"))
 						}
 					},
 					{
