@@ -65,7 +65,9 @@ Ext.define("SiteSelector.store.BloodSugars", {
 	changeAllReadings: function(targetUnit, algorithms) {
 		this.each(function(r) {
 			var u = r.get("unit");
-			if (u == targetUnit) {
+			if (u == null) {
+				r.set("unit", SiteSelector.app.settings("bgunits"))
+			} else if (u == targetUnit) {
 				// done
 			} else {
 				r.set({
