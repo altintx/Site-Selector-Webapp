@@ -1,5 +1,5 @@
 Ext.define("SiteSelector.view.Settings", {
-	alias: "widget.Settings",
+	alias: "widget.settings",
 	extend: "Ext.form.FormPanel",
 	requires: ["Ext.field.Number", "Ext.form.FieldSet"],
 	config: {

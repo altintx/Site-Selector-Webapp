@@ -25,7 +25,8 @@ Ext.define("SiteSelector.view.Homescreen", {
 						flex: 1,
 						handler: function() {
 							this.up("navigationview").push({
-								xtype: "addinsulin"
+								xtype: "addinsulin",
+								title: "Add Insulin"
 							})
 						}
 					},
@@ -87,7 +88,7 @@ Ext.define("SiteSelector.view.Homescreen", {
 						flex: 1,
 						handler: function() {
 							this.up("navigationview").push({
-								xtype: "Settings",
+								xtype: "settings",
 								title: "Settings"
 							})
 						}
