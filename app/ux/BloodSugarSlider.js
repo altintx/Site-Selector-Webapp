@@ -26,7 +26,6 @@ Ext.define("SiteSelector.ux.BloodSugarSlider", {
 		} else {
 			max = 56;
 		}
-		
 		config.items = [
 			{
 				xtype: "togglefield",

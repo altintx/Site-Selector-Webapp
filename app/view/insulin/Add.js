@@ -5,7 +5,6 @@ Ext.define("SiteSelector.view.insulin.Add", {
 		items: [
 			{
 				xtype: "fieldset",
-				title: "Insulin",
 				items: [
 					{
 						xtype: "container",
@@ -44,8 +43,9 @@ Ext.define("SiteSelector.view.insulin.Add", {
 								xtype: "sliderfield",
 								name: "duration",
 								label: "Extended",
+								labelWidth: "40%",
 								minValue: 0,
-								maxValue: 8,
+								maxValue: 6,
 								increment: 0.25,
 								flex: 4
 							},
@@ -58,7 +58,7 @@ Ext.define("SiteSelector.view.insulin.Add", {
 						]
 					}
 				],
-				instruction: "If using an extended wave, for how long it is set"
+				instructions: "If using an extended wave, for how long it is set"
 			},
 			{
 				xtype: "fieldset",

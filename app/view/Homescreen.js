@@ -49,7 +49,7 @@ Ext.define("SiteSelector.view.Homescreen", {
 						text: "Sites",
 						flex: 1,
 						ui: "icon",
-						html: '<img src="/resources/icons/homescreen/sites.png" /><div>Sites</div>',
+						html: '<img src="/resources/icons/homescreen/sites.png" /><div>Infusion<br/>Sites</div>',
 						handler: function() {
 							(function(view) {
 								view.fireEvent("show_sites", view);

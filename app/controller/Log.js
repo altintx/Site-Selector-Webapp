@@ -17,7 +17,6 @@ Ext.define("SiteSelector.controller.Log", {
 	},
 	
 	log_onItemTap: function(list, ix, target, logrecord) {
-		debugger;
 		var record = logrecord.getOwner();
 		var nv = Ext.Viewport.down("navigationview");
 		var overlay;

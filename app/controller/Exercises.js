@@ -25,12 +25,17 @@ Ext.define("SiteSelector.controller.Exercises", {
 	},
 	
 	show: function(navview) {
+		var record = new SiteSelector.model.Exercise({
+			when: new Date()
+		});
+		record.set({
+			bgnow: Ext.data.StoreManager.get("BloodSugars").mostRecent(),
+			cgmnow: Ext.data.StoreManager.get("BloodSugars").mostRecent()
+		});
 		navview.push({
 			xtype: "addexercise",
 			title: "Exercise",
-			record: new SiteSelector.model.Exercise({
-				when: new Date()
-			})
+			record: record
 		})	
 	},
 	

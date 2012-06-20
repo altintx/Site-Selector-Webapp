@@ -35,6 +35,7 @@ Ext.define("SiteSelector.controller.Body", {
 		var $this = this;
 		Ext.Viewport.down("navigationview").push({
 			xtype: "SiteEdit",
+			title: "Edit Site",
 			record: options.record
 		});
 	},
@@ -144,6 +145,10 @@ Ext.define("SiteSelector.controller.Body", {
 				});
 			} else {
 				store.sync();
+			}
+			debugger;
+			if (["shot_bolus", "shot_basal"].indexOf(kind) > -1) {
+				$this.up("navigationview").fireEvent("bolus", $this.up("navigationview"));
 			}
 		}
 	},
