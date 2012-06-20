@@ -33,6 +33,7 @@ Ext.define("SiteSelector.view.Homescreen", {
 						text: "Eat",
 						flex: 1,
 						xtype: "button",
+						html: '<img src="/resources/icons/homescreen/eat.png" style="width:1in;clear:both;" /><div>Eat</div>',
 						handler: function() {
 							(function(view) {
 								view.fireEvent("eat", view);
@@ -43,6 +44,7 @@ Ext.define("SiteSelector.view.Homescreen", {
 						xtype: "button",
 						text: "Sites",
 						flex: 1,
+						html: '<img src="/resources/icons/homescreen/sites.png" style="width:1in;clear:both;" /><div>Sites</div>',
 						handler: function() {
 							(function(view) {
 								view.fireEvent("show_sites", view);
@@ -60,6 +62,7 @@ Ext.define("SiteSelector.view.Homescreen", {
 						text: "Exercise",
 						flex: 1,
 						xtype: "button",
+						html: '<img src="/resources/icons/homescreen/exercise.png" style="width:1in;clear:both;" /><div>Exercise</div>',
 						handler: function() {
 							(function(view) {
 								view.fireEvent("list_exercises", view);
@@ -69,6 +72,7 @@ Ext.define("SiteSelector.view.Homescreen", {
 					{
 						text: "Log",
 						xtype: "button",
+						html: '<img src="/resources/icons/homescreen/log.png" style="width:1in;clear:both;" /><div>Log</div>',
 						flex: 1,
 						handler: function() {
 							(function(view) {
@@ -80,6 +84,7 @@ Ext.define("SiteSelector.view.Homescreen", {
 						text: "Settings",
 						xtype: "button",
 						flex: 1,
+						html: '<img src="/resources/icons/homescreen/settings.png" style="width:1in;clear:both;" /><div>Settings</div>',
 						handler: function() {
 							(function(view) {
 								view.fireEvent("show_settings", view);
