@@ -44,3 +44,15 @@ body.x-chrome .site .x-button-label {
 	margin-left: 0;
 	top: 0;
 }
+
+.x-button.x-button-icon {
+	background-color: transparent !important;
+	background-image: none !important;
+	border: 0;
+}
+
+.x-button-icon img {
+	width: 1in;
+	height: 1in;
+	clear: both;
+}
