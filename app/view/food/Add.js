@@ -13,7 +13,8 @@ Ext.define("SiteSelector.view.food.Add", {
 					{
 						xtype: "textfield",
 						name: "description",
-						label: false
+						label: false,
+						placeHolder: "Description"
 					},
 					{
 						xtype: "numberfield",
