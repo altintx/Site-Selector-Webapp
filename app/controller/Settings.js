@@ -5,6 +5,9 @@ Ext.define("SiteSelector.controller.Settings", {
 			form: {
 				activate: 'activate',
 				deactivate: 'doSave'
+			},
+			'navigationview': {
+				show_settings: "show_settings"
 			}
 		},
 		refs: {
@@ -20,7 +23,12 @@ Ext.define("SiteSelector.controller.Settings", {
 		// store sync
 		this.getApplication().settingsStore.sync();
 	},
-	activate: function(form) {
-		form.setRecord(SiteSelector.app.settings());
+	
+	show_settings: function(navview) {
+		navview.push({
+			xtype: "settings",
+			title: "Settings",
+			record: SiteSelector.app.settings()
+		})
 	}
 })

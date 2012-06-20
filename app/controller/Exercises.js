@@ -4,7 +4,8 @@ Ext.define("SiteSelector.controller.Exercises", {
 	config: {
 		refs: {
 			'addexercise': 'addexercise',
-			'editexercise': 'editexercise'
+			'editexercise': 'editexercise',
+			'navigationview': "navigationview"
 		},
 		control: {
 			'addexercise': {
@@ -12,12 +13,25 @@ Ext.define("SiteSelector.controller.Exercises", {
 			},
 			'editexercise': {
 				edit: "edit"
+			},
+			navigationview: {
+				"list_exercises": "show"
 			}
 		},
 		views: [
 			"SiteSelector.view.exercise.Add",
 			"SiteSelector.view.exercise.Edit"
 		]
+	},
+	
+	show: function(navview) {
+		navview.push({
+			xtype: "addexercise",
+			title: "Exercise",
+			record: new SiteSelector.model.Exercise({
+				when: new Date()
+			})
+		})	
 	},
 	
 	add: function($this) {

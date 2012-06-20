@@ -2,7 +2,8 @@ Ext.define("SiteSelector.controller.Body", {
 	extend: "Ext.app.Controller",
 	config: {
 		refs: {
-			formPanel: "BodyList"
+			formPanel: "BodyList",
+			navigationview: "navigationview"
 		},
 		control: {
 			formPanel: {
@@ -11,9 +12,19 @@ Ext.define("SiteSelector.controller.Body", {
 				initialize: "onActivate",
 				longtap: "addSite",
 				zoom: "zoom"
+			},
+			navigationview: {
+				show_sites: "show_sites"
 			}
 		}
 	},
+	show_sites: function(navview) {
+		navview.push({
+			xtype: "bodypanel" + Ext.Viewport.getOrientation(),
+			title: "Sites"
+		});	
+	},
+	
 	onActivate: function(container) {
 		window.setTimeout(function() {
 			container.clearSites();

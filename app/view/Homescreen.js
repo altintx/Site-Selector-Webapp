@@ -44,10 +44,9 @@ Ext.define("SiteSelector.view.Homescreen", {
 						text: "Sites",
 						flex: 1,
 						handler: function() {
-							this.up("navigationview").push({
-								xtype: "bodypanel" + Ext.Viewport.getOrientation(),
-								title: "Sites"
-							})
+							(function(view) {
+								view.fireEvent("show_sites", view);
+							})(this.up("navigationview"))
 						}
 					}
 				]
@@ -62,13 +61,9 @@ Ext.define("SiteSelector.view.Homescreen", {
 						flex: 1,
 						xtype: "button",
 						handler: function() {
-							this.up("navigationview").push({
-								xtype: "addexercise",
-								title: "Exercise",
-								record: new SiteSelector.model.Exercise({
-									when: new Date()
-								})
-							})
+							(function(view) {
+								view.fireEvent("list_exercises", view);
+							})(this.up("navigationview"))
 						}
 					},
 					{
@@ -86,10 +81,9 @@ Ext.define("SiteSelector.view.Homescreen", {
 						xtype: "button",
 						flex: 1,
 						handler: function() {
-							this.up("navigationview").push({
-								xtype: "settings",
-								title: "Settings"
-							})
+							(function(view) {
+								view.fireEvent("show_settings", view);
+							})(this.up("navigationview"))
 						}
 					}
 				]
