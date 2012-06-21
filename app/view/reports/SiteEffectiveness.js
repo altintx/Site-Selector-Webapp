@@ -39,7 +39,7 @@ Ext.define("SiteSelector.view.reports.SiteEffectiveness", {
 			sugarStore = Ext.data.StoreManager.get("BloodSugars");
 			
 		siteStore.each(function(site) {
-			if (site.get("when") == null || site.get("removed") || site.get("kind") != "pump") return;
+			if (site.get("when") == null || site.get("removed") == null || site.get("kind") != "pump") return;
 			
 			var plot = {
 					x: site.data.x * 100,
