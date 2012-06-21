@@ -46,9 +46,16 @@ body.x-chrome .site .x-button-label {
 }
 
 .x-button.x-button-icon {
-	background-color: transparent !important;
-	background-image: none !important;
-	border: 0;
+	background-color: transparent;
+	background-image: none;
+	border-color: transparent;
+}
+.x-button.x-button-pressing.x-button-icon {
+	border-color: #999;
+	background-color: #c4c4c4;
+	background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #ababab), color-stop(10%, #b8b8b8), color-stop(65%, #c4c4c4), color-stop(100%, #c6c6c6));
+	background-image: -webkit-linear-gradient(#ababab, #b8b8b8 10%, #c4c4c4 65%, #c6c6c6);
+	background-image: linear-gradient(#ababab, #b8b8b8 10%, #c4c4c4 65%, #c6c6c6);
 }
 
 .x-button-icon img {
