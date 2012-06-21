@@ -139,7 +139,7 @@ Ext.application({
 				var settingsView = Ext.Viewport.down("navigationview").push({
 					record: settings,
 					scrollable: true,
-					xtype: "Settings",
+					xtype: "settings",
 					listeners: {
 						initialize: function() {
 							window.setTimeout(function() {
