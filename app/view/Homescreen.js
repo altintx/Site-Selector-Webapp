@@ -24,7 +24,7 @@ Ext.define("SiteSelector.view.Homescreen", {
 						text: "Insulin",
 						xtype: "button",
 						ui: "icon",
-						html: '<img src="/resources/icons/homescreen/vial.png" /><div>Insulin</div>',
+						html: '<img src="' + window.location.pathname.replace("index.html", "") + '/resources/icons/homescreen/vial.png" /><div>Insulin</div>',
 						flex: 1,
 						handler: function() {
 							(function(view) {
@@ -37,7 +37,7 @@ Ext.define("SiteSelector.view.Homescreen", {
 						flex: 1,
 						ui: "icon",
 						xtype: "button",
-						html: '<img src="/resources/icons/homescreen/eat.png" /><div>Eat</div>',
+						html: '<img src="' + window.location.pathname.replace("index.html", "") + '/resources/icons/homescreen/eat.png" /><div>Eat</div>',
 						handler: function() {
 							(function(view) {
 								view.fireEvent("eat", view);
@@ -49,7 +49,7 @@ Ext.define("SiteSelector.view.Homescreen", {
 						text: "Sites",
 						flex: 1,
 						ui: "icon",
-						html: '<img src="/resources/icons/homescreen/sites.png" /><div>Infusion<br/>Sites</div>',
+						html: '<img src="' + window.location.pathname.replace("index.html", "") + '/resources/icons/homescreen/sites.png" /><div>Sites</div>',
 						handler: function() {
 							(function(view) {
 								view.fireEvent("show_sites", view);
@@ -68,7 +68,7 @@ Ext.define("SiteSelector.view.Homescreen", {
 						flex: 1,
 						ui: "icon",
 						xtype: "button",
-						html: '<img src="/resources/icons/homescreen/exercise.png" /><div>Exercise</div>',
+						html: '<img src="' + window.location.pathname.replace("index.html", "") + '/resources/icons/homescreen/exercise.png" /><div>Exercise</div>',
 						handler: function() {
 							(function(view) {
 								view.fireEvent("list_exercises", view);
@@ -78,7 +78,7 @@ Ext.define("SiteSelector.view.Homescreen", {
 					{
 						text: "Log",
 						xtype: "button",
-						html: '<img src="/resources/icons/homescreen/log.png" /><div>Log</div>',
+						html: '<img src="' + window.location.pathname.replace("index.html", "") + '/resources/icons/homescreen/log.png" /><div>Log</div>',
 						flex: 1,
 						ui: "icon",
 						handler: function() {
@@ -92,7 +92,7 @@ Ext.define("SiteSelector.view.Homescreen", {
 						xtype: "button",
 						flex: 1,
 						ui: "icon",
-						html: '<img src="/resources/icons/homescreen/settings.png" /><div>Settings</div>',
+						html: '<img src="' + window.location.pathname.replace("index.html", "") + '/resources/icons/homescreen/settings.png" /><div>Settings</div>',
 						handler: function() {
 							(function(view) {
 								view.fireEvent("show_settings", view);

@@ -39,7 +39,7 @@ Ext.define("SiteSelector.ux.BloodSugarSlider", {
 				name: field,
 				label: label,
 				labelCls: "transparent_label",
-				labelWidth: "40%",
+				labelWidth: "30%",
 				minValue: min,
 				maxValue: max,
 				increment: increment,

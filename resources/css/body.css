@@ -52,7 +52,20 @@ body.x-chrome .site .x-button-label {
 }
 
 .x-button-icon img {
-	width: 1in;
-	height: 1in;
+	width: 0.9in;
+	height: 0.9in;
 	clear: both;
 }
+
+.x-tablet .x-img.captured {
+	width: 6in;
+	height: 4.5in;
+	background-size: 6in 4.5in;
+}
+
+.x-phone .x-img.captured {
+	width: 2.8in;
+	height: 2in;
+	background-size: 2.8in 2in;
+}
+

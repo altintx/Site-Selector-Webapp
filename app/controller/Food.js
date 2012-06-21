@@ -1,22 +1,18 @@
 Ext.define("SiteSelector.controller.Food", {
 	extend: "Ext.app.Controller",
 	requires: [
-		// "SiteSelector.view.Geolocator"
 		"SiteSelector.ux.BloodSugarSlider"
 	],
 	config: {
 		views: [
 			"SiteSelector.view.food.Add",
 			"SiteSelector.view.food.Edit"
-			// "SiteSelector.view.Geolocator",
-			// "SiteSelector.view.MealGallery"
 		],
 		models: [
 			"Food",
 			"Restaurant"
 		],
 		refs: {
-			// 'Geolocator': "geolocator",
 			"AddScreen": "addfood",
 			"MealGallery": "meal_gallery",
 			"Homescreen": "navigationview"
@@ -39,18 +35,24 @@ Ext.define("SiteSelector.controller.Food", {
 	
 	persistPhoto: function(imageURI, callback) {
 		window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fs) {
+			console.log(imageURI);
+			console.log(window.resolveLocalFileSystemURI);
 			window.resolveLocalFileSystemURI(imageURI, function(fe) {
+				console.log("fe", fe);
 				fe.moveTo(fs.root, "meal-" + Date.now() + ".jpg", function(f) {
+					console.log("f", f);
 					callback(f.toURL())
 				}, function(error) {
 					// fail
+					console.log("Smaller fail")
 				});
-				
+
 			}, function (e) {
-				
+				// fail
+				console.log("Big fat fail");
 			});
 		}, function(event) {
-			// fail
+			console.log("I like paste");
 		});
 	},
 	
@@ -71,15 +73,16 @@ Ext.define("SiteSelector.controller.Food", {
 		});
 	},
 	
-	addPic: function(meal) {
+	addPic: function(meal, callback) {
+		var $this = this;
 		if (navigator.camera) {
 			navigator.camera.getPicture(function(temporaryImageURI) {
 				$this.persistPhoto(temporaryImageURI, function(persistentURL) {
 					meal.set("file_uri", persistentURL);
+					callback(persistentURL);
 				});
 			}, function(message) {
 				Ext.Msg.alert("Failed to save the photo", message)
-				getLocation();
 			}, { 
 				quality: 50,
 				destinationType: Camera.DestinationType.FILE_URI

@@ -69,7 +69,12 @@ Ext.define("SiteSelector.view.food.Edit", {
 					nv.pop();
 				}
 			});
-			$this.down("image[name=photo]").setSrc($this.getRecord().get("file_uri"));
+			
+			(function(photoRef, photoUri) {
+				photoRef.setSrc(photoUri);
+				if (photoUri) photoRef.element.addCls("captured");
+			})($this.down("image[name=photo]"), $this.getRecord().get("file_uri"));
+			
 			$this.on("destroy", function() {
 				saveButton.destroy();
 			})

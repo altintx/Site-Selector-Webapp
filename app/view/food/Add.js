@@ -62,7 +62,6 @@ Ext.define("SiteSelector.view.food.Add", {
 			{
 				xtype: "fieldset",
 				title: "Photo",
-				hidden: !navigator.camera,
 				items: [
 					{
 						xtype: "container",
@@ -71,6 +70,7 @@ Ext.define("SiteSelector.view.food.Add", {
 							{
 								xtype: "image",
 								src: false,
+								name: "photo",
 								flex: 1
 							},
 							{
@@ -78,10 +78,18 @@ Ext.define("SiteSelector.view.food.Add", {
 								iconCls: "compose",
 								iconMask: true,
 								handler: function(b) {
-									var form = b.up("addfood");
-									form.fireEvent("addPic", form.getRecord())
-								},
-								disabled: !navigator.camera
+									if (navigator.camera) {
+										var form = b.up("addfood");
+										form.fireEvent("addPic", form.getRecord(), function(uri) {
+											(function(photo) {
+												photo.setSrc(uri);
+												if (!photo.element.hasCls("captured")) photo.element.addCls("captured");
+											})(form.down("image[name=photo]"));
+										})
+									} else {
+										Ext.Msg.alert("No Camera");
+									}
+								}
 							}
 						]
 					},

@@ -146,7 +146,6 @@ Ext.define("SiteSelector.controller.Body", {
 			} else {
 				store.sync();
 			}
-			debugger;
 			if (["shot_bolus", "shot_basal"].indexOf(kind) > -1) {
 				$this.up("navigationview").fireEvent("bolus", $this.up("navigationview"));
 			}
