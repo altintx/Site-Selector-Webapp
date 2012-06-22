@@ -112,9 +112,6 @@ Ext.define("SiteSelector.view.food.Add", {
 				list.setValue(nearest.get("id"));
 			})(form.getRecord());
 		});
-		
-		// this.down("spinnerfield[name=bgnow]").setIncrement(SiteSelector.app.bgStep);
-		// this.down("spinnerfield[name=cgmnow]").setIncrement(SiteSelector.app.bgStep);
 	},
 	
 	initialize: function() {
@@ -133,7 +130,7 @@ Ext.define("SiteSelector.view.food.Add", {
 						form.updateRecord(record);
 						form.fireEvent("save", record, form);
 						navigationview.pop();
-						navigationview.fireEvent("insulinforfood", record, record.get("use_bgnow")? record.get("bgnow"): record.get("use_cgmnow")? record.get("cgmnow"): 0)
+						navigationview.fireEvent("insulinforfood", record, form.getValues.use_bgnow? form.getValues().bgnow: form.getValues().use_cgmnow? form.getValues().cgmnow: 0)
 					})($this, $this.up("navigationview"), $this.getRecord());
 				}
 			})
