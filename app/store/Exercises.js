@@ -27,13 +27,15 @@ Ext.define("SiteSelector.store.Exercises", {
 			})
 			var r = logStore.getAt(ix);
 			
-			r.set({
-				title: "Exercised for " + m.data.duration + "m",
-				description: m.data.action + " for " + m.data.duration + " minutes"
-			});
+			if (m.get("ended")) {
+				r.set({
+					title: "Exercised for " + ((m.get("ended").getTime() - m.get("when").getTime()) / 60000) + "m",
+					description: m.data.action + " for " + ((m.get("ended").getTime() - m.get("when").getTime()) / 60000) + " minutes"
+				});
+			}
 		});
 		store.getNewRecords().forEach(function(m) {
-			logStore.record(m, "Exercised for " + m.data.duration + "m", m.data.action + " for " + m.data.duration + " minutes");
+			logStore.record(m, "Exercising", m.data.action + " from " + m.data.when);
 		});
 		store.getRemovedRecords().forEach(function(m) {
 			logStore.each(function(r) {

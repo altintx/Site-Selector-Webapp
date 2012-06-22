@@ -28,19 +28,39 @@ Ext.define("SiteSelector.view.exercise.Edit", {
 							slotOrder: ['month', 'day', 'year','hour'] // append more fields depending on device type
 						}
 					}),
+					(function(config) {
+						if (Ext.os.is.Phone) {
+							config.picker.slotOrder.push("ampm");
+							config.dateTimeFormat = 'm/d/Y gA';
+						} else {
+							config.picker.slotOrder.push("minute");
+							config.picker.slotOrder.push("ampm");
+							config.dateTimeFormat = 'm/d/Y h:i:A';
+						}
+						return config;
+					})({
+						xtype: 'datetimepickerfield',
+						name : 'ended',
+						label: "Ended",
+						picker: {
+							yearFrom: 2012,
+							ampm : true,
+							slotOrder: ['month', 'day', 'year','hour'] // append more fields depending on device type
+						}
+					}),
 					{
 						xtype: "textfield",
 						name: "action",
 						label: "Activity",
 					},
-					{
-						xtype: "spinnerfield",
-						name: "duration",
-						label: "Duration",
-						minValue: 0,
-						maxValue: 480,
-						increment: 5
-					},
+					// {
+					// 	xtype: "spinnerfield",
+					// 	name: "duration",
+					// 	label: "Duration",
+					// 	minValue: 0,
+					// 	maxValue: 480,
+					// 	increment: 5
+					// },
 					{
 						xtype: "spinnerfield",
 						name: "carb_load",
@@ -71,6 +91,12 @@ Ext.define("SiteSelector.view.exercise.Edit", {
 			})
 			$this.on("destroy", function() {
 				save.destroy();
+			}),
+			$this.on("hide", function() {
+				save.hide();
+			});
+			$this.on("show", function() {
+				save.show();
 			})
 		});
 	}

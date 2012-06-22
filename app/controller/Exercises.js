@@ -20,23 +20,67 @@ Ext.define("SiteSelector.controller.Exercises", {
 		},
 		views: [
 			"SiteSelector.view.exercise.Add",
-			"SiteSelector.view.exercise.Edit"
+			"SiteSelector.view.exercise.Edit",
+			"SiteSelector.view.exercise.Still"
 		]
 	},
 	
 	show: function(navview) {
-		var record = new SiteSelector.model.Exercise({
-			when: new Date()
+		var s_ex = Ext.data.StoreManager.get("Exercises");
+		var s_my = Ext.create("Ext.data.Store", {
+			model: "SiteSelector.model.Exercise",
+			data: []
 		});
-		record.set({
-			bgnow: Ext.data.StoreManager.get("BloodSugars").mostRecent(),
-			cgmnow: Ext.data.StoreManager.get("BloodSugars").mostRecent()
-		});
-		navview.push({
-			xtype: "addexercise",
-			title: "Exercise",
-			record: record
-		})	
+		s_ex.each(function(r) {
+			if (r.get("ended") == null) {
+				s_my.add(r);
+			}
+		})
+		if (s_my.getCount() > 0) {
+			navview.push({
+				xtype: "stillexercising",
+				store: s_my,
+				listeners: {
+					edit: function(record) {
+						navview.pop();
+						navview.push({
+							xtype: "editexercise",
+							record: record,
+							title: "Edit Exercise"
+						});
+					},
+					"new": function(record) {
+						var record = new SiteSelector.model.Exercise({
+							when: new Date()
+						});
+						record.set({
+							bgnow: Ext.data.StoreManager.get("BloodSugars").mostRecent(),
+							cgmnow: Ext.data.StoreManager.get("BloodSugars").mostRecent()
+						});
+						navview.pop();
+						navview.push({
+							xtype: "addexercise",
+							record: record,
+							title: "Exercise"
+						});
+					}
+					
+				}
+			});
+		} else {
+			var record = new SiteSelector.model.Exercise({
+				when: new Date()
+			});
+			record.set({
+				bgnow: Ext.data.StoreManager.get("BloodSugars").mostRecent(),
+				cgmnow: Ext.data.StoreManager.get("BloodSugars").mostRecent()
+			});
+			navview.push({
+				xtype: "addexercise",
+				title: "Exercise",
+				record: record
+			});
+		}
 	},
 	
 	add: function($this) {

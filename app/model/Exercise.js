@@ -23,6 +23,11 @@ Ext.define("SiteSelector.model.Exercise", {
 				name: 'when',
 				type: 'date',
 				dateFormat: "c"
+			},
+			{
+				name: "ended",
+				type: "date",
+				dateFormat: "c"
 			}
 		]
 	}
