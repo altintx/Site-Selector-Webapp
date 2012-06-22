@@ -103,6 +103,7 @@ Ext.define("SiteSelector.view.food.Add", {
 		var form = this;
 		var list = this.down("selectfield[name=foursquare_location]");
 		list.getStore().getNearbyRestaurants(function(store, nearest) {
+			if (typeof nearest == "undefined") return;
 			(function(record) {
 				record.set({
 					foursquare_id: nearest.get("id"),
@@ -118,8 +119,11 @@ Ext.define("SiteSelector.view.food.Add", {
 	
 	initialize: function() {
 		this.callParent(arguments);
-		var $this = this;
-		setTimeout(function() {
+		this.on("painted", function($this) {
+			$this.up("navigationview").on("back", function(nv) {
+				$this.hide();
+			}, true);
+			
 			var tb = $this.up("navigationview").getNavigationBar();
 			var done = tb.add({
 				align: "right",
@@ -142,7 +146,7 @@ Ext.define("SiteSelector.view.food.Add", {
 			$this.on("show", function() {
 				done.show()
 			})
-		}, 10);
+		});
 	},
 
 });

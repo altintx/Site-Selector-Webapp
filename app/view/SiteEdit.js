@@ -151,8 +151,11 @@ Ext.define("SiteSelector.view.SiteEdit", {
 	
 	initialize: function() {
 		this.callParent();
-		var $this = this;
-		setTimeout(function (args) {
+		this.on("painted", function($this) {
+			$this.up("navigationview").on("back", function(nv) {
+				$this.hide();
+			}, true);
+			
 			var tb = $this.up("navigationview").getNavigationBar();
 			var done = tb.add({
 				align: "right",
@@ -175,6 +178,6 @@ Ext.define("SiteSelector.view.SiteEdit", {
 			$this.on("destroy", function() {
 				done.destroy();
 			});
-		}, 1)
+		});
 	}
 });

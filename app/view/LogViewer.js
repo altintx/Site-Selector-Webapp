@@ -17,54 +17,69 @@ Ext.define("SiteSelector.view.LogViewer", {
 	initialize: function(v) {
 		this.callParent(arguments);
 		
-		var $this = this;
-		setTimeout(function() {
+		this.on("painted", function($this) {
+			$this.up("navigationview").on("back", function(nv) {
+				$this.hide();
+			});
 			var tb = $this.up("navigationview").getNavigationBar();
-			var btnExport = tb.add({
-				align: "right",
-				text: "Export",
-				action: "export",
-				handler: function() {
-					var help = Ext.Viewport.add({
-						xtype: "panel",
-						html: "<h3>To save this data as a spreadsheet:</h3><ol><li>Connect your iOS device to your computer.</li><li>In <strong>iTunes</strong>, click to the <strong>Apps</strong> tab.</li><li>Scroll down to <strong>File Sharing</strong></li><li>Choose <strong>Site Selector</strong>.</li><li>Choose <strong>sites.csv</strong></li><li>Press <strong>Save to...</strong></li></ol>",
-						overlay: true,
-						top: "1in",
-						hideOnMaskTap: true,
-					});
-					// expire help after 10s
-					Ext.Anim.run(help, 'fade', {
-						after: function() {
-							help.destroy();
-						},
-						out: true,
-						delay: 10000
-					})
-					help.showBy(this);
-				}
-			})
-			var btnReports = tb.add({
+			var more = tb.add({
 				align: "right",
 				text: "Reports",
-				handler: function() {
-					$this.up("navigationview").push({
-						xtype: "reportbrowser",
-						title: "Reports"
+				handler: function(b) {
+					var menu = new Ext.ActionSheet({
+						items: [
+							{
+								text: "Export",
+								handler: function() {
+									var help = Ext.Viewport.add({
+										xtype: "panel",
+										html: "<h3>To save this data as a spreadsheet:</h3><ol><li>Connect your iOS device to your computer.</li><li>In <strong>iTunes</strong>, click to the <strong>Apps</strong> tab.</li><li>Scroll down to <strong>File Sharing</strong></li><li>Choose <strong>Site Selector</strong>.</li><li>Choose <strong>sites.csv</strong></li><li>Press <strong>Save to...</strong></li></ol>",
+										overlay: true,
+										top: "1in",
+										hideOnMaskTap: true,
+									});
+									// expire help after 10s
+									Ext.Anim.run(help, 'fade', {
+										after: function() {
+											help.destroy();
+										},
+										out: true,
+										delay: 10000
+									})
+									help.showBy(b);
+									menu.destroy();
+								}
+							},
+							{
+								text: "Reports",
+								handler: function() {
+									$this.up("navigationview").push({
+										xtype: "reportbrowser",
+										title: "Reports"
+									});
+									menu.destroy();
+								}
+							},
+							{
+								text: "Cancel",
+								handler: function() {
+									menu.destroy();
+								}
+							}
+						]
 					});
+					menu.show();
 				}
-			})
+			});
 			$this.on("destroy", function() {
-				btnExport.destroy();
-				btnReports.destroy();
+				more.destroy();
 			});
 			$this.on("hide", function() {
-				btnExport.hide();
-				btnReports.hide();
+				more.hide();
 			});
 			$this.on("show", function() {
-				btnExport.show();
-				btnReports.show();
+				more.show();
 			});
-		}, 10);	
+		});	
 	}
 });

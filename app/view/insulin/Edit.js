@@ -43,8 +43,11 @@ Ext.define("SiteSelector.view.insulin.Edit", {
 	
 	initialize: function() {
 		this.callParent(arguments);
-		var $this = this;
-		setTimeout(function() {
+		this.on("painted", function($this) { 
+			$this.up("navigationview").on("back", function(nv) {
+				$this.hide();
+			}, true);
+			
 			var tb = $this.up("navigationview").getNavigationBar();
 			var done = tb.add({
 				text: "Save",
@@ -58,7 +61,7 @@ Ext.define("SiteSelector.view.insulin.Edit", {
 			$this.on("destroy", function() {
 				done.destroy();
 			});
-		}, 10);
+		});
 	},
 	
 })

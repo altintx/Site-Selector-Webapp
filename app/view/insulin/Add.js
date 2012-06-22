@@ -152,6 +152,10 @@ Ext.define("SiteSelector.view.insulin.Add", {
 	initialize: function() {
 		this.callParent(arguments);
 		this.on("painted", function($this) {
+			$this.up("navigationview").on("back", function(nv) {
+				$this.hide();
+			}, true);
+			
 			var tb = $this.up("navigationview").getNavigationBar();
 			var done = tb.add({
 				text: "Save",

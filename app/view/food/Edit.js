@@ -56,8 +56,11 @@ Ext.define("SiteSelector.view.food.Edit", {
 	initialize: function() {
 		this.callParent();
 		
-		var $this = this;
-		setTimeout(function() {
+		this.on("painted", function($this) { 
+			$this.up("navigationview").on("back", function(nv) {
+				$this.hide();
+			}, true);
+			
 			var nv = $this.up("navigationview");
 			var saveButton = nv.getNavigationBar().add({
 				text: "Save",

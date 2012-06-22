@@ -68,6 +68,10 @@ Ext.define("SiteSelector.view.exercise.Add", {
 	initialize: function() {
 		var nv = Ext.Viewport.down("navigationview");
 		this.on("painted", function($this) { 
+			nv.on("back", function(nv) {
+				$this.hide();
+			}, true);
+			
 			var save = nv.getNavigationBar().add({
 				text: "Save",
 				align: "right",
@@ -79,6 +83,12 @@ Ext.define("SiteSelector.view.exercise.Add", {
 			$this.on("destroy", function() {
 				save.destroy();
 			})
-		}, 1);
+			$this.on("hide", function() {
+				save.hide();
+			})
+			$this.on("show", function() {
+				save.show();
+			})
+		});
 	}
 });
