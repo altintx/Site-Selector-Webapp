@@ -131,7 +131,7 @@ Ext.define("SiteSelector.view.food.Add", {
 				handler: function() {
 					(function(form, navigationview, record) {
 						form.updateRecord(record);
-						form.fireEvent("save", record);
+						form.fireEvent("save", record, form);
 						navigationview.pop();
 						navigationview.fireEvent("insulinforfood", record, record.get("use_bgnow")? record.get("bgnow"): record.get("use_cgmnow")? record.get("cgmnow"): 0)
 					})($this, $this.up("navigationview"), $this.getRecord());

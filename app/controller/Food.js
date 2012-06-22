@@ -122,24 +122,24 @@ Ext.define("SiteSelector.controller.Food", {
 		Ext.Viewport.down("addfood").setRecord(current_meal);
 	},
 	
-	savemeal: function(meal) {
+	savemeal: function(meal, form) {
 		var meal_store = Ext.data.StoreManager.get("Meals"),
 			bgnow_store = Ext.data.StoreManager.get("BloodSugars");
 		
-		if (meal.get("use_cgmnow")) {
+		if (form.getValues().use_cgmnow) {
 			bgnow_store.add({
 				when: meal.get("when"),
 				kind: "cgm",
-				reading: meal.get("cgmnow"),
+				reading: form.getValues().cgmnow,
 				unit: SiteSelector.app.settings("bgunit")
 			});
 		}
 		
-		if (meal.get("use_bgnow")) {
+		if (form.getValues().use_bgnow) {
 			bgnow_store.add({
 				when: meal.get("when"),
 				kind: "meter",
-				reading: meal.get("bgnow"),
+				reading: form.getValues().bgnow,
 				unit: SiteSelector.app.settings("bgunit")
 			});
 		}
