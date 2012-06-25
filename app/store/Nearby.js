@@ -69,15 +69,15 @@ Ext.define("SiteSelector.store.Nearby", {
 	getNearbyRestaurants: function(callback) {
 		this.getNearby(function(store) {
 			store.clearFilter();
-			store.filter(new Ext.util.Filter({
-			    filterFn: function(item) {
-					return ((item.raw.categories || []).filter(function(cat) {
-						return (cat.icon.prefix.toString().indexOf("food") > -1) || 
-						/restaurant/i.test(cat.name) 
-					}).length > 0) ||
-					/-11111111/.test(item.data.id);
-			    }
-			}));
+			//store.filter(new Ext.util.Filter({
+			//    filterFn: function(item) {
+			//		return ((item.raw.categories || []).filter(function(cat) {
+			//			return (cat.icon.prefix.toString().indexOf("food") > -1) || 
+			//			/restaurant/i.test(cat.name) 
+			//		}).length > 0) ||
+			//		/-11111111/.test(item.data.id);
+			//    }
+			//}));
 			var nearest = store.getAt(2); // first non-zero
 			if (callback) callback(store, nearest);
 		});
