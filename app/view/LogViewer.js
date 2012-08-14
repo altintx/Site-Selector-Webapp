@@ -41,13 +41,8 @@ Ext.define("SiteSelector.view.LogViewer", {
 						})
 						help.showBy(this);
 					}
-				},
-				{
-					align: "right",
-					text: "Add",
-					action: "addevent"
 				}
 			]
 		}]
 	}
-})
+});

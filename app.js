@@ -16,7 +16,6 @@ Ext.application({
 		"Settings",
 		"Body",
 		"Log",
-		"BloodSugar",
 		"Reports"
 	],
 	

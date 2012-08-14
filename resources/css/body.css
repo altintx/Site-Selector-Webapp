@@ -44,3 +44,6 @@ body.x-chrome .site .x-button-label {
 	margin-left: 0;
 	top: 0;
 }
+.x-title .x-innerhtml {
+	text-overflow: clip;
+}

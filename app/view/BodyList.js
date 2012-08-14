@@ -1,10 +1,10 @@
 Ext.define("SiteSelector.view.BodyList", {
-    extend: 'Ext.Container',
+	extend: 'Ext.Container',
 	alias: "widget.BodyList",
 	requires: ["Ext.Img", "Ext.ActionSheet", "Ext.field.Slider", "SiteSelector.view.Body", "Ext.ux.ComboButton"],
 	stores: ['Sites'],
-	
-    config: {
+
+	config: {
 		iconCls: "user",
 		layout: "fit",
 		store: null,
@@ -13,104 +13,31 @@ Ext.define("SiteSelector.view.BodyList", {
 		bodyConfig: null,
 		_sliders: []
 	},
-	
+
 	constructor: function(config) {
 		this.store = config.store;
 		this.sites = [];
 		this.side = config.side;
 		this._sliders = [];
-		
+
 		config.items = [
-			{
-				xtype: "titlebar",
-				docked: "top",
-				title: config.title,
-				items: [
-					{
-						text: "History",
-						align: "left",
-						handler: function() {
-							var container = this.up("BodyList").down("container[alias=vbox]");
-							container.getScrollable().getScroller().scrollTo(0,0);
-							var help = Ext.Viewport.add({
-								xtype: "panel",
-								html: "Swipe up to dismiss. You can also swipe down to reveal this panel.",
-								overlay: true,
-								top: "1in",
-								hideOnMaskTap: true,
-							});
-							help.showBy(container.down("sliderfield"));
-							// expire help after 5s
-							Ext.Anim.run(help, 'fade', {
-								after: function() {
-									help.destroy();
-								},
-								out: true,
-								delay: 5000
-							});
-							container.getScrollable().getScroller().on("scroll", function(event) {
-								help.destroy();
-							}, true);
-						}
-					},
-					{
-						text: "Add Site",
-						align: "right",
-						xtype: "combobutton",
-						listeners: {
-							tap: function(button, e) {
-								console.log(e);
-								var help = Ext.Viewport.add({
-									xtype: "panel",
-									html: "Temporarily hiding existing sites. Long-tap to place a site, or short-tap to zoom first.",
-									overlay: true,
-									top: "1in",
-									hideOnMaskTap: true,
-								});
-								help.showBy(this);
-								// expire help after 5s
-								Ext.Anim.run(help, 'fade', {
-									after: function() {
-										help.destroy();
-									},
-									out: true,
-									delay: 5000
-								})
-								var bl = this.up("BodyList");
-								bl.clearSites();
-								var t = setTimeout(function() {
-									bl.drawSites();
-								}, 5000);
-								bl.down("body").on("tap", function() {
-									bl.drawSites();
-									clearTimeout(t);
-								})
-							},
-							longtap: function() {
-								var menu = Ext.create('SiteSelector.view.LogActionSheet');
-								Ext.Viewport.add(menu);
-								menu.show();
-							}
-						}
-					}
-				]
-			},
 			{
 				xtype: "body",
 				side: config.side
 			}
 		];
-		
+
 		this.callParent(arguments);
-		
+
 		this.drawSites = this.drawSitesDefault;
 	},
-	
-	
+
 	initialize: function() {
 		var $this = this;
 		var humanBodyMap = $this.down("body");
-		
+
+		if (typeof this.store == "string") this.setStore(Ext.data.StoreManager.get(this.store));
+
 		var fn = function(store, records, index) {
 			humanBodyMap = $this.down("body");
 			if (humanBodyMap.element) {
@@ -128,7 +55,7 @@ Ext.define("SiteSelector.view.BodyList", {
 		};
 		// needs assigned this way so we can unregister on just this instance
 		$this.getStore().on("addrecords", fn);
-		
+
 		var fnTimer = function() {
 			var fnSlider = function() {
 				var c = Ext.ComponentQuery.query("slider");
@@ -196,11 +123,11 @@ Ext.define("SiteSelector.view.BodyList", {
 		}
 		fnTimer();
 	},
-	
+
 	drawSitesDefault: function() {
 		var $this = this;
 		var body = $this.down("body");
-		
+
 		$this.getStore().each(function(record) {
 			if (record.data.side == $this.side) {
 				try {
@@ -210,12 +137,12 @@ Ext.define("SiteSelector.view.BodyList", {
 			}
 		});
 	},
-	
+
 	onTimeFilterChange: function() {
 		var $this = this,
-		    scheduled_anim = null;
-		    help = null,
-		    body = this.down("body");
+			scheduled_anim = null;
+			help = null,
+			body = this.down("body");
 		return function(slider, thumb) {
 			var value = slider.getValue(), msg = "";
 			if (help) {
@@ -238,12 +165,12 @@ Ext.define("SiteSelector.view.BodyList", {
 				top: "1in",
 				hideOnMaskTap: true,
 			});
-			
+
 			$this.clearSites();
 			$this.drawSites(value * 1000 * 60 * 60 * 24);
-			
+
 			scheduled_anim = Date.now() + 5000;
-			
+
 			var close_help = function() {
 				if (Date.now() > scheduled_anim) {
 					Ext.Anim.run(help, 'fade', {
@@ -259,7 +186,7 @@ Ext.define("SiteSelector.view.BodyList", {
 			setTimeout(close_help, 5000)
 		};
 	},
-	
+
 	drawSitesPeriod: function(daysBack) {
 		var $this = this;
 		var body = $this.down("body");
@@ -273,9 +200,9 @@ Ext.define("SiteSelector.view.BodyList", {
 			}
 		});
 	},
-	
+
 	clearSites: function() {
 		this.down("body").clearSites();
 	},
-	
+
 });

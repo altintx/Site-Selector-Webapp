@@ -15,16 +15,15 @@ Ext.define("SiteSelector.view.Body", {
 			config.side = "front";
 		}
 		
-		
 		if ("resolution" in config) {
 			var availableResolutions = [1024, 2048];
-			if (config.resolution == parseInt(config.resolution)) {
+			if (config.resolution == parseInt(config.resolution, 10)) {
 				if (availableResolutions.indexOf(config.resolution) > -1) {
 					config.resolution = availableResolutions[config.resolution];
 				} else {
 					throw new Error("Don't know what to do with provided resolution (" + config.resolution + ")");
 				}
-			} else if (config.resolution = "max") {
+			} else if (config.resolution == "max") {
 				config.resolution = availableResolutions[availableResolutions.length - 1];
 			}
 		} else {
@@ -88,13 +87,13 @@ Ext.define("SiteSelector.view.Body", {
 	plotPoint: function (x, y, opacity, record) {
 		var img = this.element,
 		    placeHolder = Ext.DomHelper.append(img, {
-		    	tag: "div"
+				tag: "div"
 		    }, true),
 		    $this = this;
 		placeHolder.setStyle({
 			position: "absolute"
 		});
-		placeHolder.setSize("0.25in", "0.25in");;
+		placeHolder.setSize("0.25in", "0.25in");
 		if (placeHolder.getWidth() > 0) {
 			var site = new Ext.Button({
 				cls: "circle " + record.get("kind"),

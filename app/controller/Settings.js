@@ -2,20 +2,17 @@ Ext.define("SiteSelector.controller.Settings", {
 	extend: "Ext.app.Controller",
 	config: {
 		control: {
-			saveButton: {
-				tap: 'doSave'
-			},
 			form: {
-				activate: 'activate'
+				activate: 'activate',
+				deactivate: "doSave"
 			}
 		},
 		refs: {
-			saveButton: 'Settings button[action=save]',
 			form: 'Settings',
 		}
 	},
-	doSave: function(button) {
-		var form = button.up("formpanel");
+	
+	doSave: function(form) {
 		var r = form.getRecord();
 		form.updateRecord(r);
 		r.dirty = true;
@@ -23,8 +20,8 @@ Ext.define("SiteSelector.controller.Settings", {
 		
 		// store sync
 		this.getApplication().settingsStore.sync();
-		Ext.Viewport.down("tabpanel").switchTo("front");
 	},
+	
 	activate: function(form) {
 		form.setRecord(SiteSelector.app.settings());
 	}
