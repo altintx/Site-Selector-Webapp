@@ -4,6 +4,16 @@ Ext.Loader.setPath({
 });
 //</debug>
 
+Array.prototype.unique = function() {	
+	var o = {}, i, l = this.length, r = [];	
+	for(i=0; i<l;i+=1) 
+		o[this[i]] = this[i];	
+	for(i in o) 
+		r.push(o[i]);	
+	return r;
+};
+
+
 Ext.application({
 	name: 'SiteSelector',
 
@@ -51,7 +61,7 @@ Ext.application({
 	// getUserBgInMgDl: true, // see model.Setting
 	bgStep: 1,
 	
-	settings: function() {
+	settings: function(key) {
 		this.settingsStore = Ext.data.StoreManager.get("Settings");
 		var settings = this.settingsStore.first();
 		if (this.firstLoad && (!settings || settings.data.version  < 2.2)) {
@@ -72,8 +82,10 @@ Ext.application({
 					target_bg: 100,
 					usereminders: 1,
 					usezoom: Ext.os.is.phone? 1: 0,
-					version: 2.2,
-					bgunits: "mgdl"
+					version: 4.0,
+					bgunits: "mgdl",
+					quietFrom: new Date(2000, 0, 1, 22, 0, 0),
+					quietTo: new Date(2000, 01, 1, 7, 0, 0)
 				});
 				settings = R[0];
 			}
@@ -121,6 +133,15 @@ Ext.application({
 					this.settingsStore.sync();
 					msg = "Shot tracking is now available. Configure your healing time for each of basal and bolus. Also, blood sugar units can now be set to mmol/L";
 					title = "Thanks for upgrading!";				
+				case 2.2:
+				case 3.0:
+					settings.set({
+						version: 4.0,
+						quiet_from: new Date(2000, 0, 1, 22, 0, 0),
+						quiet_to: new Date(2000, 01, 1, 7, 0, 0)
+					});
+					msg = "Reminders now have a quiet period and will remind you a few hours earlier that it's almost time to change sites.";
+					title = "Thanks for upgrading!";				
 				default:
 					/* this version */
 			}
@@ -165,7 +186,11 @@ Ext.application({
 			this.firstLoad = false;
 		}
 		
-		return settings;
+		if (key) {
+			return settings.get(key);
+		} else {
+			return settings;
+		}
 	},
 	
 	showHelp: false,

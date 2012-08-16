@@ -9,14 +9,7 @@ Ext.define("SiteSelector.view.Settings", {
 			{
 				title: "Settings",
 				xtype: "titlebar",
-				docked: "top",
-				items: [
-					{
-						text: "Save",
-						align: "right",
-						action: "save"
-					}
-				]
+				docked: "top"
 			},
 			{
 				xtype: "fieldset",
@@ -36,20 +29,6 @@ Ext.define("SiteSelector.view.Settings", {
 						xtype: "numberfield",
 						label: "Lasts",
 						name: "pumplasts",
-						minValue: 0,
-						maxValue: 100
-					},
-					{
-						xtype: "numberfield",
-						label: "Carb Ratio",
-						name: "carb_ratio",
-						minValue: 0,
-						maxValue: 20
-					},
-					{
-						xtype: "numberfield",
-						label: "Correction Factor",
-						name: "correction_factor",
 						minValue: 0,
 						maxValue: 100
 					}
@@ -76,36 +55,6 @@ Ext.define("SiteSelector.view.Settings", {
 						name: "cgmlasts",
 						minValue: 0,
 						maxValue: 100
-					},
-					{
-						xtype: "selectfield",
-						label: "Units",
-						name: "bgunits",
-						options: [
-							{
-								text: "mg/dL",
-								value: "mgdl"
-							},
-							{
-								text: "mmol/L",
-								value: "mmoll"
-							}
-						],
-						listeners: {
-							change: function(select, record) {
-								var v = select.up("formpanel").down("numberfield[name=target_bg]");
-								if (record.get("value") == "mmoll") {
-									v.setValue(parseInt(0.555 * v.getValue()) / 10);
-								} else {
-									v.setValue(parseInt(18.0182 * v.getValue()));
-								}
-							}
-						}
-					},
-					{
-						xtype: "numberfield",
-						label: "Target BG",
-						name: "target_bg"
 					}
 				],
 				instructions: "Heals and Lasts are in days.",
@@ -144,7 +93,7 @@ Ext.define("SiteSelector.view.Settings", {
 			{
 				xtype: "fieldset",
 				title: "Reminders",
-				instructions: "You'll be reminded after the indicated number of days that it's time to change your site.",
+				instructions: "You'll be reminded after the indicated number of days that it's time to change your site. If a reminder should be delivered during the quiet period, you'll be notified prematurely.",
 				defaults: {
 					labelWidth: "60%"
 				},
@@ -153,6 +102,26 @@ Ext.define("SiteSelector.view.Settings", {
 						xtype: 'togglefield',
 						name: 'usereminders',
 						label: 'Use',
+					},
+					{
+						xtype: "datetimepickerfield",
+						name: "quiet_from",
+						label: "Quiet From",
+						picker: {
+							slotOrder: ["hour", "minute", "ampm"],
+							ampm: true
+						},
+						dateTimeFormat: "h:i:A"
+					},
+					{
+						xtype: "datetimepickerfield",
+						name: "quiet_to",
+						label: "Quiet To",
+						picker: {
+							slotOrder: ["hour", "minute", "ampm"],
+							ampm: true
+						},
+						dateTimeFormat: "h:i:A"
 					}
 				]
 			},

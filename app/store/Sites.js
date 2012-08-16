@@ -56,7 +56,7 @@ Ext.define("SiteSelector.store.Sites", {
 					var v = r.get(fields[f]);
 					if (typeof v == "null") v = "";
 					record_buffer.push(v);
-				};
+				}
 				buffer += record_buffer.join() + "\n";
 			});
 			writer.write(buffer);
@@ -68,10 +68,9 @@ Ext.define("SiteSelector.store.Sites", {
 	},
 	
 	onBeforeSync: function (store) {
-		var field;
 		var logStore = Ext.data.StoreManager.get("Logs");
 		store.getUpdatedRecords().forEach(function(m) {
-			for (field in m.modified) {
+			for (var field in m.modified) {
 				if (field == "removed") {
 					// if we're modifying the removal date, delete old one from log and create anew
 					logStore.each(function(r) {
@@ -80,41 +79,68 @@ Ext.define("SiteSelector.store.Sites", {
 						}
 					})
 					logStore.record(m, "Site Removed", "The " + m.get("kind") + " site was removed from " + m.get("location"), { date_field: "removed" });
-					(new LocalNotification()).cancel(m.getId());
+					LocalNotification.cancel(m.getId() + "-0");
+					LocalNotification.cancel(m.getId() + "-1");
 				}
 			}
 		});
+		var siteReminderText = function(m, hours_early) {
+			if (m.get("kind") == "pump") {
+				if (hours_early > 0) {
+					return "It'll be time to change your pump in " + hours_early + " hour" + (hours_early > 1? "s": "");
+				} else {
+					return "It's time to change your pump";
+				}
+			} else if (m.get("kind") == "cgm") {
+				if (hours_early > 0) {
+					return "It'll be time to change your CGM in " + hours_early + " hour" + (hours_early > 1? "s": "");
+				} else {
+					return "It's time to change your CGM";
+				}
+			} else if (m.get("kind") == "shot_basal") {
+				if (hours_early > 0) {
+					return "It'll be time to take a basal shot in " + hours_early + " hour" + (hours_early > 1? "s": "");
+				} else {
+					return "It's time to take a basal shot";
+				}
+			}
+		}
 		store.getNewRecords().forEach(function(m) {
-			// TODO: log if new site
 			logStore.record(m, "Site Inserted", "New " + m.get("kind") + " site was inserted at " + m.get("location"));
 			
 			if (SiteSelector.app.settings().get("usereminders")) {
-				var nice = "";
-				if (m.get("kind") == "pump") {
-					nice = "It's time to change your pump";
-				} else if (m.get("kind") == "cgm") {
-					nice = "It's time to change your CGM";
-				} else if (m.get("kind") == "shot_basal") {
-					nice = "It's time to take a basal shot"
-				} else {
-					return; // no reminders for bolus
+				var effective = Date.now() / 1000 + m.lasts() * 86400;
+				var reminders = [
+					SiteSelector.app.settings().quietAdjustedTime(effective),
+					SiteSelector.app.settings().quietAdjustedTime(effective - 1000 * 60 * 60 * 4)
+				].unique(); // in case reminder is during quiet period and both would fire at same time
+				
+				var scheduler = function(deliver, message, m) {
+					var inner = (function() {
+						if (m.phantom) return setTimeout(inner, 500);
+					
+						LocalNotification.add({ 
+							date: deliver, 
+							message: message, 
+							badge: 0, 
+							id: m.getId().toString() + "-" + reminders.indexOf(deliver) 
+						});					
+					});
+					inner();
 				}
-				var slave = function() {
-					if (m.phantom) {
-						setTimeout(slave, 500);
-						return;
-					}
-					(new LocalNotification()).add({ date: Date.now() / 1000 +  m.lasts() * 86400, message: nice, badge: 0, id: m.getId().toString() });
-				}
-				slave();
+				
+				reminders.forEach(function(at_time) {
+					var hours_early = Math.floor((effective.getTime() - at_time.getTime()) / (1000 * 60 * 60));
+					scheduler(at_time, siteReminderText(m, hours_early), m);
+				})
 			}
 		});
 		store.getRemovedRecords().forEach(function(m) {
-			(new LocalNotification()).cancel(m.getId());
+			LocalNotification.cancel(m.getId() + "-0");
+			LocalNotification.cancel(m.getId() + "-1");
 			
 			logStore.each(function(r) {
 				if (r.get("fk") == m.getId() && r.get("model") == "SiteSelector.model.Site") {
-					console.log("removing", r);
 					logStore.remove(r);
 				}
 			});

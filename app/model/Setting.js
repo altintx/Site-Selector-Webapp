@@ -86,29 +86,49 @@ Ext.define('SiteSelector.model.Setting', {
 			{
 				name: "basallasts",
 				type: "int"
+			},
+			{
+				name: "quiet_from",
+				type: "date"
+			},
+			{
+				name: "quiet_to",
+				type: "date"
 			}
 	    ]
 	},
 	
 	updateUserBloodSugarUnits: function() {
 		if (this.get("bgunits") == "mgdl") {
-			// SiteSelector.app.getBloodSugarInUserUnits = function(mgdl) {
-			// 	return mgdl;
-			// }
-			// SiteSelector.app.getUserBgInMgDl = function(mgdl) {
-			// 	return mgdl;
-			// }
 			Ext.data.StoreManager.get("BloodSugars").changeAllReadings("mgdl", { mmoll: function(x) { return parseInt(x * 18.0182) } });
 			SiteSelector.app.bgStep = 1;
 		} else {
-			// SiteSelector.app.getBloodSugarInUserUnits = function(mgdl) {
-			// 	return mgdl * x 0.0555;
-			// }
-			// SiteSelector.app.getUserBgInMgDl = function(mgdl) {
-			// 	return mgdl * 18.0182;
-			// }
 			Ext.data.StoreManager.get("BloodSugars").changeAllReadings("mmoll", { mgdl: function(x) { return parseInt(x * 0.555) / 10 } });
 			SiteSelector.app.bgStep = 0.1;
+		}
+	},
+	
+	quietAdjustedTime: function(date) {
+		if (typeof date == "number") date = new Date(date);
+		
+		var QUIET_FROM = this.get("quiet_from"), QUIET_TO = this.get("quiet_to");
+		var quietSpansDays = QUIET_FROM > QUIET_TO;
+		if (quietSpansDays) {
+			if (date > QUIET_FROM) {
+				return QUIET_FROM;
+			} else if (date < QUIET_TO) {
+				return QUIET_FROM;
+			} else {
+				return date;
+			}
+		} else {
+			if (date < QUIET_FROM) {
+				return date;
+			} else if (date > QUIET_TO) {
+				return date;
+			} else {
+				return QUIET_FROM;
+			}
 		}
 	}
 });
