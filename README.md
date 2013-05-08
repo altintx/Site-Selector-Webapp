@@ -5,7 +5,7 @@ Dependencies
 * Sencha Touch 2.0
 * Apache Cordova (PhoneGap) - the JavaScript file is bundled to ease compilation into a Native package, but is not required to run the application in a browser.
 * HTML5 LocalStorage - Sites are stored client-side. Sencha Touch will patch a compatible API if the browser does not support local storage, but it can't be relied on persisting and will greatly limit the application's utility. 
-* SenchaTouch-v2-Datetimepicker - https://github.com/tomalex0/SenchaTouch-v2-Datetimepicker
+* SenchaTouch-v2-Datetimepicker - https://github.com/tomalex0/senchatouch-datetimepickerv2
 
 Compatability
 -------------
