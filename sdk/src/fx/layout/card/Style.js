@@ -36,10 +36,21 @@ Ext.define('Ext.fx.layout.card.Style', {
 
         inAnimation.on('animationend', 'incrementEnd', this);
         outAnimation.on('animationend', 'incrementEnd', this);
+    },
 
+    updateDirection: function(direction) {
+        this.getInAnimation().setDirection(direction);
+        this.getOutAnimation().setDirection(direction);
+    },
 
-        inAnimation.setConfig(config);
-        outAnimation.setConfig(config);
+    updateDuration: function(duration) {
+        this.getInAnimation().setDuration(duration);
+        this.getOutAnimation().setDuration(duration);
+    },
+
+    updateReverse: function(reverse) {
+        this.getInAnimation().setReverse(reverse);
+        this.getOutAnimation().setReverse(reverse);
     },
 
     incrementEnd: function() {
@@ -89,11 +100,17 @@ Ext.define('Ext.fx.layout.card.Style', {
                 controller.resume();
             });
 
-            inElement.dom.style.setProperty('visibility', 'hidden', '!important');
+            inElement.dom.style.setProperty('visibility', 'hidden', 'important');
             newItem.show();
 
             Ext.Animator.run([outAnimation, inAnimation]);
             controller.pause();
         }
+    },
+
+    destroy:  function () {
+        Ext.destroy(this.getInAnimation(), this.getOutAnimation());
+
+        this.callParent(arguments);
     }
 });

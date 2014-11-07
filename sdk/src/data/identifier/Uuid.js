@@ -46,12 +46,20 @@
  * higher quality random data. Version 1 UUID's should not be used unless this information
  * can be provided by a server and care should be taken to avoid caching of this data.
  *
- * See http://www.ietf.org/rfc/rfc4122.txt for details.
+ * See [http://www.ietf.org/rfc/rfc4122.txt](http://www.ietf.org/rfc/rfc4122.txt) for details.
  */
 Ext.define('Ext.data.identifier.Uuid', {
     extend: 'Ext.data.identifier.Simple',
-
     alias: 'data.identifier.uuid',
+
+    /**
+     * Provides a way to determine if this identifier supports creating unique IDs. Proxies like {@link Ext.data.proxy.LocalStorage}
+     * need the identifier to create unique IDs and will check this property.
+     * @property isUnique
+     * @type Boolean
+     * @private
+     */
+    isUnique: true,
 
     config: {
         /**
@@ -214,8 +222,8 @@ Ext.define('Ext.data.identifier.Uuid', {
     /**
      * Converts a value into a hexadecimal value. Also allows for a maximum length
      * of the returned value.
-     * @param value
-     * @param length
+     * @param {String} value
+     * @param {Number} length
      * @private
      */
     toHex: function(value, length) {
@@ -230,18 +238,18 @@ Ext.define('Ext.data.identifier.Uuid', {
 
     /**
      * Generates a random value with between a low and high.
-     * @param lo
-     * @param hi
+     * @param {Number} low
+     * @param {Number} high
      * @private
      */
-    rand: function(lo, hi) {
-        var v = Math.random() * (hi - lo + 1);
-        return Math.floor(v) + lo;
+    rand: function(low, high) {
+        var v = Math.random() * (high - low + 1);
+        return Math.floor(v) + low;
     },
 
     /**
      * Splits a number into a low and high value.
-     * @param bignum
+     * @param {Number} bignum
      * @private
      */
     split: function(bignum) {

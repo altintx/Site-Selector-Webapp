@@ -25,7 +25,7 @@ Ext.define('Ext.behavior.Scrollable', {
     setConfig: function(config) {
         var scrollView = this.scrollView,
             component = this.component,
-            scrollViewElement, scrollContainer, scrollerElement;
+            scrollerElement, extraWrap, scroller, direction;
 
         if (config) {
             if (!scrollView) {
@@ -35,18 +35,37 @@ Ext.define('Ext.behavior.Scrollable', {
                 component.setUseBodyElement(true);
 
                 this.scrollerElement = scrollerElement = component.innerElement;
-                this.scrollContainer = scrollContainer = scrollerElement.wrap();
-                this.scrollViewElement = scrollViewElement = component.bodyElement;
 
-                scrollView.setElement(scrollViewElement);
+                if (!Ext.feature.has.ProperHBoxStretching) {
+                    scroller = scrollView.getScroller();
+                    direction = (Ext.isObject(config) ? config.direction : config) || 'auto';
+
+                    if (direction !== 'vertical') {
+                        extraWrap = scrollerElement.wrap();
+                        extraWrap.addCls(Ext.baseCSSPrefix + 'translatable-hboxfix');
+                        if (direction == 'horizontal') {
+                            extraWrap.setStyle({height: '100%'});
+                        }
+                        this.scrollContainer = extraWrap.wrap();
+                        scrollView.FixedHBoxStretching = scroller.FixedHBoxStretching = true;
+                    }
+                    else {
+                        this.scrollContainer = scrollerElement.wrap();
+                    }
+                }
+                else {
+                    this.scrollContainer = scrollerElement.wrap();
+                }
+
+                scrollView.setElement(component.bodyElement);
 
                 if (component.isPainted()) {
-                    this.onComponentPainted(component);
+                    this.onComponentPainted();
                 }
 
                 component.on(this.listeners);
             }
-            else if (Ext.isObject(config)) {
+            else if (Ext.isString(config) || Ext.isObject(config)) {
                 scrollView.setConfig(config);
             }
         }
@@ -71,7 +90,9 @@ Ext.define('Ext.behavior.Scrollable', {
 
         this.scrollContainer.destroy();
 
-        component.un(this.listeners);
+        if (!component.isDestroyed) {
+            component.un(this.listeners);
+        }
 
         delete this.scrollerElement;
         delete this.scrollView;

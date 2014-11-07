@@ -9,6 +9,74 @@
  * Creating a Store is easy - we just tell it the Model and the Proxy to use to load and save its data:
  *
  *     // Set up a {@link Ext.data.Model model} to use in our Store
+ *     Ext.define("User", {
+ *         extend: "Ext.data.Model",
+ *         config: {
+ *             fields: [
+ *                 {name: "firstName", type: "string"},
+ *                 {name: "lastName",  type: "string"},
+ *                 {name: "age",       type: "int"},
+ *                 {name: "eyeColor",  type: "string"}
+ *             ]
+ *         }
+ *     });
+ *
+ *     var myStore = Ext.create("Ext.data.Store", {
+ *         model: "User",
+ *         proxy: {
+ *             type: "ajax",
+ *             url : "/users.json",
+ *             reader: {
+ *                 type: "json",
+ *                 rootProperty: "users"
+ *             }
+ *         },
+ *         autoLoad: true
+ *     });
+ *
+ *     Ext.create("Ext.List", {
+ *         fullscreen: true,
+ *         store: myStore,
+ *         itemTpl: "{lastName}, {firstName} ({age})"
+ *     });
+ *
+ * In the example above we configured an AJAX proxy to load data from the url '/users.json'. We told our Proxy
+ * to use a {@link Ext.data.reader.Json JsonReader} to parse the response from the server into Model object -
+ * {@link Ext.data.reader.Json see the docs on JsonReader} for details.
+ *
+ * The external data file, _/users.json_, is as follows:
+ *
+ *     {
+ *         "success": true,
+ *         "users": [
+ *             {
+ *                 "firstName": "Tommy",
+ *                 "lastName": "Maintz",
+ *                 "age": 24,
+ *                 "eyeColor": "green"
+ *             },
+ *             {
+ *                 "firstName": "Aaron",
+ *                 "lastName": "Conran",
+ *                 "age": 26,
+ *                 "eyeColor": "blue"
+ *             },
+ *             {
+ *                 "firstName": "Jamie",
+ *                 "lastName": "Avins",
+ *                 "age": 37,
+ *                 "eyeColor": "brown"
+ *             }
+ *         ]
+ *     }
+ *
+ * ## Inline data
+ *
+ * Stores can also load data inline. Internally, Store converts each of the objects we pass in as {@link #cfg-data}
+ * into Model instances:
+ *
+ *     @example
+ *     // Set up a model to use in our Store
  *     Ext.define('User', {
  *         extend: 'Ext.data.Model',
  *         config: {
@@ -21,36 +89,21 @@
  *         }
  *     });
  *
- *     var myStore = Ext.create('Ext.data.Store', {
- *         model: 'User',
- *         proxy: {
- *             type: 'ajax',
- *             url : '/users.json',
- *             reader: {
- *                 type: 'json',
- *                 rootProperty: 'users'
- *             }
- *         },
- *         autoLoad: true
+ *     Ext.create("Ext.data.Store", {
+ *         storeId: "usersStore",
+ *         model: "User",
+ *         data : [
+ *             {firstName: "Ed",    lastName: "Spencer"},
+ *             {firstName: "Tommy", lastName: "Maintz"},
+ *             {firstName: "Aaron", lastName: "Conran"},
+ *             {firstName: "Jamie", lastName: "Avins"}
+ *         ]
  *     });
  *
- * In the example above we configured an AJAX proxy to load data from the url '/users.json'. We told our Proxy
- * to use a {@link Ext.data.reader.Json JsonReader} to parse the response from the server into Model object -
- * {@link Ext.data.reader.Json see the docs on JsonReader} for details.
- *
- * ## Inline data
- *
- * Stores can also load data inline. Internally, Store converts each of the objects we pass in as {@link #cfg-data}
- * into Model instances:
- *
- *     Ext.create('Ext.data.Store', {
- *         model: 'User',
- *         data : [
- *             {firstName: 'Ed',    lastName: 'Spencer'},
- *             {firstName: 'Tommy', lastName: 'Maintz'},
- *             {firstName: 'Aaron', lastName: 'Conran'},
- *             {firstName: 'Jamie', lastName: 'Avins'}
- *         ]
+ *     Ext.create("Ext.List", {
+ *         fullscreen: true,
+ *         store: "usersStore",
+ *         itemTpl: "{lastName}, {firstName}"
  *     });
  *
  * Loading inline data using the method above is great if the data is in the correct format already (e.g. it doesn't need
@@ -64,7 +117,18 @@
  * Applications often need to load sets of associated data - for example a CRM system might load a User and her Orders.
  * Instead of issuing an AJAX request for the User and a series of additional AJAX requests for each Order, we can load a nested dataset
  * and allow the Reader to automatically populate the associated models. Below is a brief example, see the {@link Ext.data.reader.Reader} intro
- * docs for a full explanation:
+ * documentation for a full explanation:
+ *
+ *     // Set up a model to use in our Store
+ *     Ext.define('User', {
+ *         extend: 'Ext.data.Model',
+ *         config: {
+ *             fields: [
+ *                 {name: 'name', type: 'string'},
+ *                 {name: 'id',   type: 'int'}
+ *             ]
+ *         }
+ *     });
  *
  *     var store = Ext.create('Ext.data.Store', {
  *         autoLoad: true,
@@ -77,6 +141,12 @@
  *                 rootProperty: 'users'
  *             }
  *         }
+ *     });
+ *
+ *     Ext.create("Ext.List", {
+ *         fullscreen: true,
+ *         store: store,
+ *         itemTpl: "{name} (id: {id})"
  *     });
  *
  * Which would consume a response like this:
@@ -98,6 +168,23 @@
  *                         "status": "shipped"
  *                     }
  *                 ]
+ *             },
+ *             {
+ *                 "id": 3,
+ *                 "name": "Tommy",
+ *                 "orders": [
+ *                 ]
+ *             },
+ *             {
+ *                 "id": 4,
+ *                 "name": "Jamie",
+ *                 "orders": [
+ *                     {
+ *                         "id": 12,
+ *                         "total": 17.76,
+ *                         "status": "shipped"
+ *                     }
+ *                 ]
  *             }
  *         ]
  *     }
@@ -110,26 +197,75 @@
  * held inside {@link Ext.util.MixedCollection MixedCollection} instances to make them easy to manage. Usually it is sufficient to
  * either just specify sorters and filters in the Store configuration or call {@link #sort} or {@link #filter}:
  *
- *     var store = Ext.create('Ext.data.Store', {
- *         model: 'User',
+ *     // Set up a model to use in our Store
+ *     Ext.define('User', {
+ *         extend: 'Ext.data.Model',
+ *         config: {
+ *             fields: [
+ *                 {name: 'firstName', type: 'string'},
+ *                 {name: 'lastName', type: 'string'},
+ *                 {name: 'age',   type: 'int'}
+ *             ]
+ *         }
+ *     });
+ *
+ *     var store = Ext.create("Ext.data.Store", {
+ *         autoLoad: true,
+ *         model: "User",
+ *         proxy: {
+ *             type: "ajax",
+ *             url : "users.json",
+ *             reader: {
+ *                 type: "json",
+ *                 rootProperty: "users"
+ *             }
+ *         },
  *         sorters: [
  *             {
- *                 property : 'age',
- *                 direction: 'DESC'
+ *                 property : "age",
+ *                 direction: "DESC"
  *             },
  *             {
- *                 property : 'firstName',
- *                 direction: 'ASC'
+ *                 property : "firstName",
+ *                 direction: "ASC"
  *             }
  *         ],
- *
  *         filters: [
  *             {
- *                 property: 'firstName',
- *                 value   : /Ed/
+ *                 property: "firstName",
+ *                 value: /Jamie/
  *             }
  *         ]
  *     });
+ *
+ *     Ext.create("Ext.List", {
+ *         fullscreen: true,
+ *         store: store,
+ *         itemTpl: "{lastName}, {firstName} ({age})"
+ *     });
+ *
+ * And the data file, _users.json_, is as follows:
+ *
+ *     {
+ *         "success": true,
+ *         "users": [
+ *             {
+ *                 "firstName": "Tommy",
+ *                 "lastName": "Maintz",
+ *                 "age": 24
+ *             },
+ *             {
+ *                 "firstName": "Aaron",
+ *                 "lastName": "Conran",
+ *                 "age": 26
+ *             },
+ *             {
+ *                 "firstName": "Jamie",
+ *                 "lastName": "Avins",
+ *                 "age": 37
+ *             }
+ *         ]
+ *     }
  *
  * The new Store will keep the configured sorters and filters in the MixedCollection instances mentioned above. By default, sorting
  * and filtering are both performed locally by the Store - see {@link #remoteSort} and {@link #remoteFilter} to allow the server to
@@ -139,11 +275,11 @@
  * and automatically filters the dataset (calling {@link #filter} with no arguments simply re-applies all existing filters). Note that by
  * default your sorters are automatically reapplied if using local sorting.
  *
-     store.filter('eyeColor', 'Brown');
+ *     store.filter('eyeColor', 'Brown');
  *
  * Change the sorting at any time by calling {@link #sort}:
  *
-     store.sort('height', 'ASC');
+ *     store.sort('height', 'ASC');
  *
  * Note that all existing sorters will be removed in favor of the new sorter data (if {@link #sort} is called with no arguments,
  * the existing sorters are just reapplied instead of being removed). To keep existing sorters and add new ones, just add them
@@ -158,25 +294,23 @@
  *
  * ## Registering with StoreManager
  *
- * Any Store that is instantiated with a {@link #storeId} will automatically be registed with the {@link Ext.data.StoreManager StoreManager}.
+ * Any Store that is instantiated with a {@link #storeId} will automatically be registered with the {@link Ext.data.StoreManager StoreManager}.
  * This makes it easy to reuse the same store in multiple views:
  *
- *     //this store can be used several times
+ *     // this store can be used several times
  *     Ext.create('Ext.data.Store', {
  *         model: 'User',
  *         storeId: 'usersStore'
  *     });
  *
- *     new Ext.List({
- *         store: 'usersStore',
- *
- *         //other config goes here
+ *     Ext.create('Ext.List', {
+ *         store: 'usersStore'
+ *         // other config goes here
  *     });
  *
- *     new Ext.view.View({
- *         store: 'usersStore',
- *
- *         //other config goes here
+ *     Ext.create('Ext.view.View', {
+ *         store: 'usersStore'
+ *         // other config goes here
  *     });
  *
  * ## Further Reading
@@ -267,9 +401,9 @@ Ext.define('Ext.data.Store', {
      * Fires whenever records have been loaded into the store. Note that you should not listen
      * for this event in order to refresh the data view. Use the {@link #refresh} event for this instead.
      * @param {Ext.data.Store} this
-     * @param {Ext.util.Grouper[]} records An array of records
-     * @param {Boolean} successful True if the operation was successful.
-     * @param {Ext.data.Operation} operation The associated operation
+     * @param {Ext.data.Model[]} records An array of records
+     * @param {Boolean} successful `true` if the operation was successful.
+     * @param {Ext.data.Operation} operation The associated operation.
      */
 
     /**
@@ -282,7 +416,7 @@ Ext.define('Ext.data.Store', {
 
     /**
      * @event beforesync
-     * Fired before a call to {@link #sync} is executed. Return false from any listener to cancel the synv
+     * Fired before a call to {@link #sync} is executed. Return `false` from any listener to cancel the sync
      * @param {Object} options Hash of all records to be synchronized, broken down into create, update and destroy
      */
 
@@ -291,6 +425,7 @@ Ext.define('Ext.data.Store', {
      * Fired after the {@link #removeAll} method is called. Note that you should not listen for this event in order
      * to refresh the data view. Use the {@link #refresh} event for this instead.
      * @param {Ext.data.Store} this
+     * @return {Ext.data.Store}
      */
 
     statics: {
@@ -324,23 +459,23 @@ Ext.define('Ext.data.Store', {
         data: null,
 
         /**
-         * @cfg {Boolean/Object} autoLoad
-         * If data is not specified, and if autoLoad is true or an Object, this store's load method is automatically called
-         * after creation. If the value of autoLoad is an Object, this Object will be passed to the store's load method.
-         * Defaults to false.
+         * @cfg {Boolean/Object} [autoLoad=false]
+         * If data is not specified, and if `autoLoad` is `true` or an Object, this store's load method is automatically called
+         * after creation. If the value of `autoLoad` is an Object, this Object will be passed to the store's `load()` method.
          * @accessor
          */
         autoLoad: null,
 
         /**
          * @cfg {Boolean} autoSync
-         * True to automatically sync the Store with its Proxy after every edit to one of its Records. Defaults to false.
+         * `true` to automatically sync the Store with its Proxy after every edit to one of its Records.
          * @accessor
          */
         autoSync: false,
 
         /**
          * @cfg {String} model
+         * Returns Ext.data.Model and not a String.
          * Name of the {@link Ext.data.Model Model} associated with this store.
          * The string is used as an argument for {@link Ext.ModelManager#getModel}.
          * @accessor
@@ -355,40 +490,54 @@ Ext.define('Ext.data.Store', {
         proxy: undefined,
 
         /**
-         * @cfg {Object[]} fields
-         * This may be used in place of specifying a {@link #model} configuration. The fields should be a
+         * @cfg {Object[]/Ext.util.Collection} fields
+         * Returns Ext.util.Collection not just an Object.
+         * Use in place of specifying a {@link #model} configuration. The fields should be a
          * set of {@link Ext.data.Field} configuration objects. The store will automatically create a {@link Ext.data.Model}
          * with these fields. In general this configuration option should be avoided, it exists for the purposes of
          * backwards compatibility. For anything more complicated, such as specifying a particular id property or
          * associations, a {@link Ext.data.Model} should be defined and specified for the {@link #model}
          * config.
+         * @return Ext.util.Collection
          * @accessor
          */
         fields: null,
 
         /**
          * @cfg {Boolean} remoteSort
-         * True to defer any sorting operation to the server. If false, sorting is done locally on the client. Defaults to <tt>false</tt>.
+         * `true` to defer any sorting operation to the server. If `false`, sorting is done locally on the client.
          *
          * If this is set to `true`, you will have to manually call the {@link #method-load} method after you {@link #method-sort}, to retrieve the sorted
          * data from the server.
+         *
+         * {@link #buffered Buffered} stores automatically set this to `true`. Buffered stores contain an abitrary
+         * subset of the full dataset which depends upon various configurations and which pages have been requested
+         * for rendering. Such *sparse* datasets are ineligible for local sorting.
          * @accessor
          */
         remoteSort: false,
 
         /**
          * @cfg {Boolean} remoteFilter
-         * True to defer any filtering operation to the server. If false, filtering is done locally on the client. Defaults to `false`.
+         * `true` to defer any filtering operation to the server. If `false`, filtering is done locally on the client.
          *
          * If this is set to `true`, you will have to manually call the {@link #method-load} method after you {@link #method-filter} to retrieve the filtered
          * data from the server.
+         *
+         * {@link #buffered Buffered} stores automatically set this to `true`. Buffered stores contain an abitrary
+         * subset of the full dataset which depends upon various configurations and which pages have been requested
+         * for rendering. Such *sparse* datasets are ineligible for local filtering.
          * @accessor
          */
         remoteFilter: false,
 
         /**
          * @cfg {Boolean} remoteGroup
-         * True to defer any grouping operation to the server. If false, grouping is done locally on the client. Defaults to <tt>false</tt>
+         * `true` to defer any grouping operation to the server. If `false`, grouping is done locally on the client.
+         *
+         * {@link #buffered Buffered} stores automatically set this to `true`. Buffered stores contain an abitrary
+         * subset of the full dataset which depends upon various configurations and which pages have been requested
+         * for rendering. Such *sparse* datasets are ineligible for local grouping.
          * @accessor
          */
         remoteGroup: false,
@@ -411,7 +560,7 @@ Ext.define('Ext.data.Store', {
         sorters: null,
 
         /**
-         * @cfg {Object[]} grouper
+         * @cfg {Object} grouper
          * A configuration object for this Store's {@link Ext.util.Grouper grouper}.
          *
          * For example, to group a store's items by the first letter of the last name:
@@ -453,8 +602,8 @@ Ext.define('Ext.data.Store', {
         groupDir: null,
 
         /**
-         * @cfg {Function} getGroupString This function will be passed to the {@link #grouper} configuration as it's groupFn.
-         * Note that this configuration is deprecated and grouper: {groupFn: yourFunction}} is preferred.
+         * @cfg {Function} getGroupString This function will be passed to the {@link #grouper} configuration as it's `groupFn`.
+         * Note that this configuration is deprecated and grouper: `{groupFn: yourFunction}}` is preferred.
          * @deprecated
          * @accessor
          */
@@ -463,25 +612,42 @@ Ext.define('Ext.data.Store', {
         /**
          * @cfg {Number} pageSize
          * The number of records considered to form a 'page'. This is used to power the built-in
-         * paging using the nextPage and previousPage functions. Defaults to 25.
-         * @accessor
+         * paging using the nextPage and previousPage functions.
+         *
+         * If this Store is {@link #buffered}, pages are loaded into a page cache before the Store's
+         * data is updated from the cache. The pageSize is the number of rows loaded into the cache in one request.
+         * This will not affect the rendering of a buffered grid, but a larger page size will mean fewer loads.
+         *
+         * In a buffered grid, scrolling is monitored, and the page cache is kept primed with data ahead of the
+         * direction of scroll to provide rapid access to data when scrolling causes it to be required. Several pages
+         * in advance may be requested depending on various parameters.
+         *
+         * It is recommended to tune the {@link #pageSize}, {@link #trailingBufferZone} and
+         * {@link #leadingBufferZone} configurations based upon the conditions pertaining in your deployed application.
          */
         pageSize: 25,
 
         /**
          * @cfg {Number} totalCount The total number of records in the full dataset, as indicated by a server. If the
-         * server-side dataset contains 5000 records but only returns pages of 50 at a time, totalCount will be set to
+         * server-side dataset contains 5000 records but only returns pages of 50 at a time, `totalCount` will be set to
          * 5000 and {@link #getCount} will return 50
          */
         totalCount: null,
 
         /**
-         * @cfg {Boolean} clearOnPageLoad True to empty the store when loading another page via {@link #loadPage},
-         * {@link #nextPage} or {@link #previousPage} (defaults to true). Setting to false keeps existing records, allowing
+         * @cfg {Boolean} clearOnPageLoad `true` to empty the store when loading another page via {@link #loadPage},
+         * {@link #nextPage} or {@link #previousPage}. Setting to `false` keeps existing records, allowing
          * large data sets to be loaded one page at a time but rendered all together.
          * @accessor
          */
         clearOnPageLoad: true,
+
+        /**
+         * @cfg {Object} params Parameters to send into the proxy for any CRUD operations
+         *
+         * @accessor
+         */
+        params: {},
 
         modelDefaults: {},
 
@@ -494,11 +660,127 @@ Ext.define('Ext.data.Store', {
 
         /**
          * @cfg {Boolean} syncRemovedRecords This configuration allows you to disable the synchronization of
-         * removed records on this Store. By default, when you call removeAll or remove, records will be added
+         * removed records on this Store. By default, when you call `removeAll()` or `remove()`, records will be added
          * to an internal removed array. When you then sync the Store, we send a destroy request for these records.
-         * If you don't want this to happen, you can set this configuration to false.
+         * If you don't want this to happen, you can set this configuration to `false`.
          */
-        syncRemovedRecords: true
+        syncRemovedRecords: true,
+
+        /**
+         * @cfg {Boolean} destroyRemovedRecords This configuration allows you to prevent destroying record
+         * instances when they are removed from this store and are not in any other store.
+         */
+        destroyRemovedRecords: true,
+
+        /**
+         * @cfg {Boolean} buffered
+         * Allows the Store to prefetch and cache in a **page cache**, pages of Records, and to then satisfy
+         * loading requirements from this page cache.
+         *
+         * To use buffered Stores, initiate the process by loading the first page. The number of rows rendered are
+         * determined automatically, and the range of pages needed to keep the cache primed for scrolling is
+         * requested and cached.
+         * Example:
+         *
+         *     myStore.loadPage(1); // Load page 1
+         *
+         * A {@link Ext.grid.plugin.BufferedRenderer BufferedRenderer} is instantiated which will monitor the scrolling in the grid, and
+         * refresh the view's rows from the page cache as needed. It will also pull new data into the page
+         * cache when scrolling of the view draws upon data near either end of the prefetched data.
+         *
+         * The margins which trigger view refreshing from the prefetched data are {@link Ext.grid.plugin.BufferedRenderer#numFromEdge},
+         * {@link Ext.grid.plugin.BufferedRenderer#leadingBufferZone} and {@link Ext.grid.plugin.BufferedRenderer#trailingBufferZone}.
+         *
+         * The margins which trigger loading more data into the page cache are, {@link #leadingBufferZone} and
+         * {@link #trailingBufferZone}.
+         *
+         * By default, only 5 pages of data are cached in the page cache, with pages "scrolling" out of the buffer
+         * as the view moves down through the dataset.
+         * Setting this value to zero means that no pages are *ever* scrolled out of the page cache, and
+         * that eventually the whole dataset may become present in the page cache. This is sometimes desirable
+         * as long as datasets do not reach astronomical proportions.
+         *
+         * Selection state may be maintained across page boundaries by configuring the SelectionModel not to discard
+         * records from its collection when those Records cycle out of the Store's primary collection. This is done
+         * by configuring the SelectionModel like this:
+         *
+         *     selModel: {
+         *         pruneRemoved: false
+         *     }
+         *
+         */
+        buffered: false,
+
+        /**
+         * @cfg {Object/Array} plugins
+         * @accessor
+         * An object or array of objects that will provide custom functionality for this component.  The only
+         * requirement for a valid plugin is that it contain an init method that accepts a reference of type Ext.Component.
+         *
+         * When a component is created, if any plugins are available, the component will call the init method on each
+         * plugin, passing a reference to itself.  Each plugin can then call methods or respond to events on the
+         * component as needed to provide its functionality.
+         *
+         * For examples of plugins, see Ext.plugin.PullRefresh and Ext.plugin.ListPaging
+         *
+         * ## Example code
+         *
+         * A plugin by alias:
+         *
+         *     Ext.create('Ext.dataview.List', {
+         *         config: {
+         *             plugins: 'listpaging',
+         *             itemTpl: '<div class="item">{title}</div>',
+         *             store: 'Items'
+         *         }
+         *     });
+         *
+         * Multiple plugins by alias:
+         *
+         *     Ext.create('Ext.dataview.List', {
+         *         config: {
+         *             plugins: ['listpaging', 'pullrefresh'],
+         *             itemTpl: '<div class="item">{title}</div>',
+         *             store: 'Items'
+         *         }
+         *     });
+         *
+         * Single plugin by class name with config options:
+         *
+         *     Ext.create('Ext.dataview.List', {
+         *         config: {
+         *             plugins: {
+         *                 xclass: 'Ext.plugin.ListPaging', // Reference plugin by class
+         *                 autoPaging: true
+         *             },
+         *
+         *             itemTpl: '<div class="item">{title}</div>',
+         *             store: 'Items'
+         *         }
+         *     });
+         *
+         * Multiple plugins by class name with config options:
+         *
+         *     Ext.create('Ext.dataview.List', {
+         *         config: {
+         *             plugins: [
+         *                 {
+         *                     xclass: 'Ext.plugin.PullRefresh',
+         *                     pullRefreshText: 'Pull to refresh...'
+         *                 },
+         *                 {
+         *                     xclass: 'Ext.plugin.ListPaging',
+         *                     autoPaging: true
+         *                 }
+         *             ],
+         *
+         *             itemTpl: '<div class="item">{title}</div>',
+         *             store: 'Items'
+         *         }
+         *     });
+         *
+         */
+        plugins: null
     },
 
     /**
@@ -527,7 +809,7 @@ Ext.define('Ext.data.Store', {
         if (config.hasOwnProperty('sortOnLoad')) {
             Ext.Logger.deprecate(
                 '[Ext.data.Store] sortOnLoad is always activated in Sencha Touch 2 so your Store is always fully ' +
-                'sorted after loading. The only expection is if you are using remoteSort and change sorting after ' +
+                'sorted after loading. The only exception is if you are using remoteSort and change sorting after ' +
                 'the Store as loaded, in which case you need to call store.load() to fetch the sorted data from the server.'
             );
         }
@@ -535,7 +817,7 @@ Ext.define('Ext.data.Store', {
         if (config.hasOwnProperty('filterOnLoad')) {
             Ext.Logger.deprecate(
                 '[Ext.data.Store] filterOnLoad is always activated in Sencha Touch 2 so your Store is always fully ' +
-                'sorted after loading. The only expection is if you are using remoteFilter and change filtering after ' +
+                'sorted after loading. The only exception is if you are using remoteFilter and change filtering after ' +
                 'the Store as loaded, in which case you need to call store.load() to fetch the filtered data from the server.'
             );
         }
@@ -549,8 +831,47 @@ Ext.define('Ext.data.Store', {
         // </deprecated>
 
         this.initConfig(config);
+
+        this.callParent(arguments);
     },
 
+    applyPlugins: function(config) {
+        var ln, i, configObj;
+
+        if (!config) {
+            return config;
+        }
+
+        config = [].concat(config);
+
+        for (i = 0, ln = config.length; i < ln; i++) {
+            configObj = config[i];
+            config[i] = Ext.factory(configObj, 'Ext.plugin.Plugin', null, 'plugin');
+        }
+
+        return config;
+    },
+
+    updatePlugins: function(newPlugins, oldPlugins) {
+        var ln, i;
+
+        if (newPlugins) {
+            for (i = 0, ln = newPlugins.length; i < ln; i++) {
+                newPlugins[i].init(this);
+            }
+        }
+
+        if (oldPlugins) {
+            for (i = 0, ln = oldPlugins.length; i < ln; i++) {
+                Ext.destroy(oldPlugins[i]);
+            }
+        }
+    },
+
+    /**
+     * @private
+     * @return {Ext.util.Collection}
+     */
     createDataCollection: function() {
         return new Ext.util.Collection(function(record) {
             return record.getId();
@@ -599,6 +920,7 @@ Ext.define('Ext.data.Store', {
                     extend: 'Ext.data.Model',
                     config: {
                         fields: fields,
+                        useCache: false,
                         proxy: this.getProxy()
                     }
                 });
@@ -632,30 +954,37 @@ Ext.define('Ext.data.Store', {
 
         if (!proxy && this.getModel()) {
             proxy = this.getModel().getProxy();
+        }
 
-            if (!proxy) {
-                proxy = new Ext.data.proxy.Memory({
-                    model: this.getModel()
-                });
-            }
+        if (!proxy) {
+            proxy = new Ext.data.proxy.Memory({
+                model: this.getModel()
+            });
+        }
+
+        if (proxy.isMemoryProxy) {
+            this.setSyncRemovedRecords(false);
         }
 
         return proxy;
     },
 
-    updateProxy: function(proxy) {
+    updateProxy: function(proxy, oldProxy) {
         if (proxy) {
             if (!proxy.getModel()) {
                 proxy.setModel(this.getModel());
             }
-            proxy.on('metachange', this.onMetaChange, this);
+            proxy.on('metachange', 'onMetaChange', this);
+        }
+        if (oldProxy) {
+            proxy.un('metachange', 'onMetaChange', this);
         }
     },
 
     /**
-     * We are using applyData so that we can return nothing and prevent the this.data
+     * We are using applyData so that we can return nothing and prevent the `this.data`
      * property to be overridden.
-     * @param data
+     * @param {Array/Object} data
      */
     applyData: function(data) {
         var me = this,
@@ -665,6 +994,7 @@ Ext.define('Ext.data.Store', {
             if (proxy instanceof Ext.data.proxy.Memory) {
                 proxy.setData(data);
                 me.load();
+                return;
             } else {
                 // We make it silent because we don't want to fire a refresh event
                 me.removeAll(true);
@@ -696,6 +1026,15 @@ Ext.define('Ext.data.Store', {
         this.setData(null);
     },
 
+    /**
+     * Uses the configured {@link Ext.data.reader.Reader reader} to convert the data into records
+     * and adds it to the Store. Use this when you have raw data that needs to pass trough converters,
+     * mappings and other extra logic from the reader.
+     *
+     * If your data is already formated and ready for consumption, use {@link #add} method.
+     *
+     * @param {Object[]} data Array of data to load
+     */
     addData: function(data) {
         var reader = this.getProxy().getReader(),
             resultSet = reader.read(data),
@@ -712,7 +1051,7 @@ Ext.define('Ext.data.Store', {
     },
 
     /**
-     * Returns true if the Store is set to autoLoad or is a type which loads upon instantiation.
+     * Returns `true` if the Store is set to {@link #autoLoad} or is a type which loads upon instantiation.
      * @return {Boolean}
      */
     isAutoLoading: function() {
@@ -774,7 +1113,7 @@ Ext.define('Ext.data.Store', {
             };
         }
 
-        grouper = Ext.factory(grouper, Ext.util.Grouper, this.getGrouper());
+        grouper = Ext.factory(grouper, Ext.util.Grouper);
         return grouper;
     },
 
@@ -798,14 +1137,17 @@ Ext.define('Ext.data.Store', {
                 });
             }
         }
+        if (oldGrouper) {
+            this.fireEvent('refresh', this, data);
+        }
     },
 
     /**
      * This method tells you if this store has a grouper defined on it.
-     * @return {Boolean} true if this store has a grouper defined.
+     * @return {Boolean} `true` if this store has a grouper defined.
      */
     isGrouped: function() {
-        return !!this.getGrouped();
+        return !!this.getGrouper();
     },
 
     updateSorters: function(sorters) {
@@ -866,14 +1208,16 @@ Ext.define('Ext.data.Store', {
      *
      *     myStore.add({some: 'data2'}, {some: 'other data2'});
      *
+     * Use {@link #addData} method instead if you have raw data that need to pass
+     * through the data reader.
+     *
      * @param {Ext.data.Model[]/Ext.data.Model...} model An array of Model instances
      * or Model configuration objects, or variable number of Model instance or config arguments.
-     * @return {Ext.data.Model[]} The model instances that were added
+     * @return {Ext.data.Model[]} The model instances that were added.
      */
     add: function(records) {
-        //accept both a single-argument array of records, or any number of record arguments
         if (!Ext.isArray(records)) {
-            records = Array.prototype.slice.apply(arguments);
+            records = Array.prototype.slice.call(arguments);
         }
 
         return this.insert(this.data.length, records);
@@ -881,9 +1225,10 @@ Ext.define('Ext.data.Store', {
 
     /**
      * Inserts Model instances into the Store at the given index and fires the {@link #add} event.
-     * See also <code>{@link #add}</code>.
+     * See also `{@link #add}`.
      * @param {Number} index The start index at which to insert the passed Records.
      * @param {Ext.data.Model[]} records An Array of Ext.data.Model objects to add to the cache.
+     * @return {Object}
      */
     insert: function(index, records) {
         if (!Ext.isArray(records)) {
@@ -892,10 +1237,12 @@ Ext.define('Ext.data.Store', {
 
         var me = this,
             sync = false,
+            data = this.data,
             ln = records.length,
             Model = this.getModel(),
             modelDefaults = me.getModelDefaults(),
-            i, record, added = false;
+            added = false,
+            i, record;
 
         records = records.slice();
 
@@ -911,10 +1258,9 @@ Ext.define('Ext.data.Store', {
             }
 
             record.set(modelDefaults);
-
-            // reassign the model in the array in case it wasn't created yet
-            records[i] = record;
             record.join(me);
+
+            records[i] = record;
 
             // If this is a newly created record, then we might want to sync it later
             sync = sync || (record.phantom === true);
@@ -922,13 +1268,13 @@ Ext.define('Ext.data.Store', {
 
         // Now we insert all these records in one go to the collection. Saves many function
         // calls to data.insert. Does however create two loops over the records we are adding.
-        if (ln === 1) {
-            added = this.data.insert(index, records[0]);
+        if (records.length === 1) {
+            added = data.insert(index, records[0]);
             if (added) {
                 added = [added];
             }
         } else {
-            added = this.data.insertAll(index, records);
+            added = data.insertAll(index, records);
         }
 
         if (added) {
@@ -943,10 +1289,10 @@ Ext.define('Ext.data.Store', {
     },
 
     /**
-     * Removes the given record from the Store, firing the 'removerecords' event passing all the instances that are removed.
-     * @param {Ext.data.Model/Ext.data.Model[]} records Model instance or array of instances to remove
+     * Removes the given record from the Store, firing the `removerecords` event passing all the instances that are removed.
+     * @param {Ext.data.Model/Ext.data.Model[]} records Model instance or array of instances to remove.
      */
-    remove: function(records) {
+    remove: function (records) {
         if (records.isModel) {
             records = [records];
         }
@@ -955,12 +1301,14 @@ Ext.define('Ext.data.Store', {
             sync = false,
             i = 0,
             autoSync = this.getAutoSync(),
+            syncRemovedRecords = me.getSyncRemovedRecords(),
+            destroyRemovedRecords = this.getDestroyRemovedRecords(),
             ln = records.length,
             indices = [],
             removed = [],
             isPhantom,
             items = me.data.items,
-            record, index, j;
+            record, index;
 
         for (; i < ln; i++) {
             record = records[i];
@@ -974,14 +1322,17 @@ Ext.define('Ext.data.Store', {
                     indices.push(index);
                 }
 
-                if (!isPhantom && me.getSyncRemovedRecords()) {
-                     // don't push phantom records onto removed
-                     me.removed.push(record);
+                record.unjoin(me);
+                me.data.remove(record);
+
+                if (destroyRemovedRecords && !syncRemovedRecords && !record.stores.length) {
+                    record.destroy();
+                }
+                else if (!isPhantom && syncRemovedRecords) {
+                    // don't push phantom records onto removed
+                    me.removed.push(record);
                 }
 
-                record.unjoin(me);
-
-                me.data.remove(record);
                 sync = sync || !isPhantom;
             }
         }
@@ -994,8 +1345,8 @@ Ext.define('Ext.data.Store', {
     },
 
     /**
-     * Removes the model instance at the given index
-     * @param {Number} index The record index
+     * Removes the model instance at the given index.
+     * @param {Number} index The record index.
      */
     removeAt: function(index) {
         var record = this.getAt(index);
@@ -1007,24 +1358,36 @@ Ext.define('Ext.data.Store', {
 
     /**
      * Remove all items from the store.
-     * @param {Boolean} silent Prevent the `clear` event from being fired.
+     * @param {Boolean} [silent] Prevent the `clear` event from being fired.
      */
     removeAll: function(silent) {
-        if (silent !== true) {
+        if (silent !== true && this.eventFiringSuspended !== true) {
             this.fireAction('clear', [this], 'doRemoveAll');
         } else {
             this.doRemoveAll.call(this, true);
         }
     },
 
-    doRemoveAll: function(silent) {
-        var me = this;
-        me.data.each(function(record) {
+    doRemoveAll: function (silent) {
+        var me = this,
+            destroyRemovedRecords = this.getDestroyRemovedRecords(),
+            syncRemovedRecords = this.getSyncRemovedRecords(),
+            records = me.data.all.slice(),
+            ln = records.length,
+            i, record;
+
+        for (i = 0; i < ln; i++) {
+            record = records[i];
             record.unjoin(me);
-        });
-        if (me.getSyncRemovedRecords()) {
-            me.removed = me.removed.concat(me.data.items);
+
+            if (destroyRemovedRecords && !syncRemovedRecords && !record.stores.length) {
+                record.destroy();
+            }
+            else if (record.phantom !== true && syncRemovedRecords) {
+                me.removed.push(record);
+            }
         }
+
         me.data.clear();
 
         if (silent !== true) {
@@ -1038,9 +1401,37 @@ Ext.define('Ext.data.Store', {
 
     /**
      * Calls the specified function for each of the {@link Ext.data.Model Records} in the cache.
-     * @param {Function} fn The function to call. The {@link Ext.data.Model Record} is passed as the first parameter.
-     * Returning <tt>false</tt> aborts and exits the iteration.
-     * @param {Object} scope (optional) The scope (<code>this</code> reference) in which the function is executed.
+     *
+     *     // Set up a model to use in our Store
+     *     Ext.define('User', {
+     *         extend: 'Ext.data.Model',
+     *         config: {
+     *             fields: [
+     *                 {name: 'firstName', type: 'string'},
+     *                 {name: 'lastName', type: 'string'}
+     *             ]
+     *         }
+     *     });
+     *
+     *     var store = Ext.create('Ext.data.Store', {
+     *         model: 'User',
+     *         data : [
+     *             {firstName: 'Ed',    lastName: 'Spencer'},
+     *             {firstName: 'Tommy', lastName: 'Maintz'},
+     *             {firstName: 'Aaron', lastName: 'Conran'},
+     *             {firstName: 'Jamie', lastName: 'Avins'}
+     *         ]
+     *     });
+     *
+     *     store.each(function (item, index, length) {
+     *         console.log(item.get('firstName'), index);
+     *     });
+     *
+     * @param {Function} fn The function to call. Returning `false` aborts and exits the iteration.
+     * @param {Ext.data.Model} fn.item
+     * @param {Number} fn.index
+     * @param {Number} fn.length
+     * @param {Object} scope (optional) The scope (`this` reference) in which the function is executed.
      * Defaults to the current {@link Ext.data.Model Record} in the iteration.
      */
     each: function(fn, scope) {
@@ -1048,28 +1439,38 @@ Ext.define('Ext.data.Store', {
     },
 
     /**
-     * Gets the number of cached records.
+     * Gets the number of cached records. Note that filtered records are not included in this count.
      * If using paging, this may not be the total size of the dataset.
      * @return {Number} The number of Records in the Store's cache.
      */
     getCount: function() {
-        return this.data.length || 0;
+        return this.data.items.length || 0;
+    },
+
+    /**
+     * Gets the number of all cached records including the ones currently filtered.
+     * If using paging, this may not be the total size of the dataset.
+     * @return {Number} The number of all Records in the Store's cache.
+     */
+    getAllCount: function () {
+        return this.data.all.length || 0;
     },
 
     /**
      * Get the Record at the specified index.
      * @param {Number} index The index of the Record to find.
-     * @return {Ext.data.Model} The Record at the passed index. Returns undefined if not found.
+     * @return {Ext.data.Model/undefined} The Record at the passed index. Returns `undefined` if not found.
      */
     getAt: function(index) {
         return this.data.getAt(index);
     },
 
     /**
-     * Returns a range of Records between specified indices.
-     * @param {Number} startIndex (optional) The starting index (defaults to 0)
-     * @param {Number} endIndex (optional) The ending index (defaults to the last Record in the Store)
-     * @return {Ext.data.Model[]} An array of Records
+     * Returns a range of Records between specified indices. Note that if the store is filtered, only filtered results
+     * are returned.
+     * @param {Number} [startIndex=0] (optional) The starting index.
+     * @param {Number} [endIndex=-1] (optional) The ending index (defaults to the last Record in the Store).
+     * @return {Ext.data.Model[]} An array of Records.
      */
     getRange: function(start, end) {
         return this.data.getRange(start, end);
@@ -1078,7 +1479,7 @@ Ext.define('Ext.data.Store', {
     /**
      * Get the Record with the specified id.
      * @param {String} id The id of the Record to find.
-     * @return {Ext.data.Model} The Record with the passed id. Returns undefined if not found.
+     * @return {Ext.data.Model/undefined} The Record with the passed id. Returns `undefined` if not found.
      */
     getById: function(id) {
         return this.data.findBy(function(record) {
@@ -1107,8 +1508,9 @@ Ext.define('Ext.data.Store', {
     /**
      * @private
      * A model instance should call this method on the Store it has been {@link Ext.data.Model#join joined} to.
-     * @param {Ext.data.Model} record The model instance that was edited
+     * @param {Ext.data.Model} record The model instance that was edited.
      * @param {String[]} modifiedFieldNames Array of field names changed during edit.
+     * @param {Object} modified
      */
     afterEdit: function(record, modifiedFieldNames, modified) {
         var me = this,
@@ -1145,8 +1547,8 @@ Ext.define('Ext.data.Store', {
 
     /**
      * @private
-     * A model instance should call this method on the Store it has been {@link Ext.data.Model#join joined} to..
-     * @param {Ext.data.Model} record The model instance that was edited
+     * A model instance should call this method on the Store it has been {@link Ext.data.Model#join joined} to.
+     * @param {Ext.data.Model} record The model instance that was edited.
      */
     afterReject: function(record) {
         var index = this.data.indexOf(record);
@@ -1156,7 +1558,9 @@ Ext.define('Ext.data.Store', {
     /**
      * @private
      * A model instance should call this method on the Store it has been {@link Ext.data.Model#join joined} to.
-     * @param {Ext.data.Model} record The model instance that was edited
+     * @param {Ext.data.Model} record The model instance that was edited.
+     * @param {String[]} modifiedFieldNames
+     * @param {Object} modified
      */
     afterCommit: function(record, modifiedFieldNames, modified) {
         var me = this,
@@ -1189,7 +1593,7 @@ Ext.define('Ext.data.Store', {
 
     /**
      * This gets called by a record after is gets erased from the server.
-     * @param record
+     * @param {Ext.data.Model} record
      * @private
      */
     afterErase: function(record) {
@@ -1201,6 +1605,21 @@ Ext.define('Ext.data.Store', {
             data.remove(record);
             me.fireEvent('removerecords', me, [record], [index]);
         }
+    },
+
+    applyRemoteFilter: function(value) {
+        var proxy = this.getProxy();
+        return value || (proxy && proxy.isSQLProxy  === true);
+    },
+
+    applyRemoteSort: function(value) {
+        var proxy = this.getProxy();
+        return value || (proxy && proxy.isSQLProxy  === true);
+    },
+
+    applyRemoteGroup: function(value) {
+        var proxy = this.getProxy();
+        return value || (proxy && proxy.isSQLProxy  === true);
     },
 
     updateRemoteFilter: function(remoteFilter) {
@@ -1244,13 +1663,13 @@ Ext.define('Ext.data.Store', {
      *
      * because Store handles the toggling automatically.
      *
-     * If the {@link #remoteSort} configuration has been set to true, you will have to manually call the {@link #method-load}
+     * If the {@link #remoteSort} configuration has been set to `true`, you will have to manually call the {@link #method-load}
      * method after you sort to retrieve the sorted data from the server.
      *
      * @param {String/Ext.util.Sorter[]} sorters Either a string name of one of the fields in this Store's configured
      * {@link Ext.data.Model Model}, or an array of sorter configurations.
-     * @param {String} defaultDirection The default overall direction to sort the data by. Defaults to "ASC".
-     * @param {String} where (Optional) This can be either 'prepend' or 'append'. If you leave this undefined
+     * @param {String} [defaultDirection=ASC] The default overall direction to sort the data by.
+     * @param {String} where (Optional) This can be either `'prepend'` or `'append'`. If you leave this undefined
      * it will clear the current sorters.
      */
     sort: function(sorters, defaultDirection, where) {
@@ -1259,7 +1678,7 @@ Ext.define('Ext.data.Store', {
             autoSort = data.getAutoSort();
 
         if (sorters) {
-            // While we are adding sorters we dont want to sort right away
+            // While we are adding sorters we don't want to sort right away
             // since we need to update sortTypes on the sorters.
             data.setAutoSort(false);
             if (typeof where === 'string') {
@@ -1282,7 +1701,7 @@ Ext.define('Ext.data.Store', {
         }
 
         if (!this.getRemoteSort()) {
-            // If we havent added any new sorters we have to manually call sort
+            // If we haven't added any new sorters we have to manually call sort
             if (!sorters) {
                 this.data.sort();
             }
@@ -1316,7 +1735,7 @@ Ext.define('Ext.data.Store', {
      *         Ext.create('Ext.util.Filter', {filterFn: function(item) { return item.get("age") > 10; }, root: 'data'})
      *     ]);
      *
-     * If the {@link #remoteFilter} configuration has been set to true, you will have to manually call the {@link #method-load}
+     * If the {@link #remoteFilter} configuration has been set to `true`, you will have to manually call the {@link #method-load}
      * method after you filter to retrieve the filtered data from the server.
      *
      * @param {Object[]/Ext.util.Filter[]/String} filters The set of filters to apply to the data.
@@ -1325,47 +1744,49 @@ Ext.define('Ext.data.Store', {
      * {@link Ext.util.MixedCollection#filter filter} method for filter syntax.
      * Alternatively, pass in a property string.
      * @param {String} [value] value to filter by (only if using a property string as the first argument).
-     * @param {Boolean} [anyMatch=false] True to allow any match, false to anchor regex beginning with `^`.
-     * @param {Boolean} [caseSensitive=false] True to make the filtering regex case sensitive.
+     * @param {Boolean} [anyMatch=false] `true` to allow any match, false to anchor regex beginning with `^`.
+     * @param {Boolean} [caseSensitive=false] `true` to make the filtering regex case sensitive.
      */
     filter: function(property, value, anyMatch, caseSensitive) {
         var data = this.data,
-            ln = data.length;
+            filter = null;
+
+        if (property) {
+            if (Ext.isFunction(property)) {
+                filter = {filterFn: property};
+            }
+            else if (Ext.isArray(property) || property.isFilter) {
+                filter = property;
+            }
+            else {
+                filter = {
+                    property     : property,
+                    value        : value,
+                    anyMatch     : anyMatch,
+                    caseSensitive: caseSensitive,
+                    id           : property
+                };
+            }
+        }
 
         if (this.getRemoteFilter()) {
-            if (property) {
-                if (Ext.isString(property)) {
-                    data.addFilters({
-                        property     : property,
-                        value        : value,
-                        anyMatch     : anyMatch,
-                        caseSensitive: caseSensitive
-                    });
-                }
-                else if (Ext.isArray(property) || property.isFilter) {
-                    data.addFilters(property);
-                }
-            }
+            data.addFilters(filter);
         } else {
-            data.filter(property, value, anyMatch, caseSensitive);
+            data.filter(filter);
             this.fireEvent('filter', this, data, data.getFilters());
-
-            if (data.length !== ln) {
-                this.fireEvent('refresh', this, data);
-            }
+            this.fireEvent('refresh', this, data);
         }
     },
 
     /**
      * Filter by a function. The specified function will be called for each
-     * Record in this Store. If the function returns <tt>true</tt> the Record is included,
+     * Record in this Store. If the function returns `true` the Record is included,
      * otherwise it is filtered out.
-     * @param {Function} fn The function to be called. It will be passed the following parameters:<ul>
-     * <li><b>record</b> : Ext.data.Model<p class="sub-desc">The {@link Ext.data.Model record}
-     * to test for filtering. Access field values using {@link Ext.data.Model#get}.</p></li>
-     * <li><b>id</b> : Object<p class="sub-desc">The ID of the Record passed.</p></li>
-     * </ul>
-     * @param {Object} scope (optional) The scope (<code>this</code> reference) in which the function is executed. Defaults to this Store.
+     * @param {Function} fn The function to be called. It will be passed the following parameters:
+     * @param {Ext.data.Model} fn.record The {@link Ext.data.Model record}
+     * to test for filtering. Access field values using {@link Ext.data.Model#get}.
+     * @param {Object} fn.id The ID of the Record passed.
+     * @param {Object} scope (optional) The scope (`this` reference) in which the function is executed. Defaults to this Store.
      */
     filterBy: function(fn, scope) {
         var me = this,
@@ -1373,8 +1794,9 @@ Ext.define('Ext.data.Store', {
             ln = data.length;
 
         data.filter({
-            filterFn: fn,
-            scope: scope
+            filterFn: function(record) {
+                return fn.call(scope || me, record, record.getId());
+            }
         });
 
         this.fireEvent('filter', this, data, data.getFilters());
@@ -1386,23 +1808,22 @@ Ext.define('Ext.data.Store', {
 
     /**
      * Query the cached records in this Store using a filtering function. The specified function
-     * will be called with each record in this Store. If the function returns <tt>true</tt> the record is
+     * will be called with each record in this Store. If the function returns `true` the record is
      * included in the results.
-     * @param {Function} fn The function to be called. It will be passed the following parameters:<ul>
-     * <li><b>record</b> : Ext.data.Model<p class="sub-desc">The {@link Ext.data.Model record}
-     * to test for filtering. Access field values using {@link Ext.data.Model#get}.</p></li>
-     * <li><b>id</b> : Object<p class="sub-desc">The ID of the Record passed.</p></li>
-     * </ul>
-     * @param {Object} scope (optional) The scope (<code>this</code> reference) in which the function is executed. Defaults to this Store.
-     * @return {Ext.util.MixedCollection} Returns an Ext.util.MixedCollection of the matched records
-     **/
+     * @param {Function} fn The function to be called. It will be passed the following parameters:
+     * @param {Ext.data.Model} fn.record The {@link Ext.data.Model record}
+     * to test for filtering. Access field values using {@link Ext.data.Model#get}.
+     * @param {Object} fn.id The ID of the Record passed.
+     * @param {Object} scope (optional) The scope (`this` reference) in which the function is executed. Defaults to this Store.
+     * @return {Ext.util.MixedCollection} Returns an Ext.util.MixedCollection of the matched records.
+     */
     queryBy: function(fn, scope) {
         return this.data.filterBy(fn, scope || this);
     },
 
     /**
      * Reverts to a view of the Record cache with no filtering applied.
-     * @param {Boolean} [suppressEvent=false] True to clear silently without firing the `refresh` event.
+     * @param {Boolean} [suppressEvent=false] `true` to clear silently without firing the `refresh` event.
      */
     clearFilter: function(suppressEvent) {
         var ln = this.data.length;
@@ -1411,18 +1832,26 @@ Ext.define('Ext.data.Store', {
         }
         this.data.setFilters(null);
         if (suppressEvent) {
-            this.resumeEvents();
+            this.resumeEvents(true);
         } else if (ln !== this.data.length) {
             this.fireEvent('refresh', this, this.data);
         }
     },
 
     /**
-     * Returns true if this store is currently filtered
+     * Returns `true` if this store is currently filtered.
      * @return {Boolean}
      */
-    isFiltered: function() {
+    isFiltered : function () {
         return this.data.filtered;
+    },
+
+    /**
+     * Returns `true` if this store is currently sorted.
+     * @return {Boolean}
+     */
+    isSorted : function () {
+        return this.data.sorted;
     },
 
     getSorters: function() {
@@ -1460,8 +1889,8 @@ Ext.define('Ext.data.Store', {
      *        }
      *     ]
      *
-     * @param {String} groupName (Optional) Pass in an optional groupName argument to access a specific group as defined by {@link #grouper}
-     * @return {Object/Object[]} The grouped data
+     * @param {String} groupName (Optional) Pass in an optional `groupName` argument to access a specific group as defined by {@link #grouper}.
+     * @return {Object/Object[]} The grouped data.
      */
     getGroups: function(requestGroupString) {
         var records = this.data.items,
@@ -1501,6 +1930,10 @@ Ext.define('Ext.data.Store', {
         return requestGroupString ? pointers[requestGroupString] : groups;
     },
 
+    /**
+     * @param {Ext.data.Model} record
+     * @return {null}
+     */
     getGroupString: function(record) {
         var grouper = this.getGrouper();
         if (grouper) {
@@ -1514,10 +1947,10 @@ Ext.define('Ext.data.Store', {
      * @param {String} fieldName The name of the Record field to test.
      * @param {String/RegExp} value Either a string that the field value
      * should begin with, or a RegExp to test against the field.
-     * @param {Number} startIndex (optional) The index to start searching at
-     * @param {Boolean} anyMatch (optional) True to match any part of the string, not just the beginning
-     * @param {Boolean} caseSensitive (optional) True for case sensitive comparison
-     * @param {Boolean} exactMatch (optional) True to force exact match (^ and $ characters added to the regex). Defaults to false.
+     * @param {Number} startIndex (optional) The index to start searching at.
+     * @param {Boolean} anyMatch (optional) `true` to match any part of the string, not just the beginning.
+     * @param {Boolean} caseSensitive (optional) `true` for case sensitive comparison.
+     * @param {Boolean} [exactMatch=false] (optional) `true` to force exact match (^ and $ characters added to the regex).
      * @return {Number} The matched index or -1
      */
     find: function(fieldName, value, startIndex, anyMatch, caseSensitive, exactMatch) {
@@ -1537,11 +1970,11 @@ Ext.define('Ext.data.Store', {
      * @param {String} fieldName The name of the Record field to test.
      * @param {String/RegExp} value Either a string that the field value
      * should begin with, or a RegExp to test against the field.
-     * @param {Number} startIndex (optional) The index to start searching at
-     * @param {Boolean} anyMatch (optional) True to match any part of the string, not just the beginning
-     * @param {Boolean} caseSensitive (optional) True for case sensitive comparison
-     * @param {Boolean} exactMatch (optional) True to force exact match (^ and $ characters added to the regex). Defaults to false.
-     * @return {Ext.data.Model} The matched record or null
+     * @param {Number} startIndex (optional) The index to start searching at.
+     * @param {Boolean} anyMatch (optional) `true` to match any part of the string, not just the beginning.
+     * @param {Boolean} caseSensitive (optional) `true` for case sensitive comparison.
+     * @param {Boolean} [exactMatch=false] (optional) `true` to force exact match (^ and $ characters added to the regex).
+     * @return {Ext.data.Model} The matched record or `null`.
      */
     findRecord: function() {
         var me = this,
@@ -1553,8 +1986,8 @@ Ext.define('Ext.data.Store', {
      * Finds the index of the first matching Record in this store by a specific field value.
      * @param {String} fieldName The name of the Record field to test.
      * @param {Object} value The value to match the field against.
-     * @param {Number} startIndex (optional) The index to start searching at
-     * @return {Number} The matched index or -1
+     * @param {Number} startIndex (optional) The index to start searching at.
+     * @return {Number} The matched index or -1.
      */
     findExact: function(fieldName, value, startIndex) {
         return this.data.findIndexBy(function(record) {
@@ -1564,15 +1997,14 @@ Ext.define('Ext.data.Store', {
 
     /**
      * Find the index of the first matching Record in this Store by a function.
-     * If the function returns <tt>true</tt> it is considered a match.
-     * @param {Function} fn The function to be called. It will be passed the following parameters:<ul>
-     * <li><b>record</b> : Ext.data.Model<p class="sub-desc">The {@link Ext.data.Model record}
-     * to test for filtering. Access field values using {@link Ext.data.Model#get}.</p></li>
-     * <li><b>id</b> : Object<p class="sub-desc">The ID of the Record passed.</p></li>
-     * </ul>
-     * @param {Object} scope (optional) The scope (<code>this</code> reference) in which the function is executed. Defaults to this Store.
-     * @param {Number} startIndex (optional) The index to start searching at
-     * @return {Number} The matched index or -1
+     * If the function returns `true` it is considered a match.
+     * @param {Function} fn The function to be called. It will be passed the following parameters:
+     * @param {Ext.data.Model} fn.record The {@link Ext.data.Model record}
+     * to test for filtering. Access field values using {@link Ext.data.Model#get}.
+     * @param {Object} fn.id The ID of the Record passed.
+     * @param {Object} scope (optional) The scope (`this` reference) in which the function is executed. Defaults to this Store.
+     * @param {Number} startIndex (optional) The index to start searching at.
+     * @return {Number} The matched index or -1.
      */
     findBy: function(fn, scope, startIndex) {
         return this.data.findIndexBy(fn, scope, startIndex);
@@ -1597,8 +2029,9 @@ Ext.define('Ext.data.Store', {
      *         console.log('loaded records');
      *     }, this);
      *
-     * @param {Object/Function} [options] config object, passed into the Ext.data.Operation object before loading.
+     * @param {Object/Function} [options] config object, passed into the {@link Ext.data.Operation} object before loading.
      * @param {Object} [scope] Scope for the function.
+     * @return {Object}
      */
     load: function(options, scope) {
         var me = this,
@@ -1633,6 +2066,7 @@ Ext.define('Ext.data.Store', {
             limit: pageSize,
             addRecords: false,
             action: 'read',
+            params: this.getParams(),
             model: this.getModel()
         });
 
@@ -1647,16 +2081,16 @@ Ext.define('Ext.data.Store', {
     },
 
     /**
-     * Returns true if the Store is currently performing a load operation
-     * @return {Boolean} True if the Store is currently loading
+     * Returns `true` if the Store is currently performing a load operation.
+     * @return {Boolean} `true` if the Store is currently loading.
      */
     isLoading: function() {
         return Boolean(this.loading);
     },
 
     /**
-     * Returns true if the Store has been loaded.
-     * @return {Boolean} True if the Store has been loaded
+     * Returns `true` if the Store has been loaded.
+     * @return {Boolean} `true` if the Store has been loaded.
      */
     isLoaded: function() {
         return Boolean(this.loaded);
@@ -1666,8 +2100,12 @@ Ext.define('Ext.data.Store', {
      * Synchronizes the Store with its Proxy. This asks the Proxy to batch together any new, updated
      * and deleted records in the store, updating the Store's internal representation of the records
      * as each operation completes.
+     * @return {Object}
+     * @return {Object} return.added
+     * @return {Object} return.updated
+     * @return {Object} return.removed
      */
-    sync: function() {
+    sync: function(options) {
         var me = this,
             operations = {},
             toCreate = me.getNewRecords(),
@@ -1691,10 +2129,10 @@ Ext.define('Ext.data.Store', {
         }
 
         if (needsSync && me.fireEvent('beforesync', this, operations) !== false) {
-            me.getProxy().batch({
+            me.getProxy().batch(Ext.merge({
                 operations: operations,
                 listeners: me.getBatchListeners()
-            });
+            }, options || {}));
         }
 
         return {
@@ -1705,26 +2143,26 @@ Ext.define('Ext.data.Store', {
     },
 
     /**
-     * Convenience function for getting the first model instance in the store
-     * @return {Ext.data.Model/undefined} The first model instance in the store, or undefined
+     * Convenience function for getting the first model instance in the store.
+     * @return {Ext.data.Model/undefined} The first model instance in the store, or `undefined`.
      */
     first: function() {
         return this.data.first();
     },
 
     /**
-     * Convenience function for getting the last model instance in the store
-     * @return {Ext.data.Model/undefined} The last model instance in the store, or undefined
+     * Convenience function for getting the last model instance in the store.
+     * @return {Ext.data.Model/undefined} The last model instance in the store, or `undefined`.
      */
     last: function() {
         return this.data.last();
     },
 
     /**
-     * Sums the value of <tt>property</tt> for each {@link Ext.data.Model record} between <tt>start</tt>
-     * and <tt>end</tt> and returns the result.
-     * @param {String} field The field in each record
-     * @return {Number} The sum
+     * Sums the value of `property` for each {@link Ext.data.Model record} between `start`
+     * and `end` and returns the result.
+     * @param {String} field The field in each record.
+     * @return {Number} The sum.
      */
     sum: function(field) {
         var total = 0,
@@ -1741,8 +2179,8 @@ Ext.define('Ext.data.Store', {
 
     /**
      * Gets the minimum value in the store.
-     * @param {String} field The field in each record
-     * @return {Object} The minimum value, if no items exist, undefined.
+     * @param {String} field The field in each record.
+     * @return {Object/undefined} The minimum value, if no items exist, `undefined`.
      */
     min: function(field) {
         var i = 1,
@@ -1765,8 +2203,8 @@ Ext.define('Ext.data.Store', {
 
     /**
      * Gets the maximum value in the store.
-     * @param {String} field The field in each record
-     * @return {Object} The maximum value, if no items exist, undefined.
+     * @param {String} field The field in each record.
+     * @return {Object/undefined} The maximum value, if no items exist, `undefined`.
      */
     max: function(field) {
         var i = 1,
@@ -1791,7 +2229,7 @@ Ext.define('Ext.data.Store', {
     /**
      * Gets the average value in the store.
      * @param {String} field The field in each record you want to get the average for.
-     * @return {Object} The average value, if no items exist, 0.
+     * @return {Number} The average value, if no items exist, 0.
      */
     average: function(field) {
         var i = 0,
@@ -1810,9 +2248,12 @@ Ext.define('Ext.data.Store', {
 
     /**
      * @private
-     * Returns an object which is passed in as the listeners argument to proxy.batch inside this.sync.
-     * This is broken out into a separate function to allow for customisation of the listeners
-     * @return {Object} The listeners object
+     * Returns an object which is passed in as the listeners argument to `proxy.batch` inside `this.sync`.
+     * This is broken out into a separate function to allow for customization of the listeners.
+     * @return {Object} The listeners object.
+     * @return {Object} return.scope
+     * @return {Object} return.exception
+     * @return {Object} return.complete
      */
     getBatchListeners: function() {
         return {
@@ -1824,7 +2265,7 @@ Ext.define('Ext.data.Store', {
 
     /**
      * @private
-     * Attached as the 'complete' event listener to a proxy's Batch object. Iterates over the batch operations
+     * Attached as the `complete` event listener to a proxy's Batch object. Iterates over the batch operations
      * and updates the Store's internal data MixedCollection.
      */
     onBatchComplete: function(batch) {
@@ -1848,7 +2289,7 @@ Ext.define('Ext.data.Store', {
 
     /**
      * @private
-     * Called internally when a Proxy has completed a load request
+     * Called internally when a Proxy has completed a load request.
      */
     onProxyLoad: function(operation) {
         var me = this,
@@ -1874,32 +2315,47 @@ Ext.define('Ext.data.Store', {
 
     doDataRefresh: function(store, data, operation) {
         var records = operation.getRecords(),
-            me = this;
+            me = this,
+            destroyRemovedRecords = me.getDestroyRemovedRecords(),
+            currentRecords = data.all.slice(),
+            ln = currentRecords.length,
+            ln2 = records.length,
+            ids = {},
+            i, record;
 
         if (operation.getAddRecords() !== true) {
-            data.each(function(record) {
+            for (i = 0; i < ln2; i++) {
+                ids[records[i].id] = true;
+            }
+            for (i = 0; i < ln; i++) {
+                record = currentRecords[i];
                 record.unjoin(me);
-            });
+
+                // If the record we are removing is not part of the records we are about to add to the store then handle
+                // the destroying or removing of the record to avoid memory leaks.
+                if (ids[record.id] !== true && destroyRemovedRecords && !record.stores.length) {
+                    record.destroy();
+                }
+            }
+
             data.clear();
-
             // This means we have to fire a clear event though
-            me.fireEvent('clear', this);
+            me.fireEvent('clear', me);
         }
-
         if (records && records.length) {
             // Now lets add the records without firing an addrecords event
             me.suspendEvents();
             me.add(records);
-            me.resumeEvents();
+            me.resumeEvents(true); // true to discard the queue
         }
 
-        this.fireEvent('refresh', this, this.data);
+        me.fireEvent('refresh', me, data);
     },
 
     /**
      * @private
      * Callback for any write Operation over the Proxy. Updates the Store's MixedCollection to reflect
-     * the updates provided by the Proxy
+     * the updates provided by the Proxy.
      */
     onProxyWrite: function(operation) {
         var me = this,
@@ -1944,7 +2400,7 @@ Ext.define('Ext.data.Store', {
          * @event metachange
          * Fires whenever the server has sent back new metadata to reconfigure the Reader.
          * @param {Ext.data.Store} this
-         * @param {Object} data The metadata sent back from the server
+         * @param {Object} data The metadata sent back from the server.
          */
         this.fireEvent('metachange', this, data);
     },
@@ -1974,7 +2430,7 @@ Ext.define('Ext.data.Store', {
 
     /**
      * Returns any records that have been removed from the store but not yet destroyed on the proxy.
-     * @return {Ext.data.Model[]} The removed Model instances
+     * @return {Ext.data.Model[]} The removed Model instances.
      */
     getRemovedRecords: function() {
         return this.removed;
@@ -1983,9 +2439,10 @@ Ext.define('Ext.data.Store', {
     // PAGING METHODS
     /**
      * Loads a given 'page' of data by setting the start and limit values appropriately. Internally this just causes a normal
-     * load operation, passing in calculated 'start' and 'limit' params
-     * @param {Number} page The number of the page to load
-     * @param {Object} options See options for {@link #method-load}
+     * load operation, passing in calculated `start` and `limit` params.
+     * @param {Number} page The number of the page to load.
+     * @param {Object} options See options for {@link #method-load}.
+     * @param {Object} scope
      */
     loadPage: function(page, options, scope) {
         if (typeof options === 'function') {
@@ -2012,19 +2469,37 @@ Ext.define('Ext.data.Store', {
     },
 
     /**
-     * Loads the next 'page' in the current data set
-     * @param {Object} options See options for {@link #method-load}
+     * Loads the next 'page' in the current data set.
+     * @param {Object} options See options for {@link #method-load}.
      */
     nextPage: function(options) {
         this.loadPage(this.currentPage + 1, options);
     },
 
     /**
-     * Loads the previous 'page' in the current data set
-     * @param {Object} options See options for {@link #method-load}
+     * Loads the previous 'page' in the current data set.
+     * @param {Object} options See options for {@link #method-load}.
      */
     previousPage: function(options) {
         this.loadPage(this.currentPage - 1, options);
+    },
+
+    destroy: function() {
+        this.clearData();
+        var proxy = this.getProxy();
+        if (proxy) {
+            proxy.onDestroy();
+        }
+        Ext.data.StoreManager.unregister(this);
+
+        Ext.destroy(this.getPlugins());
+
+        if (this.implicitModel && this.getModel()) {
+          delete Ext.data.ModelManager.types[this.getModel().getName()];
+        }
+        Ext.destroy(this.data);
+
+        this.callParent(arguments);
     }
 
     // <deprecated product=touch since=2.0>
@@ -2050,9 +2525,9 @@ Ext.define('Ext.data.Store', {
     }
 }, function() {
     /**
-     * Loads an array of data straight into the Store
-     * @param {Ext.data.Model[]/Object[]} data Array of data to load. Any non-model instances will be cast into model instances first
-     * @param {Boolean} append True to add the records to the existing records in the store, false to remove the old ones first
+     * Loads an array of data straight into the Store.
+     * @param {Ext.data.Model[]/Object[]} data Array of data to load. Any non-model instances will be cast into model instances first.
+     * @param {Boolean} append `true` to add the records to the existing records in the store, `false` to remove the old ones first.
      * @deprecated 2.0 Please use #add or #setData instead.
      * @method loadData
      */

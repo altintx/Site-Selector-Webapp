@@ -44,17 +44,66 @@ Ext.define('Ext.slider.Toggle', {
         return 1;
     },
 
+    updateMinValueCls: function(newCls, oldCls) {
+        var element = this.element;
+
+        if (oldCls && element.hasCls(oldCls)) {
+            element.replaceCls(oldCls, newCls);
+        }
+    },
+
+    updateMaxValueCls: function(newCls, oldCls) {
+        var element = this.element;
+
+        if (oldCls && element.hasCls(oldCls)) {
+            element.replaceCls(oldCls, newCls);
+        }
+    },
+
     setValue: function(newValue, oldValue) {
         this.callParent(arguments);
         this.onChange(this, this.getThumbs()[0], newValue, oldValue);
     },
 
+    setIndexValue: function(index, value, animation) {
+        var oldValue = this.getValue()[index];
+        this.callParent(arguments);
+
+        var thumb = this.getThumb(index),
+            newValue = this.getValue()[index];
+
+        if (oldValue !== newValue) {
+            this.fireEvent('change', this, thumb, newValue, oldValue);
+        }
+    },
+
     onChange: function(me, thumb, newValue, oldValue) {
         var isOn = newValue > 0,
             onCls = me.getMaxValueCls(),
-            offCls = me.getMinValueCls();
+            offCls = me.getMinValueCls(),
+            element = this.element;
 
-        this.element.addCls(isOn ? onCls : offCls);
-        this.element.removeCls(isOn ? offCls : onCls);
+        element.addCls(isOn ? onCls : offCls);
+        element.removeCls(isOn ? offCls : onCls);
+    },
+
+    toggle: function() {
+        var value = this.getValue();
+        this.setValue((value == 1) ? 0 : 1);
+
+        return this;
+    },
+
+    onTap: function() {
+        if (this.isDisabled() || this.getReadOnly()) {
+            return;
+        }
+
+        var oldValue = this.getValue(),
+            newValue = (oldValue == 1) ? 0 : 1,
+            thumb = this.getThumb(0);
+
+        this.setIndexValue(0, newValue, this.getAnimation());
+        this.refreshThumbConstraints(thumb);
     }
 });

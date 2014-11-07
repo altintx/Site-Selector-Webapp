@@ -20,7 +20,7 @@ Ext.define("SiteSelector.view.Settings", {
 			},
 			{
 				xtype: "fieldset",
-				title: "Pump & Insulin",
+				title: "Pump",
 				defaults: {
 					labelWidth: "60%"
 				},
@@ -39,26 +39,26 @@ Ext.define("SiteSelector.view.Settings", {
 						minValue: 0,
 						maxValue: 100
 					},
-					{
-						xtype: "numberfield",
-						label: "Carb Ratio",
-						name: "carb_ratio",
-						minValue: 0,
-						maxValue: 20
-					},
-					{
-						xtype: "numberfield",
-						label: "Correction Factor",
-						name: "correction_factor",
-						minValue: 0,
-						maxValue: 100
-					}
+					// {
+					// 	xtype: "numberfield",
+					// 	label: "Carb Ratio",
+					// 	name: "carb_ratio",
+					// 	minValue: 0,
+					// 	maxValue: 20
+					// },
+					// {
+					// 	xtype: "numberfield",
+					// 	label: "Correction Factor",
+					// 	name: "correction_factor",
+					// 	minValue: 0,
+					// 	maxValue: 100
+					// }
 				],
 				instructions: "Heals and lasts are in days",
 			},
 			{
 				xtype: "fieldset",
-				title: "CGM & Blood Sugar",
+				title: "CGM",
 				defaults: {
 					labelWidth: "60%"
 				},
@@ -76,37 +76,37 @@ Ext.define("SiteSelector.view.Settings", {
 						name: "cgmlasts",
 						minValue: 0,
 						maxValue: 100
-					},
-					{
-						xtype: "selectfield",
-						label: "Units",
-						name: "bgunits",
-						options: [
-							{
-								text: "mg/dL",
-								value: "mgdl"
-							},
-							{
-								text: "mmol/L",
-								value: "mmoll"
-							}
-						],
-						listeners: {
-							change: function(select, record) {
-								var v = select.up("formpanel").down("numberfield[name=target_bg]");
-								if (record.get("value") == "mmoll") {
-									v.setValue(parseInt(0.555 * v.getValue()) / 10);
-								} else {
-									v.setValue(parseInt(18.0182 * v.getValue()));
-								}
-							}
-						}
-					},
-					{
-						xtype: "numberfield",
-						label: "Target BG",
-						name: "target_bg"
 					}
+					// {
+					// 	xtype: "selectfield",
+					// 	label: "Units",
+					// 	name: "bgunits",
+					// 	options: [
+					// 		{
+					// 			text: "mg/dL",
+					// 			value: "mgdl"
+					// 		},
+					// 		{
+					// 			text: "mmol/L",
+					// 			value: "mmoll"
+					// 		}
+					// 	],
+					// 	listeners: {
+					// 		change: function(select, record) {
+					// 			var v = select.up("formpanel").down("numberfield[name=target_bg]");
+					// 			if (record.get("value") == "mmoll") {
+					// 				v.setValue(parseInt(0.555 * v.getValue()) / 10);
+					// 			} else {
+					// 				v.setValue(parseInt(18.0182 * v.getValue()));
+					// 			}
+					// 		}
+					// 	}
+					// },
+					// {
+					// 	xtype: "numberfield",
+					// 	label: "Target BG",
+					// 	name: "target_bg"
+					// }
 				],
 				instructions: "Heals and Lasts are in days.",
 			},
@@ -141,21 +141,21 @@ Ext.define("SiteSelector.view.Settings", {
 				],
 				instructions: "Heals and Lasts are in hours."
 			},
-			{
-				xtype: "fieldset",
-				title: "Reminders",
-				instructions: "You'll be reminded after the indicated number of days that it's time to change your site.",
-				defaults: {
-					labelWidth: "60%"
-				},
-				items: [
-					{
-						xtype: 'togglefield',
-						name: 'usereminders',
-						label: 'Use',
-					}
-				]
-			},
+			// {
+			// 	xtype: "fieldset",
+			// 	title: "Reminders",
+			// 	instructions: "You'll be reminded after the indicated number of days that it's time to change your site.",
+			// 	defaults: {
+			// 		labelWidth: "60%"
+			// 	},
+			// 	items: [
+			// 		{
+			// 			xtype: 'togglefield',
+			// 			name: 'usereminders',
+			// 			label: 'Use',
+			// 		}
+			// 	]
+			// },
 			{
 				xtype: "fieldset",
 				title: "Zoom",

@@ -15,7 +15,7 @@ Ext.define('Ext.tab.Bar', {
 
     config: {
         /**
-         * @cfg
+         * @cfg baseCls
          * @inheritdoc
          */
         baseCls: Ext.baseCSSPrefix + 'tabbar',
@@ -49,6 +49,13 @@ Ext.define('Ext.tab.Bar', {
      * @param {Ext.tab.Tab} oldTab The old Tab
      */
 
+    platformConfig: [{
+        theme: ['Blackberry', 'CupertinoClassic', 'MountainView'],
+        defaults: {
+            flex: 1
+        }
+    }],
+
     initialize: function() {
         var me = this;
         me.callParent();
@@ -69,14 +76,14 @@ Ext.define('Ext.tab.Bar', {
     /**
      * @private
      */
-    applyActiveTab: function(activeTab, oldActiveTab) {
-        if (!activeTab && activeTab !== 0) {
+    applyActiveTab: function(newActiveTab, oldActiveTab) {
+        if (!newActiveTab && newActiveTab !== 0) {
             return;
         }
 
-        var activeTabInstance = this.parseActiveTab(activeTab);
+        var newTabInstance = this.parseActiveTab(newActiveTab);
 
-        if (!activeTabInstance) {
+        if (!newTabInstance) {
             // <debug warn>
             if (oldActiveTab) {
                 Ext.Logger.warn('Trying to set a non-existent activeTab');
@@ -84,23 +91,29 @@ Ext.define('Ext.tab.Bar', {
             // </debug>
             return;
         }
-        return activeTabInstance;
+        return newTabInstance;
     },
 
     /**
      * @private
-     * When docked to the top, pack left, when on the bottom pack center
+     * Default pack to center when docked to the bottom, otherwise default pack to left
      */
     doSetDocked: function(newDocked) {
         var layout = this.getLayout(),
-            pack   = newDocked == 'bottom' ? 'center' : 'left';
+            initialConfig = this.getInitialConfig(),
+            pack;
 
-        //layout isn't guaranteed to be instantiated so must test
-        if (layout.isLayout) {
-            layout.setPack(pack);
-        } else {
-            layout.pack = (layout && layout.pack) ? layout.pack : pack;
+        if (!initialConfig.layout || !initialConfig.layout.pack) {
+            pack = (newDocked == 'bottom') ? 'center' : 'left';
+            //layout isn't guaranteed to be instantiated so must test
+            if (layout.isLayout) {
+                layout.setPack(pack);
+            } else {
+                layout.pack = (layout && layout.pack) ? layout.pack : pack;
+            }
         }
+
+		this.callParent(arguments);
     },
 
     /**
@@ -112,7 +125,8 @@ Ext.define('Ext.tab.Bar', {
             newTab.setActive(true);
         }
 
-        if (oldTab) {
+        //Check if the parent is present, if not it is destroyed
+        if (oldTab && oldTab.parent) {
             oldTab.setActive(false);
         }
     },
@@ -124,7 +138,7 @@ Ext.define('Ext.tab.Bar', {
     parseActiveTab: function(tab) {
         //we need to call getItems to initialize the items, otherwise they will not exist yet.
         if (typeof tab == 'number') {
-            return this.getInnerItems()[tab];
+			return this.getItems().items[tab];
         }
         else if (typeof tab == 'string') {
             tab = Ext.getCmp(tab);

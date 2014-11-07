@@ -1,5 +1,6 @@
 /**
  * @aside guide layouts
+ * @aside video layouts
  *
  * The HBox (short for horizontal box) layout makes it easy to position items horizontally in a
  * {@link Ext.Container Container}. It can size items based on a fixed width or a fraction of the total width
@@ -64,16 +65,7 @@
  * [Layout Guide](#!/guide/layouts).
  */
 Ext.define('Ext.layout.HBox', {
-    extend: 'Ext.layout.AbstractBox',
-    alternateClassName: 'Ext.layout.HBoxLayout',
+    extend: 'Ext.layout.FlexBox',
 
-    alias: 'layout.hbox',
-
-    sizePropertyName: 'width',
-
-    sizeChangeEventName: 'widthchange',
-
-    cls: Ext.baseCSSPrefix + 'layout-hbox'
+    alias: 'layout.hbox'
 });
-
-

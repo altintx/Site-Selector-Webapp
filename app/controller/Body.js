@@ -127,8 +127,8 @@ Ext.define("SiteSelector.controller.Body", {
 			if (this.getText() == "Cancel") return;
 			var w = humanBodyMap.element.getWidth(),
 			    h = humanBodyMap.element.getHeight(),
-			    x = event.browserEvent.layerX,
-			    y = event.browserEvent.layerY,
+			    x = event.browserEvent.offsetX,
+			    y = event.browserEvent.offsetY,
 			    store = Ext.data.StoreManager.get("Sites"),
 			    kind = $kinds[this.getText()],
 				when = new Date();
@@ -198,6 +198,7 @@ Ext.define("SiteSelector.controller.Body", {
 				},
 				{
 					xtype: "container",
+					height: "100%",
 					style: {
 						overflow: "hidden",
 						position: "relative",

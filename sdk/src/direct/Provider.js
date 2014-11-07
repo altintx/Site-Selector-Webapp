@@ -63,6 +63,11 @@ Ext.define('Ext.direct.Provider', {
      * Fires when the Provider receives an exception from the server-side
      */
 
+    /**
+     * @property {Boolean} isProvider Signifies this instance is an Ext.Direct provider.
+     */
+    isProvider : true,
+
     constructor : function(config){
         this.initConfig(config);
     },
@@ -77,6 +82,7 @@ Ext.define('Ext.direct.Provider', {
     /**
      * Returns whether or not the server-side is currently connected.
      * Abstract method for subclasses to implement.
+     * @return {Boolean}
      */
     isConnected: function() {
         return false;

@@ -1,5 +1,7 @@
 /**
- * A core util class to bring Draggable behavior to any DOM element
+ * A core util class to bring Draggable behavior to a Component. This class is specifically designed only for
+ * absolutely positioned elements starting from top: 0, left: 0. The initialOffset can then be set via configuration
+ * to have the elements in a different position.
  */
 Ext.define('Ext.util.Draggable', {
     isDraggable: true,
@@ -9,7 +11,6 @@ Ext.define('Ext.util.Draggable', {
     ],
 
     requires: [
-        'Ext.util.SizeMonitor',
         'Ext.util.Translatable'
     ],
 
@@ -82,14 +83,21 @@ Ext.define('Ext.util.Draggable', {
         min: { x: -Infinity, y: -Infinity },
         max: { x: Infinity, y: Infinity }
     },
+
+    containerWidth: 0,
+
+    containerHeight: 0,
+
+    width: 0,
+
+    height: 0,
+
     /**
      * Creates new Draggable.
      * @param {Object} config The configuration object for this Draggable.
      */
     constructor: function(config) {
         var element;
-
-        this.sizeMonitors = {};
 
         this.extraConstraint = {};
 
@@ -104,7 +112,9 @@ Ext.define('Ext.util.Draggable', {
             dragstart: 'onDragStart',
             drag     : 'onDrag',
             dragend  : 'onDragEnd',
-
+            resize   : 'onElementResize',
+            touchstart : 'onPress',
+            touchend   : 'onRelease',
             scope: this
         };
 
@@ -129,12 +139,6 @@ Ext.define('Ext.util.Draggable', {
     updateElement: function(element) {
         element.on(this.listeners);
 
-        this.sizeMonitors.element = new Ext.util.SizeMonitor({
-            element: element,
-            callback: this.doRefresh,
-            scope: this
-        });
-
         this.initConfig(this.initialConfig);
     },
 
@@ -152,7 +156,7 @@ Ext.define('Ext.util.Draggable', {
         offset.x = x = initialOffset.x;
         offset.y = y = initialOffset.y;
 
-        this.getTranslatable().doTranslate(x, y);
+        this.getTranslatable().translate(x, y);
     },
 
     updateCls: function(cls) {
@@ -161,7 +165,9 @@ Ext.define('Ext.util.Draggable', {
 
     applyTranslatable: function(translatable, currentInstance) {
         translatable = Ext.factory(translatable, Ext.util.Translatable, currentInstance);
-        translatable.setElement(this.getElement());
+        if (translatable) {
+            translatable.setElement(this.getElement());
+        }
 
         return translatable;
     },
@@ -208,16 +214,9 @@ Ext.define('Ext.util.Draggable', {
             return this.defaultConstraint;
         }
 
-        var dom = element.dom,
-            containerDom = container.dom,
-            width = dom.offsetWidth,
-            height = dom.offsetHeight,
-            containerWidth = containerDom.offsetWidth,
-            containerHeight = containerDom.offsetHeight;
-
         return {
             min: { x: 0, y: 0 },
-            max: { x: containerWidth - width, y: containerHeight - height }
+            max: { x: this.containerWidth - this.width, y: this.containerHeight - this.height }
         };
     },
 
@@ -228,17 +227,36 @@ Ext.define('Ext.util.Draggable', {
             container = this.getElement().getParent();
 
             if (container) {
-                this.sizeMonitors.container = new Ext.util.SizeMonitor({
-                    element: container,
-                    callback: this.doRefresh,
+                this.container = container;
+
+                container.on({
+                    resize: 'onContainerResize',
+                    destroy: 'onContainerDestroy',
                     scope: this
                 });
-
-                this.container = container;
             }
         }
 
         return container;
+    },
+
+    onElementResize: function(element, info) {
+        this.width = info.width;
+        this.height = info.height;
+
+        this.refresh();
+    },
+
+    onContainerResize: function(container, info) {
+        this.containerWidth = info.width;
+        this.containerHeight = info.height;
+
+        this.refresh();
+    },
+
+    onContainerDestroy: function() {
+        delete this.container;
+        delete this.containerSizeMonitor;
     },
 
     detachListeners: function() {
@@ -255,11 +273,18 @@ Ext.define('Ext.util.Draggable', {
         return (direction === this.DIRECTION_BOTH || direction === this.DIRECTION_VERTICAL);
     },
 
+    onPress: function(e) {
+        this.fireAction('touchstart', [this, e]);
+    },
+
+    onRelease: function(e) {
+        this.fireAction('touchend', [this, e]);
+    },
+
     onDragStart: function(e) {
         if (this.getDisabled()) {
             return false;
         }
-
         var offset = this.offset;
 
         this.fireAction('dragstart', [this, e, offset.x, offset.y], this.initDragStart);
@@ -346,24 +371,10 @@ Ext.define('Ext.util.Draggable', {
         this.setOffset(offset.x, offset.y);
     },
 
-    doRefresh: function() {
+    refresh: function() {
         this.refreshConstraint();
         this.getTranslatable().refresh();
         this.refreshOffset();
-    },
-
-    refresh: function() {
-        var sizeMonitors = this.sizeMonitors;
-
-        if (sizeMonitors.element) {
-            sizeMonitors.element.refresh();
-        }
-
-        if (sizeMonitors.container) {
-            sizeMonitors.container.refresh();
-        }
-
-        this.doRefresh();
     },
 
     /**
@@ -383,16 +394,7 @@ Ext.define('Ext.util.Draggable', {
     },
 
     destroy: function() {
-        var sizeMonitors = this.sizeMonitors,
-            translatable = this.getTranslatable();
-
-        if (sizeMonitors.element) {
-            sizeMonitors.element.destroy();
-        }
-
-        if (sizeMonitors.container) {
-            sizeMonitors.container.destroy();
-        }
+        var translatable = this.getTranslatable();
 
         var element = this.getElement();
         if (element && !element.isDestroyed) {

@@ -1,8 +1,8 @@
 /**
  * The DelayedTask class provides a convenient way to "buffer" the execution of a method,
- * performing setTimeout where a new timeout cancels the old timeout. When called, the
- * task will wait the specified time period before executing. If durng that time period,
- * the task is called again, the original call will be cancelled. This continues so that
+ * performing `setTimeout` where a new timeout cancels the old timeout. When called, the
+ * task will wait the specified time period before executing. If during that time period,
+ * the task is called again, the original call will be canceled. This continues so that
  * the function is only called a single time for each iteration.
  *
  * This method is especially useful for things like detecting whether a user has finished
@@ -13,8 +13,10 @@
  * Using {@link Ext.util.DelayedTask} is very simple:
  *
  *     //create the delayed task instance with our callback
- *     var task = Ext.create('Ext.util.DelayedTask', function() {
- *         console.log('callback!');
+ *     var task = Ext.create('Ext.util.DelayedTask', {
+ *          fn: function() {
+ *             console.log('callback!');
+ *          }
  *     });
  *
  *     task.delay(1500); //the callback function will now be called after 1500ms
@@ -46,7 +48,7 @@
  *     });
  *
  *     // Wait 500ms before calling our function. If the user presses another key
- *     // during that 500ms, it will be cancelled and we'll wait another 500ms.
+ *     // during that 500ms, it will be canceled and we'll wait another 500ms.
  *     field.on('keyup', function() {
  *         task.delay(500);
  *     });
@@ -90,14 +92,24 @@ Ext.define('Ext.util.DelayedTask', {
 
         //cancel any existing queued functions
         me.cancel();
-            
+
         //set all the new configurations
-        me.setConfig({
-            delay: delay,
-            fn: newFn,
-            scope: newScope,
-            args: newArgs
-        });
+
+        if (Ext.isNumber(delay)) {
+            me.setDelay(delay);
+        }
+
+        if (Ext.isFunction(newFn)) {
+            me.setFn(newFn);
+        }
+
+        if (newScope) {
+            me.setScope(newScope);
+        }
+
+        if (newScope) {
+            me.setArgs(newArgs);
+        }
 
         //create the callback method for this delayed task
         var call = function() {

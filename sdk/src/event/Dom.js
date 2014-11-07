@@ -1,8 +1,8 @@
 /**
  * @private
  * @extends Object
- * DOM event. This class really extends Ext.event.Event, but for documentation
- * purposes it's members are listed inside Ext.event.Event.
+ * DOM event. This class really extends {@link Ext.event.Event}, but for documentation
+ * purposes it's members are listed inside {@link Ext.event.Event}.
  */
 Ext.define('Ext.event.Dom', {
     extend: 'Ext.event.Event',
@@ -29,11 +29,7 @@ Ext.define('Ext.event.Dom', {
         this.target = this.delegatedTarget = target;
         this.type = event.type;
 
-        this.timeStamp = this.time = event.timeStamp;
-
-        if (typeof this.time != 'number') {
-            this.time = new Date(this.time).getTime();
-        }
+        this.timeStamp = this.time = +event.timeStamp;
 
         return this;
     },
@@ -42,7 +38,7 @@ Ext.define('Ext.event.Dom', {
      * @property {Number} distance
      * The distance of the event.
      *
-     * **This is only available when the event type is `swipe` and `pinch`**
+     * **This is only available when the event type is `swipe` and `pinch`.**
      */
 
     /**
@@ -75,22 +71,25 @@ Ext.define('Ext.event.Dom', {
     /**
      * Gets the x coordinate of the event.
      * @deprecated 2.0 Please use {@link #pageX} property directly.
+     * @return {Number}
      */
     getPageX: function() {
-        return this.browserEvent.pageX;
+        return this.pageX || this.browserEvent.pageX;
     },
 
     /**
      * Gets the y coordinate of the event.
      * @deprecated 2.0 Please use {@link #pageX} property directly.
+     * @return {Number}
      */
     getPageY: function() {
-        return this.browserEvent.pageY;
+        return this.pageY || this.browserEvent.pageY;
     },
 
     /**
      * Gets the X and Y coordinates of the event.
      * @deprecated 2.0 Please use the {@link #pageX} and {@link #pageY} properties directly.
+     * @return {Array}
      */
     getXY: function() {
         if (!this.xy) {
@@ -108,9 +107,9 @@ Ext.define('Ext.event.Dom', {
      * If you want the element you tapped on, then use {@link #target}.
      *
      * @param {String} selector (optional) A simple selector to filter the target or look for an ancestor of the target
-     * @param {Number/Mixed} maxDepth (optional) The max depth to
-     search as a number or element (defaults to 10 || document.body)
-     * @param {Boolean} returnEl (optional) True to return a Ext.Element object instead of DOM node
+     * @param {Number/Mixed} [maxDepth=10||document.body] (optional) The max depth to
+     * search as a number or element (defaults to 10 || document.body)
+     * @param {Boolean} returnEl (optional) `true` to return a Ext.Element object instead of DOM node.
      * @return {HTMLElement}
      */
     getTarget: function(selector, maxDepth, returnEl) {

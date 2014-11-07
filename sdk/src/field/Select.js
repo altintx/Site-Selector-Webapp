@@ -24,7 +24,6 @@
  *             }
  *         ]
  *     });
- *
  */
 Ext.define('Ext.field.Select', {
     extend: 'Ext.field.Text',
@@ -35,7 +34,7 @@ Ext.define('Ext.field.Select', {
         'Ext.picker.Picker',
         'Ext.data.Store',
         'Ext.data.StoreManager',
-        'Ext.List'
+        'Ext.dataview.List'
     ],
 
     /**
@@ -44,6 +43,17 @@ Ext.define('Ext.field.Select', {
      * @param {Ext.field.Select} this
      * @param {Mixed} newValue The new value
      * @param {Mixed} oldValue The old value
+     */
+
+    /**
+     * @event focus
+     * Fires when this field receives input focus. This happens both when you tap on the field and when you focus on the field by using
+     * 'next' or 'tab' on a keyboard.
+     *
+     * Please note that this event is not very reliable on Android. For example, if your Select field is second in your form panel,
+     * you cannot use the Next button to get to this select field. This functionality works as expected on iOS.
+     * @param {Ext.field.Select} this This field
+     * @param {Ext.event.Event} e
      */
 
     config: {
@@ -60,7 +70,7 @@ Ext.define('Ext.field.Select', {
 
         /**
          * @cfg {String/Number} valueField The underlying {@link Ext.data.Field#name data value name} (or numeric Array index) to bind to this
-         * Select control. (defaults to 'value')
+         * Select control.
          * @accessor
          */
         valueField: 'value',
@@ -68,34 +78,34 @@ Ext.define('Ext.field.Select', {
         /**
          * @cfg {String/Number} displayField The underlying {@link Ext.data.Field#name data value name} (or numeric Array index) to bind to this
          * Select control. This resolved value is the visibly rendered value of the available selection options.
-         * (defaults to 'text')
          * @accessor
          */
         displayField: 'text',
 
         /**
-         * @cfg {Ext.data.Store} store (Optional) store instance used to provide selection options data.
+         * @cfg {Ext.data.Store/Object/String} store The store to provide selection options data.
+         * Either a Store instance, configuration object or store ID.
          * @accessor
          */
         store: null,
 
         /**
-         * @cfg {Array} options (Optional) An array of select options.
-    <pre><code>
-        [
-            {text: 'First Option',  value: 'first'},
-            {text: 'Second Option', value: 'second'},
-            {text: 'Third Option',  value: 'third'}
-        ]
-    </code></pre>
-         * Note: option object member names should correspond with defined {@link #valueField valueField} and {@link #displayField displayField} values.
-         * This config will be ignore if a {@link #store store} instance is provided
+         * @cfg {Array} options An array of select options.
+         *
+         *     [
+         *         {text: 'First Option',  value: 'first'},
+         *         {text: 'Second Option', value: 'second'},
+         *         {text: 'Third Option',  value: 'third'}
+         *     ]
+         *
+         * __Note:__ Option object member names should correspond with defined {@link #valueField valueField} and {@link #displayField displayField} values.
+         * This config will be ignored if a {@link #store store} instance is provided.
          * @accessor
          */
         options: null,
 
         /**
-         * @cfg {String} hiddenName Specify a hiddenName if you're using the {@link Ext.form.Panel#standardSubmit standardSubmit} option.
+         * @cfg {String} hiddenName Specify a `hiddenName` if you're using the {@link Ext.form.Panel#standardSubmit standardSubmit} option.
          * This name will be used to post the underlying value of the select to the server.
          * @accessor
          */
@@ -126,14 +136,21 @@ Ext.define('Ext.field.Select', {
         usePicker: 'auto',
 
         /**
+         * @cfg {Boolean} autoSelect
+         * `true` to auto select the first value in the {@link #store} or {@link #options} when they are changed. Only happens when
+         * the {@link #value} is set to `null`.
+         */
+        autoSelect: true,
+
+        /**
          * @cfg {Object} defaultPhonePickerConfig
-         * The default configuration for the picker component when you are on a phone
+         * The default configuration for the picker component when you are on a phone.
          */
         defaultPhonePickerConfig: null,
 
         /**
          * @cfg {Object} defaultTabletPickerConfig
-         * The default configuration for the picker component when you are on a tablet
+         * The default configuration for the picker component when you are on a tablet.
          */
         defaultTabletPickerConfig: null,
 
@@ -141,19 +158,26 @@ Ext.define('Ext.field.Select', {
          * @cfg
          * @inheritdoc
          */
-        name: 'picker'
+        name: 'picker',
+
+        /**
+         * @cfg {String} pickerSlotAlign
+         * The alignment of text in the picker created by this Select
+         * @private
+         */
+        pickerSlotAlign: 'center'
     },
 
-    // @private
-    constructor: function(config) {
-        config = config || {};
-
-        if (!config.store) {
-            config.store = true;
+    platformConfig: [
+        {
+            theme: ['Windows'],
+            pickerSlotAlign: 'left'
+        },
+        {
+            theme: ['Tizen'],
+            usePicker: false
         }
-
-        this.callParent([config]);
-    },
+    ],
 
     // @private
     initialize: function() {
@@ -167,7 +191,47 @@ Ext.define('Ext.field.Select', {
             masktap: 'onMaskTap'
         });
 
-        component.input.dom.disabled = true;
+        component.doMaskTap = Ext.emptyFn;
+
+        if (Ext.browser.is.AndroidStock2) {
+            component.input.dom.disabled = true;
+        }
+
+        if (Ext.theme.is.Blackberry) {
+            this.label.on({
+                scope: me,
+                tap: "onFocus"
+            });
+        }
+    },
+
+    getElementConfig: function() {
+        if (Ext.theme.is.Blackberry) {
+                var prefix = Ext.baseCSSPrefix;
+
+                return {
+                    reference: 'element',
+                    className: 'x-container',
+                    children: [
+                        {
+                            reference: 'innerElement',
+                            cls: prefix + 'component-outer',
+                            children: [
+                                {
+                                    reference: 'label',
+                                    cls: prefix + 'form-label',
+                                    children: [{
+                                        reference: 'labelspan',
+                                        tag: 'span'
+                                    }]
+                                }
+                            ]
+                        }
+                    ]
+                };
+        } else {
+            return this.callParent(arguments);
+        }
     },
 
     /**
@@ -210,39 +274,36 @@ Ext.define('Ext.field.Select', {
      */
     applyValue: function(value) {
         var record = value,
-            index;
+            index, store;
 
         //we call this so that the options configruation gets intiailized, so that a store exists, and we can
         //find the correct value
         this.getOptions();
 
-        if (!(value instanceof Ext.data.Model)) {
-            index = this.getStore().find(this.getValueField(), value, null, null, null, true);
+        store = this.getStore();
+
+        if ((value != undefined && !value.isModel) && store) {
+            index = store.find(this.getValueField(), value, null, null, null, true);
 
             if (index == -1) {
-                index = this.getStore().find(this.getDisplayField(), value, null, null, null, true);
+                index = store.find(this.getDisplayField(), value, null, null, null, true);
             }
 
-            record = this.getStore().getAt(index);
+            record = store.getAt(index);
         }
 
         return record;
     },
 
     updateValue: function(newValue, oldValue) {
-        this.previousRecord = oldValue;
         this.record = newValue;
 
-        this.callParent([newValue ? newValue.get(this.getDisplayField()) : '']);
-
-        if (oldValue !== newValue && this.initialized) {
-            this.fireEvent('change', this, newValue, oldValue);
-        }
+        this.callParent([(newValue && newValue.isModel) ? newValue.get(this.getDisplayField()) : '']);
     },
 
     getValue: function() {
         var record = this.record;
-        return (record) ? record.get(this.getValueField()) : null;
+        return (record && record.isModel) ? record.get(this.getValueField()) : null;
     },
 
     /**
@@ -259,14 +320,16 @@ Ext.define('Ext.field.Select', {
 
         if (!this.picker) {
             this.picker = Ext.create('Ext.picker.Picker', Ext.apply({
-                slots: [{
-                    align       : 'center',
-                    name        : this.getName(),
-                    valueField  : this.getValueField(),
-                    displayField: this.getDisplayField(),
-                    value       : this.getValue(),
-                    store       : this.getStore()
-                }],
+                slots: [
+                    {
+                        align: this.getPickerSlotAlign(),
+                        name: this.getName(),
+                        valueField: this.getValueField(),
+                        displayField: this.getDisplayField(),
+                        value: this.getValue(),
+                        store: this.getStore()
+                    }
+                ],
                 listeners: {
                     change: this.onPickerChange,
                     scope: this
@@ -283,19 +346,22 @@ Ext.define('Ext.field.Select', {
 
         if (!this.listPanel) {
             this.listPanel = Ext.create('Ext.Panel', Ext.apply({
-                centered: true,
+                left: 0,
+                top: 0,
                 modal: true,
                 cls: Ext.baseCSSPrefix + 'select-overlay',
                 layout: 'fit',
                 hideOnMaskTap: true,
+                width: Ext.os.is.Phone ? '14em' : '18em',
+                height: (Ext.os.is.BlackBerry && Ext.os.version.getMajor() === 10) ? '12em' : (Ext.os.is.Phone ? '12.5em' : '22em'),
                 items: {
                     xtype: 'list',
                     store: this.getStore(),
-                    itemTpl: '<span class="x-list-label">{' + this.getDisplayField() + '}</span>',
+                    itemTpl: '<span class="x-list-label">{' + this.getDisplayField() + ':htmlEncode}</span>',
                     listeners: {
-                        select : this.onListSelect,
+                        select: this.onListSelect,
                         itemtap: this.onListTap,
-                        scope  : this
+                        scope: this
                     }
                 }
             }, config));
@@ -306,11 +372,7 @@ Ext.define('Ext.field.Select', {
 
     // @private
     onMaskTap: function() {
-        if (this.getDisabled()) {
-            return false;
-        }
-
-        this.showPicker();
+        this.onFocus();
 
         return false;
     },
@@ -320,45 +382,54 @@ Ext.define('Ext.field.Select', {
      * {@link Ext.List list}.
      */
     showPicker: function() {
+        var me = this,
+            store = me.getStore(),
+            value = me.getValue();
+
         //check if the store is empty, if it is, return
-        if (this.getStore().getCount() === 0) {
+        if (!store || store.getCount() === 0) {
             return;
         }
 
-        if (this.getReadOnly()) {
+        if (me.getReadOnly()) {
             return;
         }
 
-        this.isFocused = true;
+        me.isFocused = true;
 
-        //hide the keyboard
-        //the causes https://sencha.jira.com/browse/TOUCH-1679
-        // Ext.Viewport.hideKeyboard();
+        if (me.getUsePicker()) {
+            var picker = me.getPhonePicker(),
+                name = me.getName(),
+                pickerValue = {};
 
-        if (this.getUsePicker()) {
-            var picker = this.getPhonePicker(),
-                name   = this.getName(),
-                value  = {};
+            pickerValue[name] = value;
+            picker.setValue(pickerValue);
 
-            value[name] = this.record.get(this.getValueField());
-            picker.setValue(value);
             if (!picker.getParent()) {
                 Ext.Viewport.add(picker);
             }
+
             picker.show();
         } else {
-            var listPanel = this.getTabletPicker(),
+            var listPanel = me.getTabletPicker(),
                 list = listPanel.down('list'),
-                store = list.getStore(),
-                index = store.find(this.getValueField(), this.getValue(), null, null, null, true),
-                record = store.getAt((index == -1) ? 0 : index);
+                index, record;
 
             if (!listPanel.getParent()) {
                 Ext.Viewport.add(listPanel);
             }
 
-            listPanel.showBy(this.getComponent());
-            list.select(record, null, true);
+            listPanel.showBy(me.getComponent(), null);
+
+            if (value || me.getAutoSelect()) {
+                store = list.getStore();
+                index = store.find(me.getValueField(), value, null, null, null, true);
+                record = store.getAt(index);
+
+                if (record) {
+                    list.select(record, null, true);
+                }
+            }
         }
     },
 
@@ -372,8 +443,8 @@ Ext.define('Ext.field.Select', {
 
     onListTap: function() {
         this.listPanel.hide({
-            type : 'fade',
-            out  : true,
+            type: 'fade',
+            out: true,
             scope: this
         });
     },
@@ -389,22 +460,41 @@ Ext.define('Ext.field.Select', {
         me.setValue(record);
     },
 
+    onChange: function(component, newValue, oldValue) {
+        var me = this,
+            store = me.getStore(),
+            index = (store) ? store.find(me.getDisplayField(), oldValue, null, null, null, true) : -1,
+            valueField = me.getValueField(),
+            record = (store) ? store.getAt(index) : null;
+
+        oldValue = (record) ? record.get(valueField) : null;
+
+        me.fireEvent('change', me, me.getValue(), oldValue);
+    },
+
     /**
-     * Updates the underlying &lt;options&gt; list with new values.
-     * @param {Array} options An array of options configurations to insert or append.
-<pre><code>
-selectBox.setOptions(
-    [   {text: 'First Option',  value: 'first'},
-        {text: 'Second Option', value: 'second'},
-        {text: 'Third Option',  value: 'third'}
-    ]).setValue('third');
-</code></pre>
-     * Note: option object member names should correspond with defined {@link #valueField valueField} and
+     * Updates the underlying `<options>` list with new values.
+     *
+     * @param {Array} newOptions An array of options configurations to insert or append.
+     *
+     *     selectBox.setOptions([
+     *         {text: 'First Option',  value: 'first'},
+     *         {text: 'Second Option', value: 'second'},
+     *         {text: 'Third Option',  value: 'third'}
+     *     ]).setValue('third');
+     *
+     * __Note:__ option object member names should correspond with defined {@link #valueField valueField} and
      * {@link #displayField displayField} values.
+     *
      * @return {Ext.field.Select} this
      */
     updateOptions: function(newOptions) {
         var store = this.getStore();
+
+        if (!store) {
+            this.setStore(true);
+            store = this._store;
+        }
 
         if (!newOptions) {
             store.clearData();
@@ -413,12 +503,14 @@ selectBox.setOptions(
             store.setData(newOptions);
             this.onStoreDataChanged(store);
         }
+        return this;
     },
 
     applyStore: function(store) {
         if (store === true) {
             store = Ext.create('Ext.data.Store', {
-                fields: [this.getValueField(), this.getDisplayField()]
+                fields: [this.getValueField(), this.getDisplayField()],
+                autoDestroy: true
             });
         }
 
@@ -427,10 +519,10 @@ selectBox.setOptions(
 
             store.on({
                 scope: this,
-                addrecords: this.onStoreDataChanged,
-                removerecords: this.onStoreDataChanged,
-                updaterecord: this.onStoreDataChanged,
-                refresh: this.onStoreDataChanged
+                addrecords: 'onStoreDataChanged',
+                removerecords: 'onStoreDataChanged',
+                updaterecord: 'onStoreDataChanged',
+                refresh: 'onStoreDataChanged'
             });
         }
 
@@ -441,16 +533,22 @@ selectBox.setOptions(
         if (newStore) {
             this.onStoreDataChanged(newStore);
         }
+
+        if (this.getUsePicker() && this.picker) {
+            this.picker.down('pickerslot').setStore(newStore);
+        } else if (this.listPanel) {
+            this.listPanel.down('dataview').setStore(newStore);
+        }
     },
 
     /**
-     * Called when the internal {@link #store}'s data has changed
+     * Called when the internal {@link #store}'s data has changed.
      */
     onStoreDataChanged: function(store) {
         var initialConfig = this.getInitialConfig(),
             value = this.getValue();
 
-        if (Ext.isDefined(value)) {
+        if (value || value == 0) {
             this.updateValue(this.applyValue(value));
         }
 
@@ -459,7 +557,7 @@ selectBox.setOptions(
                 this.setValue(initialConfig.value);
             }
 
-            if (this.getValue() === null) {
+            if (this.getValue() === null && this.getAutoSelect()) {
                 if (store.getCount() > 0) {
                     this.setValue(store.getAt(0));
                 }
@@ -471,6 +569,10 @@ selectBox.setOptions(
      * @private
      */
     doSetDisabled: function(disabled) {
+        var component = this.getComponent();
+        if (component) {
+            component.setDisabled(disabled);
+        }
         Ext.Component.prototype.doSetDisabled.apply(this, arguments);
     },
 
@@ -481,23 +583,67 @@ selectBox.setOptions(
         Ext.Component.prototype.setDisabled.apply(this, arguments);
     },
 
+    // @private
+    updateLabelWidth: function() {
+        if (Ext.theme.is.Blackberry) {
+            return;
+        } else {
+            this.callParent(arguments);
+        }
+    },
+
+    // @private
+    updateLabelAlign: function() {
+        if (Ext.theme.is.Blackberry) {
+            return;
+        } else {
+            this.callParent(arguments);
+        }
+    },
+
     /**
      * Resets the Select field to the value of the first record in the store.
      * @return {Ext.field.Select} this
+     * @chainable
      */
     reset: function() {
-        var store = this.getStore(),
-            record = (this.originalValue) ? this.originalValue : store.getAt(0);
+        var me = this,
+            record;
 
-        if (store && record) {
-            this.setValue(record);
+        if (me.getAutoSelect()) {
+            var store = me.getStore();
+
+            record = (me.originalValue) ? me.originalValue : store.getAt(0);
+        } else {
+            var usePicker = me.getUsePicker(),
+                picker = usePicker ? me.picker : me.listPanel;
+
+            if (picker) {
+                picker = picker.child(usePicker ? 'pickerslot' : 'dataview');
+
+                picker.deselectAll();
+            }
+
+            record = null;
         }
 
-        return this;
+        me.setValue(record);
+
+        return me;
     },
 
     onFocus: function(e) {
+        if (this.getDisabled()) {
+            return false;
+        }
+
+        var component = this.getComponent();
         this.fireEvent('focus', this, e);
+
+        if (Ext.os.is.Android4) {
+            component.input.dom.focus();
+        }
+        component.input.dom.blur();
 
         this.isFocused = true;
 
@@ -506,6 +652,12 @@ selectBox.setOptions(
 
     destroy: function() {
         this.callParent(arguments);
-        Ext.destroy(this.listPanel, this.picker, this.hiddenField);
+        var store = this.getStore();
+
+        if (store && store.getAutoDestroy()) {
+            Ext.destroy(store);
+        }
+
+        Ext.destroy(this.listPanel, this.picker);
     }
 });

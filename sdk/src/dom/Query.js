@@ -1,16 +1,26 @@
+//@tag dom,core
+//@define Ext.DomQuery
+//@define Ext.core.DomQuery
+//@require Ext.env.Feature
+
 /**
  * @class Ext.DomQuery
- * @alternateClassName Ext.dom.Query
+ * @alternateClassName Ext.core.DomQuery
+ * @extend Ext.dom.Query
+ * @singleton
  *
- * Provides functionality to select elements on the page based on a CSS selector. All selectors, attribute filters and
- * pseudos below can be combined infinitely in any order. For example "div.foo:nth-child(odd)[@foo=bar].bar:first"
- * would be a perfectly valid selector.
+ * Provides functionality to select elements on the page based on a CSS selector. Delegates to
+ * document.querySelectorAll. More information can be found at
+ * [http://www.w3.org/TR/css3-selectors/](http://www.w3.org/TR/css3-selectors/)
+ *
+ * All selectors, attribute filters and pseudos below can be combined infinitely in any order. For example
+ * `div.foo:nth-child(odd)[@foo=bar].bar:first` would be a perfectly valid selector.
  *
  * ## Element Selectors:
  *
  * * \* any element
  * * E an element with the tag E
- * * E F All descendent elements of E that have the tag F
+ * * E F All descendant elements of E that have the tag F
  * * E > F or E/F all direct children elements of E that have the tag F
  * * E + F all elements with the tag F that are immediately preceded by an element with the tag E
  * * E ~ F all elements with the tag F that are preceded by a sibling element with the tag E
@@ -41,22 +51,27 @@
  * * E:nth(n) the nth E in the resultset (1 based)
  * * E:odd shortcut for :nth-child(odd)
  * * E:even shortcut for :nth-child(even)
- * * E:contains(foo) E's innerHTML contains the substring "foo"
- * * E:nodeValue(foo) E contains a textNode with a nodeValue that equals "foo"
  * * E:not(S) an E element that does not match simple selector S
- * * E:has(S) an E element that has a descendent that matches simple selector S
+ * * E:has(S) an E element that has a descendant that matches simple selector S
  * * E:next(S) an E element whose next sibling matches simple selector S
  * * E:prev(S) an E element whose previous sibling matches simple selector S
  * * E:any(S1|S2|S2) an E element which matches any of the simple selectors S1, S2 or S3//\\
  *
  * ## CSS Value Selectors:
  *
- * * E{display=none} css value "display" that equals "none"
- * * E{display^=none} css value "display" that starts with "none"
- * * E{display$=none} css value "display" that ends with "none"
- * * E{display*=none} css value "display" that contains the substring "none"
- * * E{display%=2} css value "display" that is evenly divisible by 2
- * * E{display!=none} css value "display" that does not equal "none"
+ * * E{display=none} CSS value "display" that equals "none"
+ * * E{display^=none} CSS value "display" that starts with "none"
+ * * E{display$=none} CSS value "display" that ends with "none"
+ * * E{display*=none} CSS value "display" that contains the substring "none"
+ * * E{display%=2} CSS value "display" that is evenly divisible by 2
+ * * E{display!=none} CSS value "display" that does not equal "none"
+ */
+
+/**
+ * See {@link Ext.DomQuery} which is the singleton instance of this
+ * class.  You most likely don't need to instantiate Ext.dom.Query by
+ * yourself.
+ * @private
  */
 Ext.define('Ext.dom.Query', {
     /**
@@ -68,11 +83,7 @@ Ext.define('Ext.dom.Query', {
      */
     select: function(q, root) {
         var results = [],
-            nodes,
-            i,
-            j,
-            qlen,
-            nlen;
+            nodes, i, j, qlen, nlen;
 
         root = root || document;
 
@@ -119,11 +130,37 @@ Ext.define('Ext.dom.Query', {
      * @param {String} selector The simple selector to test
      * @return {Boolean}
      */
-    is: function(el, q) {
+    is: function (el, q) {
+        var root, is, i, ln;
+
         if (typeof el == "string") {
             el = document.getElementById(el);
         }
-        return this.select(q).indexOf(el) !== -1;
+
+        if (Ext.isArray(el)) {
+            is = true;
+            ln = el.length;
+            for (i = 0; i < ln; i++) {
+                if (!this.is(el[i], q)) {
+                    is = false;
+                    break;
+                }
+            }
+        }
+        else {
+            root = el.parentNode;
+
+            if (!root) {
+                root = document.createDocumentFragment();
+                root.appendChild(el);
+                is = this.select(q, root).indexOf(el) !== -1;
+                root.removeChild(el);
+                root = null;
+            } else {
+                is = this.select(q, root).indexOf(el) !== -1;
+            }
+        }
+        return is;
     },
 
     isXml: function(el) {
@@ -134,5 +171,11 @@ Ext.define('Ext.dom.Query', {
 }, function() {
     Ext.ns('Ext.core');
     Ext.core.DomQuery = Ext.DomQuery = new this();
+    /**
+     * Shorthand of {@link Ext.dom.Query#select}
+     * @member Ext
+     * @method query
+     * @inheritdoc Ext.dom.Query#select
+     */
     Ext.query = Ext.Function.alias(Ext.DomQuery, 'select');
 });

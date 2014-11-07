@@ -25,11 +25,11 @@ Ext.define("SiteSelector.view.phone.Main", {
 				title: "Log",
 				store: "Logs"
 			},
-			{
-				xtype: "ReportBrowser",
-				title: "Reports",
-				iconCls: "info"
-			},
+			// {
+			// 	xtype: "ReportBrowser",
+			// 	title: "Reports",
+			// 	iconCls: "info"
+			// },
 			{
 				xtype: "Settings"
 			}

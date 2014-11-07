@@ -10,12 +10,6 @@ Ext.define("SiteSelector.view.tablet.Main", {
 		root: true,
         tabBarPosition: 'bottom',
 		fullScreen: true,
-        tabBar: {
-			defaults: {
-				height: "100px"
-		
-			}
-		},
         items: [
 			{
 				xtype: "container",
@@ -43,11 +37,11 @@ Ext.define("SiteSelector.view.tablet.Main", {
 				title: "Log",
 				store: "Logs"
 			},
-			{
-				xtype: "ReportBrowser",
-				title: "Reports",
-				iconCls: "info"
-			},
+			// {
+			// 	xtype: "ReportBrowser",
+			// 	title: "Reports",
+			// 	iconCls: "info"
+			// },
 			{
 				xtype: "Settings"
 			}

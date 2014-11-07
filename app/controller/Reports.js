@@ -15,9 +15,9 @@ Ext.define("SiteSelector.controller.Reports", {
 				leafitemtap: 'ListNav_onLeafItemTap'
 			}
 		},
-		refs: {
-			ListNav: 'ReportBrowser'
-		}
+		// refs: {
+		// 	ListNav: 'ReportBrowser'
+		// }
 	},
 	
 	ListNav_onLeafItemTap: function(tree, list, ix, domTarget, record, event) {

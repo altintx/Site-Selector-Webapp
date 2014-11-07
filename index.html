@@ -5,6 +5,7 @@
     <title>Site Selector</title>
  	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<!-- <script src="http://localhost:8080/target/target-script-min.js#anonymous"></script> -->
+    <link rel="stylesheet" type="text/css" href="resources/css/body.css" />
     <style type="text/css">
         /**
          * Example of an initial loading indicator.
@@ -84,7 +85,53 @@
 		}
     </style>
    <script src="cordova-1.5.0.js" type="text/javascript"></script>
-   <script id="microloader" type="text/javascript" src="sdk/microloader/development.js"></script>
+   <script id="microloader" type="text/javascript" src="sdk/sencha-touch-all-debug.js"></script>
+    <script type="text/javascript">
+        // if (!Ext.browser.is.WebKit) {
+        //  alert("The current browser is unsupported.\n\nSupported browsers:\n" +
+        //      "Google Chrome\n" +
+        //      "Apple Safari\n" +
+        //      "Mobile Safari (iOS)\n" +
+        //      "Android Browser\n" +
+        //      "BlackBerry Browser"
+        //  );
+        // }
+        // debugger;
+            document.write('<' + 'link rel="stylesheet" type="text/css" href="sdk/resources/css/cupertino-classic.css" />');
+        // if (Ext.os.is.iOS) {
+        //     document.write('<' + 'link rel="stylesheet" type="text/css" href="sdk/resources/css/cupertino.css" />');
+        //     // iOS 7
+        // } else if (Ext.os.is.WindowsPhone) {
+        //     // Windows Phone (any)
+        //     // document.write('<' + 'link rel="stylesheet" type="text/css" href="sdk/resources/css/wp.css" />');
+        //     document.write('<' + 'link rel="stylesheet" type="text/css" href="sdk/resources/css/mountainview.css" />');
+        // } else if (Ext.os.is.Android) {
+        //     // Android (any)
+        //     document.write('<' + 'link rel="stylesheet" type="text/css" href="sdk/resources/css/mountainview.css" />');
+        // } else {
+        //     // iOS 6 style
+        //     document.write('<' + 'link rel="stylesheet" type="text/css" href="sdk/resources/css/cupertino-classic.css" />');
+        // }
+    </script>
+   <script type="text/javascript" src="triangle.js"></script>
+   <script type="text/javascript" src="localnotification.js"></script>
+   <script type="text/javascript" src="app.js"></script>
+   <script type="text/javascript">
+var DOMContentLoaded = function() {
+    document.removeEventListener( "DOMContentLoaded", DOMContentLoaded, false );
+    Ext.triggerReady();
+};
+if ( document.readyState === "complete" ) {
+    // Handle it asynchronously to allow scripts the opportunity to delay ready
+    setTimeout(Ext.triggerReady, 1 );
+}
+
+// Mozilla, Opera and webkit nightlies currently support this event
+if ( document.addEventListener ) {
+    // Use the handy event callback
+document.addEventListener( "DOMContentLoaded", DOMContentLoaded, false );
+}
+   </script>
 </head>
 <body>
     <div id="appLoadingIndicator">

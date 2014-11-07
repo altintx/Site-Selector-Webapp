@@ -1,3 +1,7 @@
+//@tag foundation,core
+//@define Ext.Class
+//@require Ext.Base
+
 /**
  * @class Ext.Class
  *
@@ -6,7 +10,7 @@
  * @aside video class-system
  *
  * Handles class creation throughout the framework. This is a low level factory that is used by Ext.ClassManager and generally
- * should not be used directly. If you choose to use Ext.Class you will lose out on the namespace, aliasing and depency loading
+ * should not be used directly. If you choose to use Ext.Class you will lose out on the namespace, aliasing and dependency loading
  * features made available by Ext.ClassManager. The only time you would use Ext.Class directly is to create an anonymous class.
  *
  * If you wish to create a class you should use {@link Ext#define Ext.define} which aliases
@@ -33,8 +37,8 @@
      * @method constructor
      * Creates a new anonymous class.
      *
-     * @param {Object} data An object represent the properties of this class
-     * @param {Function} onCreated Optional, the callback function to be executed when this class is fully created.
+     * @param {Object} data An object represent the properties of this class.
+     * @param {Function} onCreated (optional) The callback function to be executed when this class is fully created.
      * Note that the creation process can be asynchronous depending on the pre-processors used.
      *
      * @return {Ext.Base} The newly created class
@@ -151,30 +155,31 @@
         preprocessors: {},
 
         /**
-         * Register a new pre-processor to be used during the class creation process
+         * Register a new pre-processor to be used during the class creation process.
          *
          * @private
          * @static
-         * @param {String} name The pre-processor's name
+         * @param {String} name The pre-processor's name.
          * @param {Function} fn The callback function to be executed. Typical format:
          *
          *     function(cls, data, fn) {
          *         // Your code here
          *
          *         // Execute this when the processing is finished.
-         *         // Asynchronous processing is perfectly ok
+         *         // Asynchronous processing is perfectly OK
          *         if (fn) {
          *             fn.call(this, cls, data);
          *         }
          *     });
          *
-         * Passed arguments for this function are:
-         *
-         * - `{Function} cls`: The created class
-         * - `{Object} data`: The set of properties passed in {@link Ext.Class} constructor
-         * - `{Function} fn`: The callback function that <b>must</b> to be executed when this pre-processor finishes,
-         * regardless of whether the processing is synchronous or aynchronous
-         *
+         * @param {Function} fn.cls The created class.
+         * @param {Object} fn.data The set of properties passed in {@link Ext.Class} constructor.
+         * @param {Function} fn.fn The callback function that __must__ to be executed when this
+         * pre-processor finishes, regardless of whether the processing is synchronous or
+         * asynchronous.
+         * @param {String[]} [properties]
+         * @param {String} [position]
+         * @param {Object} [relativeTo]
          * @return {Ext.Class} this
          */
         registerPreprocessor: function(name, fn, properties, position, relativeTo) {
@@ -198,7 +203,7 @@
         },
 
         /**
-         * Retrieve a pre-processor callback function by its name, which has been registered before
+         * Retrieve a pre-processor callback function by its name, which has been registered before.
          *
          * @private
          * @static
@@ -224,7 +229,7 @@
         defaultPreprocessors: [],
 
         /**
-         * Retrieve the array stack of default pre-processors
+         * Retrieve the array stack of default pre-processors.
          * @private
          * @static
          * @return {Function} defaultPreprocessors
@@ -234,7 +239,7 @@
         },
 
         /**
-         * Set the default array stack of default pre-processors
+         * Set the default array stack of default pre-processors.
          *
          * @private
          * @static
@@ -262,9 +267,9 @@
          * @private
          * @static
          * @param {String} name The pre-processor name. Note that it needs to be registered with
-         * {@link Ext.Class#registerPreprocessor registerPreprocessor} before this
+         * {@link Ext.Class#registerPreprocessor registerPreprocessor} before this.
          * @param {String} offset The insertion position. Four possible values are:
-         * 'first', 'last', or: 'before', 'after' (relative to the name provided in the third argument)
+         * 'first', 'last', or: 'before', 'after' (relative to the name provided in the third argument).
          * @param {String} relativeName
          * @return {Ext.Class} this
          */
@@ -351,14 +356,15 @@
 
                 if (applier) {
                     value = applier.call(this, value, oldValue);
+                    if (typeof value == 'undefined') {
+                        return this;
+                    }
                 }
 
-                if (typeof value != 'undefined') {
-                    this[internalName] = value;
+                this[internalName] = value;
 
-                    if (updater && value !== oldValue) {
-                        updater.call(this, value, oldValue);
-                    }
+                if (updater && value !== oldValue) {
+                    updater.call(this, value, oldValue);
                 }
 
                 return this;
@@ -407,20 +413,30 @@
      * @cfg {String} extend
      * The parent class that this class extends. For example:
      *
+     *     @example
      *     Ext.define('Person', {
-     *         say: function(text) { alert(text); }
+     *         say: function(text) {
+     *             alert(text);
+     *         }
      *     });
      *
      *     Ext.define('Developer', {
      *         extend: 'Person',
-     *         say: function(text) { this.callParent(["print "+text]); }
+     *         say: function(text) {
+     *             this.callParent(["print " + text]);
+     *         }
      *     });
+     *
+     *     var person1 = Ext.create("Person");
+     *     person1.say("Bill");
+     *
+     *     var developer1 = Ext.create("Developer");
+     *     developer1.say("Ted");
      */
     ExtClass.registerPreprocessor('extend', function(Class, data) {
         var Base = Ext.Base,
-            basePrototype = Base.prototype,
             extend = data.extend,
-            Parent, parentPrototype, name;
+            Parent;
 
         delete data.extend;
 
@@ -429,16 +445,6 @@
         }
         else {
             Parent = Base;
-        }
-
-        parentPrototype = Parent.prototype;
-
-        if (!Parent.$isClass) {
-            for (name in basePrototype) {
-                if (!parentPrototype[name]) {
-                    parentPrototype[name] = basePrototype[name];
-                }
-            }
         }
 
         Class.extend(Parent);
@@ -465,7 +471,9 @@
      *              }
      *          },
      *
-     *          constructor: function() { ... }
+     *          constructor: function() {
+     *              // ...
+     *          }
      *     });
      *
      *     var dellComputer = Computer.factory('Dell');
@@ -490,20 +498,160 @@
     });
     //</feature>
 
+        //<feature classSystem.platformConfig>
+    /**
+     * @cfg {Object} platformConfig
+     * Allows for setting default config values on specific platforms or themes
+     *
+     *     Ext.define('MyComponent', {
+     *          config: {
+     *              top: 0
+     *          },
+     *
+     *          platformConfig: [{
+     *              platform: ['ie10'],
+     *              theme: ['Windows'],
+     *              top: null,
+     *              bottom: 0
+     *          }]
+     *     });
+     */
+    ExtClass.registerPreprocessor('platformConfig', function(Class, data, hooks) {
+        var platformConfigs = data.platformConfig,
+            config = data.config || {},
+            platform, theme, platformConfig, i, ln, j, ln2, exclude;
+
+        delete data.platformConfig;
+
+        if (!Ext.filterPlatform) {
+            Ext.filterPlatform = function(platform) {
+                var profileMatch = false,
+                    ua = navigator.userAgent,
+                    j, jln;
+
+                platform = [].concat(platform);
+
+                function isPhone(ua) {
+                    var isMobile = /Mobile(\/|\s)/.test(ua);
+
+                    // Either:
+                    // - iOS but not iPad
+                    // - Android 2
+                    // - Android with "Mobile" in the UA
+
+                    return /(iPhone|iPod)/.test(ua) ||
+                              (!/(Silk)/.test(ua) && (/(Android)/.test(ua) && (/(Android 2)/.test(ua) || isMobile))) ||
+                              (/(BlackBerry|BB)/.test(ua) && isMobile) ||
+                              /(Windows Phone)/.test(ua);
+                }
+
+                function isTablet(ua) {
+                    return !isPhone(ua) && (/iPad/.test(ua) || /Android/.test(ua) || /(RIM Tablet OS)/.test(ua) ||
+                        (/MSIE 10/.test(ua) && /; Touch/.test(ua)));
+                }
+
+                // Check if the ?platform parameter is set in the URL
+                var paramsString = window.location.search.substr(1),
+                    paramsArray = paramsString.split("&"),
+                    params = {},
+                    testPlatform, i;
+
+                for (i = 0; i < paramsArray.length; i++) {
+                    var tmpArray = paramsArray[i].split("=");
+                    params[tmpArray[0]] = tmpArray[1];
+                }
+
+                testPlatform = params.platform;
+                if (testPlatform) {
+                    return platform.indexOf(testPlatform) != -1;
+                }
+
+                for (j = 0, jln = platform.length; j < jln; j++) {
+                    switch (platform[j]) {
+                        case 'phone':
+                            profileMatch = isPhone(ua);
+                            break;
+                        case 'tablet':
+                            profileMatch = isTablet(ua);
+                            break;
+                        case 'desktop':
+                            profileMatch = !isPhone(ua) && !isTablet(ua);
+                            break;
+                        case 'ios':
+                            profileMatch = /(iPad|iPhone|iPod)/.test(ua);
+                            break;
+                        case 'android':
+                            profileMatch = /(Android|Silk)/.test(ua);
+                            break;
+                        case 'blackberry':
+                            profileMatch = /(BlackBerry|BB)/.test(ua);
+                            break;
+                        case 'safari':
+                            profileMatch = /Safari/.test(ua) && !(/(BlackBerry|BB)/.test(ua));
+                            break;
+                        case 'chrome':
+                            profileMatch = /Chrome/.test(ua);
+                            break;
+                        case 'ie10':
+                            profileMatch = /MSIE 10/.test(ua);
+                            break;
+                        case 'windows':
+                            profileMatch = /MSIE 10/.test(ua) || /Trident/.test(ua);
+                            break;
+                        case 'tizen':
+                            profileMatch = /Tizen/.test(ua);
+                            break;
+                        case 'firefox':
+                            profileMatch = /Firefox/.test(ua);
+                    }
+                    if (profileMatch) {
+                        return true;
+                    }
+                }
+                return false;
+            };
+        }
+
+        for (i = 0, ln = platformConfigs.length; i < ln; i++) {
+            platformConfig = platformConfigs[i];
+
+            platform = platformConfig.platform;
+            exclude = platformConfig.exclude || [];
+            delete platformConfig.platform;
+
+            theme = [].concat(platformConfig.theme);
+            ln2 = theme.length;
+            delete platformConfig.theme;
+
+            if (platform && Ext.filterPlatform(platform) && !Ext.filterPlatform(exclude)) {
+                Ext.merge(config, platformConfig);
+            }
+
+            if (ln2) {
+                for (j = 0; j < ln2; j++) {
+                    if (Ext.theme.name == theme[j]) {
+                        Ext.merge(config, platformConfig);
+                    }
+                }
+            }
+        }
+    });
+    //</feature>
+
     //<feature classSystem.config>
     /**
      * @cfg {Object} config
      *
      * List of configuration options with their default values.
      *
-     * **Note** You need to make sure {@link Ext.Base#initConfig} is called from your constructor if you are defining
+     * __Note:__ You need to make sure {@link Ext.Base#initConfig} is called from your constructor if you are defining
      * your own class or singleton, unless you are extending a Component. Otherwise the generated getter and setter
      * methods will not be initialized.
      *
      * Each config item will have its own setter and getter method automatically generated inside the class prototype
      * during class creation time, if the class does not have those methods explicitly defined.
      *
-     * As an example, let’s convert the name property of a Person class to be a config item, then add extra age and
+     * As an example, let's convert the name property of a Person class to be a config item, then add extra age and
      * gender items.
      *
      *     Ext.define('My.sample.Person', {
@@ -522,7 +670,7 @@
      *         // ...
      *     });
      *
-     * Within the class, this.name still has the default value of “Mr. Unknown”. However, it’s now publicly accessible
+     * Within the class, this.name still has the default value of "Mr. Unknown". However, it's now publicly accessible
      * without sacrificing encapsulation, via setter and getter methods.
      *
      *     var jacky = new Person({
@@ -546,24 +694,28 @@
      *  - The provided config object when the class is instantiated is recursively merged with the default config object.
      *  - All corresponding setter methods are called with the merged values.
      *
-     * Beside storing the given values, thoughout the frameworks, setters generally have two key responsibilities:
+     * Beside storing the given values, throughout the frameworks, setters generally have two key responsibilities:
      *
-     *  - Filtering / validation / transformation of the given value before it’s actually stored within the instance.
+     *  - Filtering / validation / transformation of the given value before it's actually stored within the instance.
      *  - Notification (such as firing events) / post-processing after the value has been set, or changed from a
      *    previous value.
      *
      * By standardize this common pattern, the default generated setters provide two extra template methods that you
-     * can put your own custom logics into, i.e: a “applyFoo” and “updateFoo” method for a “foo” config item, which are
-     * executed before and after the value is actually set, respectively. Back to the example class, let’s validate that
+     * can put your own custom logics into, i.e: an "applyFoo" and "updateFoo" method for a "foo" config item, which are
+     * executed before and after the value is actually set, respectively. Back to the example class, let's validate that
      * age must be a valid positive number, and fire an 'agechange' if the value is modified.
      *
      *     Ext.define('My.sample.Person', {
-     *         config: { .... },
+     *         config: {
+     *             // ...
+     *         },
      *
-     *         constructor: { .... }
+     *         constructor: {
+     *             // ...
+     *         },
      *
      *         applyAge: function(age) {
-     *             if (typeof age != 'number' || age &lt; 0) {
+     *             if (typeof age !== 'number' || age < 0) {
      *                 console.warn("Invalid age, must be a positive number");
      *                 return;
      *             }
@@ -576,7 +728,7 @@
      *             this.fireEvent('agechange', this, newAge, oldAge);
      *         }
      *
-     *         // ....
+     *         // ...
      *     });
      *
      *     var jacky = new Person({
@@ -593,11 +745,11 @@
      *     alert(jacky.getAge());      // alerts 35
      *
      * In other words, when leveraging the config feature, you mostly never need to define setter and getter methods
-     * explicitly. Instead, "apply*" and "update*" methods should be implemented where neccessary. Your code will be
+     * explicitly. Instead, "apply*" and "update*" methods should be implemented where necessary. Your code will be
      * consistent throughout and only contain the minimal logic that you actually care about.
      *
      * When it comes to inheritance, the default config of the parent class is automatically, recursively merged with
-     * the child’s default config. The same applies for mixins.
+     * the child's default config. The same applies for mixins.
      */
     ExtClass.registerPreprocessor('config', function(Class, data) {
         var config = data.config,
@@ -608,7 +760,7 @@
         delete data.config;
 
         for (name in config) {
-            // Once per config item, per class hierachy
+            // Once per config item, per class hierarchy
             if (config.hasOwnProperty(name) && !(name in defaultConfig)) {
                 value = config[name];
                 nameMap = this.getConfigNameMap(name);
@@ -644,7 +796,7 @@
      *
      *     Ext.define('CanSing', {
      *          sing: function() {
-     *              alert("I'm on the highway to hell...")
+     *              alert("I'm on the highway to hell...");
      *          }
      *     });
      *
@@ -654,7 +806,7 @@
      *          mixins: {
      *              canSing: 'CanSing'
      *          }
-     *     })
+     *     });
      */
     ExtClass.registerPreprocessor('mixins', function(Class, data, hooks) {
         var mixins = data.mixins,
@@ -700,15 +852,23 @@
         members.extend = Parent;
         members.preprocessors = [
             'extend'
+
             //<feature classSystem.statics>
             ,'statics'
             //</feature>
+
             //<feature classSystem.inheritableStatics>
             ,'inheritableStatics'
             //</feature>
+
             //<feature classSystem.mixins>
             ,'mixins'
             //</feature>
+
+            //<feature classSystem.platformConfig>
+            ,'platformConfig'
+            //</feature>
+
             //<feature classSystem.config>
             ,'config'
             //</feature>

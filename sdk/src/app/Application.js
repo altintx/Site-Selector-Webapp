@@ -9,7 +9,7 @@
  * Ext.app.Application defines the set of {@link Ext.data.Model Models}, {@link Ext.app.Controller Controllers},
  * {@link Ext.app.Profile Profiles}, {@link Ext.data.Store Stores} and {@link Ext.Component Views} that an application
  * consists of. It automatically loads all of those dependencies and can optionally specify a {@link #launch} function
- * that will be called when everthing is ready.
+ * that will be called when everything is ready.
  *
  * Sample usage:
  *
@@ -26,7 +26,7 @@
  *         }
  *     });
  *
- * Creating an Application instance is the only time in Sencha Touch 2 that we don't use Ext.create to create the new
+ * Creating an Application instance is the only time in Sencha Touch that we don't use Ext.create to create the new
  * instance. Instead, the {@link Ext#application} function instantiates an Ext.app.Application internally,
  * automatically loading the Ext.app.Application class if it is not present on the page already and hooking in to
  * {@link Ext#onReady} before creating the instance itself. An alternative is to use Ext.create inside an Ext.onReady
@@ -50,16 +50,16 @@
  *
  * The example above will load 6 files:
  *
- * * app/model/User.js
- * * app/model/Group.js
- * * app/store/Users.js
- * * app/controller/Users.js
- * * app/view/Main.js
- * * app/view/ShowUser.js
+ * - app/model/User.js
+ * - app/model/Group.js
+ * - app/store/Users.js
+ * - app/controller/Users.js
+ * - app/view/Main.js
+ * - app/view/ShowUser.js
  *
  * ### Nested Dependencies
  *
- * For larger apps it's common to split the models, views and controllers into subfolders so keep the project
+ * For larger apps it's common to split the models, views and controllers into subfolders to keep the project
  * organized. This is especially true of views - it's not unheard of for large apps to have over a hundred separate
  * view classes so organizing them into folders can make maintenance much simpler.
  *
@@ -74,11 +74,11 @@
  *
  * In this case these 5 files will be loaded:
  *
- * * app/controller/Users.js
- * * app/controller/nested/MyController.js
- * * app/view/products/Show.js
- * * app/view/products/Edit.js
- * * app/view/user/Login.js
+ * - app/controller/Users.js
+ * - app/controller/nested/MyController.js
+ * - app/view/products/Show.js
+ * - app/view/products/Edit.js
+ * - app/view/user/Login.js
  *
  * Note that we can mix and match within each configuration here - for each model, view, controller, profile or store
  * you can specify either just the final part of the class name (if you follow the directory conventions), or the full
@@ -106,11 +106,11 @@
  *
  * This will load the following files:
  *
- * * Auth/view/LoginForm.js
- * * Auth/controller/Sessions.js
- * * Auth/model/User.js
- * * app/view/Welcome.js
- * * app/controller/Main.js
+ * - Auth/view/LoginForm.js
+ * - Auth/controller/Sessions.js
+ * - Auth/model/User.js
+ * - app/view/Welcome.js
+ * - app/controller/Main.js
  *
  * The first three were loaded from outside our application, the last two from the application itself. Note how we can
  * still mix and match application files and external dependency files.
@@ -153,22 +153,28 @@
  *         name: 'MyApp',
  *
  *         {@link #icon}: 'resources/img/icon.png',
- *         {@link #glossOnIcon}: false,
- *         {@link #phoneStartupScreen}: 'resources/img/phone_startup.png',
- *         {@link #tabletStartupScreen}: 'resources/img/tablet_startup.png'
+ *         {@link #isIconPrecomposed}: false,
+ *         {@link #startupImage}: {
+ *             '320x460': 'resources/startup/320x460.jpg',
+ *             '640x920': 'resources/startup/640x920.png',
+ *             '640x1096': 'resources/startup/640x1096.png',
+ *             '768x1004': 'resources/startup/768x1004.png',
+ *             '748x1024': 'resources/startup/748x1024.png',
+ *             '1536x2008': 'resources/startup/1536x2008.png',
+ *             '1496x2048': 'resources/startup/1496x2048.png'
+ *         }
  *     });
  *
  * When the user adds your app to the home screen, your resources/img/icon.png file will be used as the application
- * icon. We also used the {@link #glossOnIcon} configuration to turn off the gloss effect that is automatically added
- * to icons in iOS. Finally we used the {@link #phoneStartupScreen} and {@link #tabletStartupScreen} configurations to
- * provide the images that will be displayed while your application is starting up. See also {@link #phoneIcon},
- * {@link #tabletIcon} and {@link #statusBarStyle}.
+ * {@link #icon}. We also used the {@link #isIconPrecomposed} configuration to turn off the gloss effect that is automatically added
+ * to icons in iOS. Finally we used the {@link #startupImage} configuration to provide the images that will be displayed 
+ * while your application is starting up. See also {@link #statusBarStyle}.
  *
  * ## Find out more
  *
- * If you are not already familiar with writing applications with Sencha Touch 2 we recommend reading the
- * <a href="#!/guide/apps_intro">intro to applications</a> guide, which lays out the core principles of writing apps
- * with Sencha Touch 2.
+ * If you are not already familiar with writing applications with Sencha Touch we recommend reading the
+ * [intro to applications guide](#!/guide/apps_intro), which lays out the core principles of writing apps
+ * with Sencha Touch.
  */
 Ext.define('Ext.app.Application', {
     extend: 'Ext.app.Controller',
@@ -182,42 +188,122 @@ Ext.define('Ext.app.Application', {
 
     config: {
         /**
-         * @cfg {String/Object} icon Path to the .png image file to use when your app is added to the home screen on an
-         * iOS device. When passed in as a String, the same icon will be used for both phone and tablet devices. To set
-         * different icons for tablets and phones see the {@link #tabletIcon} and {@link #phoneIcon} configs.
+         * @cfg {String/Object} icon
+         * Specifies a set of URLs to the application icon for different device form factors. This icon is displayed
+         * when the application is added to the device's Home Screen.
+         *
+         *     Ext.setup({
+         *         icon: {
+         *             57: 'resources/icons/Icon.png',
+         *             72: 'resources/icons/Icon~ipad.png',
+         *             114: 'resources/icons/Icon@2x.png',
+         *             144: 'resources/icons/Icon~ipad@2x.png'
+         *         },
+         *         onReady: function() {
+         *             // ...
+         *         }
+         *     });
+         *
+         * Each key represents the dimension of the icon as a square shape. For example: '57' is the key for a 57 x 57
+         * icon image. Here is the breakdown of each dimension and its device target:
+         *
+         * - 57: Non-retina iPhone, iPod touch, and all Android devices
+         * - 72: Retina iPhone and iPod touch
+         * - 114: Non-retina iPad (first and second generation)
+         * - 144: Retina iPad (third generation)
+         *
+         * Note that the dimensions of the icon images must be exactly 57x57, 72x72, 114x114 and 144x144 respectively.
+         *
+         * It is highly recommended that you provide all these different sizes to accommodate a full range of
+         * devices currently available. However if you only have one icon in one size, make it 57x57 in size and
+         * specify it as a string value. This same icon will be used on all supported devices.
+         *
+         *     Ext.application({
+         *         icon: 'resources/icons/Icon.png',
+         *         launch: function() {
+         *             // ...
+         *         }
+         *     });
+         */
+        
+        /**
+         * @cfg {Object} startupImage
+         * Specifies a set of URLs to the application startup images for different device form factors. This image is
+         * displayed when the application is being launched from the Home Screen icon. Note that this currently only applies
+         * to iOS devices.
+         *
+         *     Ext.application({
+         *         startupImage: {
+         *             '320x460': 'resources/startup/320x460.jpg',
+         *             '640x920': 'resources/startup/640x920.png',
+         *             '640x1096': 'resources/startup/640x1096.png',
+         *             '768x1004': 'resources/startup/768x1004.png',
+         *             '748x1024': 'resources/startup/748x1024.png',
+         *             '1536x2008': 'resources/startup/1536x2008.png',
+         *             '1496x2048': 'resources/startup/1496x2048.png'
+         *         },
+         *         launch: function() {
+         *             // ...
+         *         }
+         *     });
+         *
+         * Each key represents the dimension of the image. For example: '320x460' is the key for a 320px x 460px image.
+         * Here is the breakdown of each dimension and its device target:
+         *
+         * - 320x460: Non-retina iPhone, iPod touch, and all Android devices
+         * - 640x920: Retina iPhone and iPod touch
+         * - 640x1096: iPhone 5 and iPod touch (fifth generation)
+         * - 768x1004: Non-retina iPad (first and second generation) in portrait orientation
+         * - 748x1024: Non-retina iPad (first and second generation) in landscape orientation
+         * - 1536x2008: Retina iPad (third generation) in portrait orientation
+         * - 1496x2048: Retina iPad (third generation) in landscape orientation
+         *
+         * Please note that there's no automatic fallback mechanism for the startup images. In other words, if you don't specify
+         * a valid image for a certain device, nothing will be displayed while the application is being launched on that device.
+         */
+        
+        /**
+         * @cfg {Boolean} isIconPrecomposed
+         * `true` to not having a glossy effect added to the icon by the OS, which will preserve its exact look. This currently
+         * only applies to iOS devices.
          */
 
         /**
-         * @cfg {String} tabletIcon Path to the .png image file to use when your app is added to the home screen on an
-         * iOS **tablet** device (iPad).
-         */
-
-        /**
-         * @cfg {String} phoneIcon Path to the .png image file to use when your app is added to the home screen on an
-         * iOS **phone** device (iPhone or iPod).
-         */
-
-        /**
-         * @cfg {Boolean} glossOnIcon If set to false, the 'gloss' effect added to home screen {@link #icon icons} on
-         * iOS devices will be removed.
-         */
-
-        /**
-         * @cfg {String} statusBarStyle Allows you to set the style of the status bar when your app is added to the
-         * home screen on iOS devices. Defaults to 'black'. Alternative is to set to 'black-translucent', which turns
+         * @cfg {String} [statusBarStyle='black'] Allows you to set the style of the status bar when your app is added to the
+         * home screen on iOS devices. Alternative is to set to 'black-translucent', which turns
          * the status bar semi-transparent and overlaps the app content. This is usually not a good option for web apps
          */
-
+        
         /**
-         * @cfg {String} phoneStartupScreen Path to the .png image file that will be displayed while the app is
-         * starting up once it has been added to the home screen of an iOS phone device (iPhone or iPod). This .png
-         * file should be 320px wide and 460px high.
+         * @cfg {String} tabletIcon Path to the _.png_ image file to use when your app is added to the home screen on an
+         * iOS **tablet** device (iPad).
+         * @deprecated 2.0.0 Please use the {@link #icon} configuration instead.
          */
 
         /**
-         * @cfg {String} tabletStartupScreen Path to the .png image file that will be displayed while the app is
-         * starting up once it has been added to the home screen of an iOS tablet device (iPad). This .png file should
+         * @cfg {String} phoneIcon Path to the _.png_ image file to use when your app is added to the home screen on an
+         * iOS **phone** device (iPhone or iPod).
+         * @deprecated 2.0.0 Please use the {@link #icon} configuration instead.
+         */
+
+        /**
+         * @cfg {Boolean} glossOnIcon If set to `false`, the 'gloss' effect added to home screen {@link #icon icons} on
+         * iOS devices will be removed.
+         * @deprecated 2.0.0 Please use the {@link #isIconPrecomposed} configuration instead.
+         */
+
+        /**
+         * @cfg {String} phoneStartupScreen Path to the _.png_ image file that will be displayed while the app is
+         * starting up once it has been added to the home screen of an iOS phone device (iPhone or iPod). This _.png_
+         * file should be 320px wide and 460px high.
+         * @deprecated 2.0.0 Please use the {@link #startupImage} configuration instead.
+         */
+
+        /**
+         * @cfg {String} tabletStartupScreen Path to the _.png_ image file that will be displayed while the app is
+         * starting up once it has been added to the home screen of an iOS tablet device (iPad). This _.png_ file should
          * be 768px wide and 1004px high.
+         * @deprecated 2.0.0 Please use the {@link #startupImage} configuration instead.
          */
 
         /**
@@ -226,7 +312,7 @@ Ext.define('Ext.app.Application', {
          * AppName.profile.ProfileName. For example, in the code below, the classes *AppName.profile.Phone*
          * and *AppName.profile.Tablet* will be loaded. Note that we are able to specify
          * either the full class name (as with *AppName.profile.Tablet*) or just the final part of the class name
-         * and leave Application to automatically prepend *AppName.profile.’* to each:
+         * and leave Application to automatically prepend *AppName.profile.'* to each:
          *
          *     profiles: [
          *         'Phone',
@@ -243,7 +329,7 @@ Ext.define('Ext.app.Application', {
          * AppName.controller.ControllerName. For example, in the code below, the classes *AppName.controller.Users*,
          * *AppName.controller.Groups* and *AppName.controller.Products* will be loaded. Note that we are able to specify
          * either the full class name (as with *AppName.controller.Products*) or just the final part of the class name
-         * and leave Application to automatically prepend *AppName.controller.’* to each:
+         * and leave Application to automatically prepend *AppName.controller.'* to each:
          *
          *     controllers: [
          *         'Users',
@@ -257,15 +343,17 @@ Ext.define('Ext.app.Application', {
 
         /**
          * @cfg {Ext.app.History} history The global {@link Ext.app.History History} instance attached to this
-         * Application. Read only
+         * Application. For more information, see 
+         * [Routing, Deep Linking, and the Back Button](http://docs.sencha.com/touch/#!/guide/history_support).
          * @accessor
+         * @readonly
          */
         history: {},
 
         /**
          * @cfg {String} name The name of the Application. This should be a single word without spaces or periods
          * because it is used as the Application's global namespace. All classes in your application should be
-         * namespaced undef the Application's name - for example if your application name is 'MyApp', your classes
+         * namespaced under the Application's name - for example if your application name is 'MyApp', your classes
          * should be named 'MyApp.model.User', 'MyApp.controller.Users', 'MyApp.view.Main' etc
          * @accessor
          */
@@ -274,38 +362,36 @@ Ext.define('Ext.app.Application', {
         /**
          * @cfg {String} appFolder The path to the directory which contains all application's classes.
          * This path will be registered via {@link Ext.Loader#setPath} for the namespace specified in the {@link #name name} config.
-         * Defaults to 'app'
          * @accessor
          */
         appFolder : 'app',
 
         /**
          * @cfg {Ext.app.Router} router The global {@link Ext.app.Router Router} instance attached to this Application.
-         * Read only.
          * @accessor
+         * @readonly
          */
         router: {},
 
         /**
-         * @cfg
+         * @cfg {Array} controllerInstances Used internally as the collection of instantiated controllers. Use {@link #getController} instead.
          * @private
-         * Used internally as the collection of instantiated controllers. Use {@link #getController} instead
          * @accessor
          */
         controllerInstances: [],
 
         /**
-         * @cfg
+         * @cfg {Array} profileInstances Used internally as the collection of instantiated profiles.
          * @private
-         * Used internally as the collection of instantiated profiles
          * @accessor
          */
         profileInstances: [],
 
         /**
          * @cfg {Ext.app.Profile} currentProfile The {@link Ext.app.Profile Profile} that is currently active for the
-         * Application. This is set once, automatically by the Application before launch. Read only.
+         * Application. This is set once, automatically by the Application before launch.
          * @accessor
+         * @readonly
          */
         currentProfile: null,
 
@@ -319,23 +405,49 @@ Ext.define('Ext.app.Application', {
         /**
          * @private
          * @cfg {Boolean} enableLoader Private config to disable loading of Profiles at application construct time.
-         * This is used by Sencha's unit test suite to test Application.js in isolation and is likely to be removed
+         * This is used by Sencha's unit test suite to test _Application.js_ in isolation and is likely to be removed
          * in favor of a more pleasing solution by the time you use it.
          * @accessor
          */
         enableLoader: true,
 
         /**
-         * @private
-         * @cfg {Boolean} requires An array of extra dependencies, to be required after this application's name config
-         * has been processed properly, but before anything else to ensure overrides get executed first
+         * @cfg {String[]} requires An array of extra dependencies, to be required after this application's {@link #name} config
+         * has been processed properly, but before anything else to ensure overrides get executed first.
          * @accessor
          */
-        requires: []
+        requires: [],
+
+        /**
+         * @cfg {String} themeVariationPrefix Used only with {@link themeVariation} this prefix will be added before the variation as a class on the HTML
+         * tag of your application.
+         */
+        themeVariationPrefix: Ext.baseCSSPrefix + 'theme-variation-',
+
+        /**
+         * @cfg {String} themeVariationTransitionCls This is only used with {@link themeVariation}. The Class provided will be added to the HTML tag
+         * then removed once the transition is complete. The duration of this delayed removal is parsed from the class itself, for example if the class
+         * has the property 'transition: color 4s, background 6s, background-color 1s' the delay will be 6s (the largest time used in that class.
+         *
+         * @accessor
+        */
+        themeVariationTransitionCls: null,
+
+        /**
+         * @cfg {String/Function} themeVariation A string to determine the variation on the current theme being used. This string will be prefixed by
+         * {@link themeVariationPrefix} and the resulting string will be added to the HTML tag of your application. If a function is provided that function
+         * must return a string.
+         *
+         *  //This will result in 'x-theme-variation-dark' being added as a class to the html tag of your application
+         *  MyApp.app.setThemeVariation("dark");
+         *
+         * @accessor
+         */
+        themeVariation: null
     },
 
     /**
-     * Constructs a new Application instance
+     * Constructs a new Application instance.
      */
     constructor: function(config) {
         config = config || {};
@@ -376,8 +488,8 @@ Ext.define('Ext.app.Application', {
      * Dispatches a given {@link Ext.app.Action} to the relevant Controller instance. This is not usually called
      * directly by the developer, instead Sencha Touch's History support picks up on changes to the browser's url
      * and calls dispatch automatically.
-     * @param {Ext.app.Action} action The action to dispatch
-     * @param {Boolean} addToHistory True by default, sets the browser's url to the action's url
+     * @param {Ext.app.Action} action The action to dispatch.
+     * @param {Boolean} [addToHistory=true] Sets the browser's url to the action's url.
      */
     dispatch: function(action, addToHistory) {
         action = action || {};
@@ -403,12 +515,12 @@ Ext.define('Ext.app.Application', {
     },
 
     /**
-     * Redirects the browser to the given url. This only affects the url after the #. You can pass in either a String
+     * Redirects the browser to the given url. This only affects the url after the '#'. You can pass in either a String
      * or a Model instance - if a Model instance is defined its {@link Ext.data.Model#toUrl toUrl} function is called,
      * which returns a string representing the url for that model. Internally, this uses your application's
      * {@link Ext.app.Router Router} to decode the url into a matching controller action and then calls
      * {@link #dispatch}.
-     * @param {String/Ext.data.Model} url The String url to redirect to
+     * @param {String/Ext.data.Model} url The String url to redirect to.
      */
     redirectTo: function(url) {
         if (Ext.data && Ext.data.Model && url instanceof Ext.data.Model) {
@@ -464,11 +576,11 @@ Ext.define('Ext.app.Application', {
     },
 
     /**
-     * @private
-     * Returns the Controller instance for the given controller name
-     * @param {String} name The name of the Controller
-     * @param {String} profileName Optional profile name. If passed, this is the same as calling
-     * getController('profileName.controllerName')
+     * Returns the Controller instance for the given controller name.
+     * @param {String} name The name of the Controller.
+     * @param {String} [profileName] Optional profile name. If passed, this is the same as calling
+     * `getController('profileName.controllerName')`.
+     * @return {Ext.app.Controller} controller instance or undefined.
      */
     getController: function(name, profileName) {
         var instances = this.getControllerInstances(),
@@ -536,7 +648,7 @@ Ext.define('Ext.app.Application', {
 
     /**
      * @private
-     * Controllers can also specify dependencies, so we grab them all here and require them
+     * Controllers can also specify dependencies, so we grab them all here and require them.
      */
     loadControllerDependencies: function() {
         this.instantiateControllers();
@@ -562,7 +674,7 @@ Ext.define('Ext.app.Application', {
     /**
      * @private
      * Callback that is invoked when all of the Application, Controller and Profile dependencies have been loaded.
-     * Launches the controllers, then the profile and application
+     * Launches the controllers, then the profile and application.
      */
     onDependenciesLoaded: function() {
         var me = this,
@@ -609,7 +721,7 @@ Ext.define('Ext.app.Application', {
 
     /**
      * @private
-     * Gathers up all of the previously computed MVCS dependencies into a single array that we can pass to Ext.require
+     * Gathers up all of the previously computed MVCS dependencies into a single array that we can pass to {@link Ext#require}.
      */
     gatherDependencies: function() {
         var classes = this.getModels().concat(this.getViews()).concat(this.getControllers());
@@ -627,8 +739,8 @@ Ext.define('Ext.app.Application', {
      * @private
      * Should be called after dependencies are loaded, instantiates all of the Stores specified in the {@link #stores}
      * config. For each item in the stores array we make sure the Store is instantiated. When strings are specified,
-     * the corresponding app/store/StoreName.js was loaded so we now instantiate a MyApp.store.StoreName, giving it the
-     * id StoreName.
+     * the corresponding _app/store/StoreName.js_ was loaded so we now instantiate a `MyApp.store.StoreName`, giving it the
+     * id `StoreName`.
      */
     instantiateStores: function() {
         var stores  = this.getStores(),
@@ -755,6 +867,54 @@ Ext.define('Ext.app.Application', {
      */
     onHistoryChange: function(url) {
         this.dispatch(this.getRouter().recognize(url), false);
+    },
+
+    updateThemeVariation: function(newVariation, oldVariation) {
+        var html = Ext.getBody().getParent(),
+            themeVariationPrefix = this.getThemeVariationPrefix() || "",
+            transitionCls = this.getThemeVariationTransitionCls();
+
+        if (Ext.isFunction(newVariation)) {
+            newVariation = newVariation.call(this);
+        }
+
+        if(!Ext.isString(newVariation)) {
+            Ext.Error.raise("Theme variation must be a String.'");
+        }
+
+        if(transitionCls) {
+            var css = "", duration = 0,
+                rules = document.styleSheets[0].cssRules,
+                i, rule, times, time;
+
+            html.addCls(transitionCls);
+            for(i in rules) {
+                rule = rules[i];
+                if(rule.selectorText && rule.selectorText.indexOf("." + transitionCls) >=1) {
+                    css += rule.cssText;
+                }
+            }
+
+            times = css.match(/[0-9]+s/g);
+            for(i in times) {
+                time = parseInt(times[i]);
+                if(time > duration) {
+                    duration = time;
+                }
+            }
+
+            if(this.$themeVariationChangeTimeout) {
+                clearTimeout(this.$themeVariationChangeTimeout);
+                this.$themeVariationChangeTimeout = null;
+            }
+
+            this.$themeVariationChangeTimeout = Ext.defer(function() {
+                html.removeCls(transitionCls);
+            }, time * 1000);
+        }
+
+        html.removeCls(themeVariationPrefix + oldVariation);
+        html.addCls(themeVariationPrefix + newVariation);
     }
 }, function() {
     // <deprecated product=touch since=2.0>

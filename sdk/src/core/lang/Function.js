@@ -1,7 +1,11 @@
+//@tag foundation,core
+//@define Ext.Function
+//@require Ext.Object
+
 /**
  * @class Ext.Function
  *
- * A collection of useful static methods to deal with function callbacks
+ * A collection of useful static methods to deal with function callbacks.
  * @singleton
  * @alternateClassName Ext.util.Functions
  */
@@ -32,8 +36,8 @@ Ext.Function = {
      *         name3: 'value3'
      *     });
      *
-     * @param {Function} setter
-     * @returns {Function} flexSetter
+     * @param {Function} fn
+     * @return {Function} flexSetter
      */
     flexSetter: function(fn) {
         return function(a, b) {
@@ -68,7 +72,7 @@ Ext.Function = {
 
     /**
      * Create a new function from the provided `fn`, change `this` to the provided scope, optionally
-     * overrides arguments for the call. (Defaults to the arguments passed by the caller)
+     * overrides arguments for the call. Defaults to the arguments passed by the caller.
      *
      * {@link Ext#bind Ext.bind} is alias for {@link Ext.Function#bind Ext.Function.bind}
      *
@@ -76,9 +80,9 @@ Ext.Function = {
      * @param {Object} scope (optional) The scope (`this` reference) in which the function is executed.
      * **If omitted, defaults to the browser window.**
      * @param {Array} args (optional) Overrides arguments for the call. (Defaults to the arguments passed by the caller)
-     * @param {Boolean/Number} appendArgs (optional) if True args are appended to call args instead of overriding,
-     * if a number the args are inserted at the specified position
-     * @return {Function} The new function
+     * @param {Boolean/Number} appendArgs (optional) if `true` args are appended to call args instead of overriding,
+     * if a number the args are inserted at the specified position.
+     * @return {Function} The new function.
      */
     bind: function(fn, scope, args, appendArgs) {
         if (arguments.length === 2) {
@@ -124,10 +128,10 @@ Ext.Function = {
      *
      * {@link Ext#pass Ext.pass} is alias for {@link Ext.Function#pass Ext.Function.pass}
      *
-     * @param {Function} fn The original function
-     * @param {Array} args The arguments to pass to new callback
+     * @param {Function} fn The original function.
+     * @param {Array} args The arguments to pass to new callback.
      * @param {Object} scope (optional) The scope (`this` reference) in which the function is executed.
-     * @return {Function} The new callback function
+     * @return {Function} The new callback function.
      */
     pass: function(fn, args, scope) {
         if (!Ext.isArray(args)) {
@@ -174,25 +178,25 @@ Ext.Function = {
      *
      *     var sayHi = function(name){
      *         alert('Hi, ' + name);
-     *     }
+     *     };
      *
      *     sayHi('Fred'); // alerts "Hi, Fred"
      *
      *     // create a new function that validates input without
      *     // directly modifying the original function:
      *     var sayHiToFriend = Ext.Function.createInterceptor(sayHi, function(name){
-     *         return name == 'Brian';
+     *         return name === 'Brian';
      *     });
      *
      *     sayHiToFriend('Fred');  // no alert
      *     sayHiToFriend('Brian'); // alerts "Hi, Brian"
      *
      * @param {Function} origFn The original function.
-     * @param {Function} newFn The function to call before the original
+     * @param {Function} newFn The function to call before the original.
      * @param {Object} scope (optional) The scope (`this` reference) in which the passed function is executed.
      * **If omitted, defaults to the scope in which the original function is called or the browser window.**
-     * @param {Object} returnValue (optional) The value to return if the passed function return false (defaults to null).
-     * @return {Function} The new function
+     * @param {Object} [returnValue=null] (optional) The value to return if the passed function return `false`.
+     * @return {Function} The new function.
      */
     createInterceptor: function(origFn, newFn, scope, returnValue) {
         var method = origFn;
@@ -238,11 +242,11 @@ Ext.Function = {
     },
 
     /**
-     * Calls this function after the number of millseconds specified, optionally in a specific scope. Example usage:
+     * Calls this function after the number of milliseconds specified, optionally in a specific scope. Example usage:
      *
      *     var sayHi = function(name){
      *         alert('Hi, ' + name);
-     *     }
+     *     };
      *
      *     // executes immediately:
      *     sayHi('Fred');
@@ -259,14 +263,14 @@ Ext.Function = {
      * {@link Ext#defer Ext.defer} is alias for {@link Ext.Function#defer Ext.Function.defer}
      *
      * @param {Function} fn The function to defer.
-     * @param {Number} millis The number of milliseconds for the setTimeout call
-     * (if less than or equal to 0 the function is executed immediately)
+     * @param {Number} millis The number of milliseconds for the `setTimeout()` call.
+     * If less than or equal to 0 the function is executed immediately.
      * @param {Object} scope (optional) The scope (`this` reference) in which the function is executed.
-     * **If omitted, defaults to the browser window.**
-     * @param {Array} args (optional) Overrides arguments for the call. (Defaults to the arguments passed by the caller)
-     * @param {Boolean/Number} appendArgs (optional) if True args are appended to call args instead of overriding,
-     * if a number the args are inserted at the specified position
-     * @return {Number} The timeout id that can be used with clearTimeout
+     * If omitted, defaults to the browser window.
+     * @param {Array} args (optional) Overrides arguments for the call. Defaults to the arguments passed by the caller.
+     * @param {Boolean/Number} appendArgs (optional) if `true`, args are appended to call args instead of overriding,
+     * if a number the args are inserted at the specified position.
+     * @return {Number} The timeout id that can be used with `clearTimeout()`.
      */
     defer: function(fn, millis, scope, args, appendArgs) {
         fn = Ext.Function.bind(fn, scope, args, appendArgs);
@@ -284,7 +288,7 @@ Ext.Function = {
      *
      *     var sayHi = function(name){
      *         alert('Hi, ' + name);
-     *     }
+     *     };
      *
      *     sayHi('Fred'); // alerts "Hi, Fred"
      *
@@ -295,10 +299,10 @@ Ext.Function = {
      *     sayGoodbye('Fred'); // both alerts show
      *
      * @param {Function} originalFn The original function.
-     * @param {Function} newFn The function to sequence
+     * @param {Function} newFn The function to sequence.
      * @param {Object} scope (optional) The scope (`this` reference) in which the passed function is executed.
      * If omitted, defaults to the scope in which the original function is called or the browser window.
-     * @return {Function} The new function
+     * @return {Function} The new function.
      */
     createSequence: function(originalFn, newFn, scope) {
         if (!newFn) {
@@ -328,25 +332,20 @@ Ext.Function = {
      * passed by the caller.
      * @return {Function} A function which invokes the passed function after buffering for the specified time.
      */
+
     createBuffered: function(fn, buffer, scope, args) {
         var timerId;
 
         return function() {
-            if (!scope) {
-                scope = this;
-            }
-
-            if (!args) {
-                args = Array.prototype.slice.call(arguments);
-            }
+            var callArgs = args || Array.prototype.slice.call(arguments, 0),
+                me = scope || this;
 
             if (timerId) {
                 clearTimeout(timerId);
-                timerId = null;
             }
 
             timerId = setTimeout(function(){
-                fn.apply(scope, args);
+                fn.apply(me, callArgs);
             }, buffer);
         };
     },
@@ -360,10 +359,10 @@ Ext.Function = {
      * a handler of a mouse move event when the processing is expensive.
      *
      * @param {Function} fn The function to execute at a regular time interval.
-     * @param {Number} interval The interval **in milliseconds** on which the passed function is executed.
+     * @param {Number} interval The interval, in milliseconds, on which the passed function is executed.
      * @param {Object} scope (optional) The scope (`this` reference) in which
      * the passed function is executed. If omitted, defaults to the scope specified by the caller.
-     * @returns {Function} A function which invokes the passed function at the specified interval.
+     * @return {Function} A function which invokes the passed function at the specified interval.
      */
     createThrottled: function(fn, interval, scope) {
         var lastCallTime, elapsed, lastArgs, timer, execute = function() {
@@ -384,24 +383,81 @@ Ext.Function = {
         };
     },
 
-    interceptBefore: function(object, methodName, fn) {
+
+    /**
+     * Adds behavior to an existing method that is executed before the
+     * original behavior of the function.  For example:
+     *
+     *     var soup = {
+     *         contents: [],
+     *         add: function(ingredient) {
+     *             this.contents.push(ingredient);
+     *         }
+     *     };
+     *     Ext.Function.interceptBefore(soup, "add", function(ingredient){
+     *         if (!this.contents.length && ingredient !== "water") {
+     *             // Always add water to start with
+     *             this.contents.push("water");
+     *         }
+     *     });
+     *     soup.add("onions");
+     *     soup.add("salt");
+     *     soup.contents; // will contain: water, onions, salt
+     *
+     * @param {Object} object The target object
+     * @param {String} methodName Name of the method to override
+     * @param {Function} fn Function with the new behavior.  It will
+     * be called with the same arguments as the original method.  The
+     * return value of this function will be the return value of the
+     * new method.
+     * @param {Object} [scope] The scope to execute the interceptor function. Defaults to the object.
+     * @return {Function} The new function just created.
+     */
+    interceptBefore: function(object, methodName, fn, scope) {
         var method = object[methodName] || Ext.emptyFn;
 
-        return object[methodName] = function() {
-            var ret = fn.apply(this, arguments);
+        return (object[methodName] = function() {
+            var ret = fn.apply(scope || this, arguments);
             method.apply(this, arguments);
 
             return ret;
-        };
+        });
     },
 
-    interceptAfter: function(object, methodName, fn) {
+    /**
+     * Adds behavior to an existing method that is executed after the
+     * original behavior of the function.  For example:
+     *
+     *     var soup = {
+     *         contents: [],
+     *         add: function(ingredient) {
+     *             this.contents.push(ingredient);
+     *         }
+     *     };
+     *     Ext.Function.interceptAfter(soup, "add", function(ingredient){
+     *         // Always add a bit of extra salt
+     *         this.contents.push("salt");
+     *     });
+     *     soup.add("water");
+     *     soup.add("onions");
+     *     soup.contents; // will contain: water, salt, onions, salt
+     *
+     * @param {Object} object The target object
+     * @param {String} methodName Name of the method to override
+     * @param {Function} fn Function with the new behavior.  It will
+     * be called with the same arguments as the original method.  The
+     * return value of this function will be the return value of the
+     * new method.
+     * @param {Object} [scope] The scope to execute the interceptor function. Defaults to the object.
+     * @return {Function} The new function just created.
+     */
+    interceptAfter: function(object, methodName, fn, scope) {
         var method = object[methodName] || Ext.emptyFn;
 
-        return object[methodName] = function() {
+        return (object[methodName] = function() {
             method.apply(this, arguments);
-            return fn.apply(this, arguments);
-        };
+            return fn.apply(scope || this, arguments);
+        });
     }
 };
 

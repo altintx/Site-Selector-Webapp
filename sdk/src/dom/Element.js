@@ -1,11 +1,9 @@
+//@tag dom,core
+//@define Ext.Element-all
+//@define Ext.Element
+
 /**
  * Encapsulates a DOM element, adding simple DOM manipulation facilities, normalizing for browser differences.
- *
- * All instances of this class inherit the methods of Ext.Fx making visual effects easily available to all DOM elements.
- *
- * Note that the events documented in this class are not Ext events, they encapsulate browser events. To access the
- * underlying browser event, see Ext.EventObject.browserEvent. Some older browsers may not support the full range of
- * events. Which events are supported is beyond the control of Sencha Touch.
  *
  * ## Usage
  *
@@ -17,7 +15,7 @@
  *
  * ## Composite (Collections of) Elements
  *
- * For working with collections of Elements, see Ext.CompositeElement
+ * For working with collections of Elements, see {@link Ext.CompositeElement}.
  *
  * @mixins Ext.mixin.Observable
  */
@@ -73,12 +71,15 @@ Ext.define('Ext.dom.Element', {
             if (!tag) {
                 tag = 'div';
             }
-
-            element = document.createElement(tag);
+            if (attributes.namespace) {
+                element = document.createElementNS(attributes.namespace, tag);
+            } else {
+                element = document.createElement(tag);
+            }
             elementStyle = element.style;
 
             for (name in attributes) {
-                if (name != 'tag' && attributes.hasOwnProperty(name)) {
+                if (name != 'tag') {
                     value = attributes[name];
 
                     switch (name) {
@@ -145,14 +146,11 @@ Ext.define('Ext.dom.Element', {
         /**
          * Retrieves Ext.dom.Element objects. {@link Ext#get} is alias for {@link Ext.dom.Element#get}.
          *
-         * **This method does not retrieve {@link Ext.Component Component}s.** This method retrieves Ext.dom.Element
-         * objects which encapsulate DOM elements. To retrieve a Component by its ID, use {@link Ext.ComponentManager#get}.
-         *
          * Uses simple caching to consistently return the same object. Automatically fixes if an object was recreated with
          * the same id via AJAX or DOM.
          *
-         * @param {String/HTMLElement/Ext.Element} el The id of the node, a DOM Node or an existing Element.
-         * @return {Ext.dom.Element} The Element object (or null if no matching element was found)
+         * @param {String/HTMLElement/Ext.Element} element The `id` of the node, a DOM Node or an existing Element.
+         * @return {Ext.dom.Element} The Element object (or `null` if no matching element was found).
          * @static
          * @inheritable
          */
@@ -164,45 +162,66 @@ Ext.define('Ext.dom.Element', {
                 return null;
             }
 
+            // DOM Id
             if (typeof element == 'string') {
+                dom = document.getElementById(element);
+
                 if (cache.hasOwnProperty(element)) {
-                    return cache[element];
+                    instance = cache[element];
                 }
 
-                if (!(dom = document.getElementById(element))) {
-                    return null;
+                // Is this in the DOM proper
+                if (dom) {
+                    // Update our Ext Element dom reference with the true DOM (it may have changed)
+                    if (instance) {
+                        instance.dom = dom;
+                    }
+                    else {
+                        // Create a new instance of Ext Element
+                        instance = cache[element] = new this(dom);
+                    }
                 }
-
-                cache[element] = instance = new this(dom);
+                // Not in the DOM, but if its in the cache, we can still use that as a DOM fragment reference, otherwise null
+                else if (!instance) {
+                    instance = null;
+                }
 
                 return instance;
             }
 
-            if ('tagName' in element) { // dom element
+             // DOM element
+            if ('tagName' in element) {
                 id = element.id;
 
                 if (cache.hasOwnProperty(id)) {
-                    return cache[id];
+                    instance = cache[id];
+                    instance.dom = element;
+                    return instance;
                 }
-
-                instance = new this(element);
-                cache[instance.getId()] = instance;
+                else {
+                    instance = new this(element);
+                    cache[instance.getId()] = instance;
+                }
 
                 return instance;
             }
 
+            // Ext Element
             if (element.isElement) {
                 return element;
             }
 
+            // Ext Composite Element
             if (element.isComposite) {
                 return element;
             }
 
+            // Array passed
             if (Ext.isArray(element)) {
                 return this.select(element);
             }
 
+            // DOM Document
             if (element === document) {
                 // create a bogus element object representing the document object
                 if (!this.documentElement) {
@@ -240,10 +259,103 @@ Ext.define('Ext.dom.Element', {
             else {
                 return (data[key] = value);
             }
+        },
+
+        /**
+         * Serializes a DOM form into a url encoded string
+         * @param {Object} form The form
+         * @return {String} The url encoded form
+         */
+        serializeForm : function(form) {
+            var fElements = form.elements || (document.forms[form] || Ext.getDom(form)).elements,
+                hasSubmit = false,
+                encoder = encodeURIComponent,
+                data = '',
+                eLen = fElements.length,
+                element, name, type, options, hasValue, e,
+                o, oLen, opt;
+
+            for (e = 0; e < eLen; e++) {
+                element = fElements[e];
+                name = element.name;
+                type = element.type;
+                options = element.options;
+
+                if (!element.disabled && name) {
+                    if (/select-(one|multiple)/i.test(type)) {
+                        oLen = options.length;
+                        for (o = 0; o < oLen; o++) {
+                            opt = options[o];
+                            if (opt.selected) {
+                                hasValue = opt.hasAttribute ? opt.hasAttribute('value') : opt.getAttributeNode('value').specified;
+                                data += Ext.String.format('{0}={1}&', encoder(name), encoder(hasValue ? opt.value : opt.text));
+                            }
+                        }
+                    } else if (!(/file|undefined|reset|button/i.test(type))) {
+                        if (!(/radio|checkbox/i.test(type) && !element.checked) && !(type == 'submit' && hasSubmit)) {
+                            data += encoder(name) + '=' + encoder(element.value) + '&';
+                            hasSubmit = /submit/i.test(type);
+                        }
+                    }
+                }
+            }
+            return data.substr(0, data.length - 1);
+        },
+
+        /**
+         * Serializes a DOM element and its children recursively into a string.
+         * @param {Object} node DOM element to serialize.
+         * @returns {String}
+         */
+        serializeNode: function (node) {
+            var result = '',
+                i, n, attr, child;
+            if (node.nodeType === document.TEXT_NODE) {
+                return node.nodeValue;
+            }
+            result += '<' + node.nodeName;
+            if (node.attributes.length) {
+                for (i = 0, n = node.attributes.length; i < n; i++) {
+                    attr = node.attributes[i];
+                    result += ' ' + attr.name + '="' + attr.value + '"';
+                }
+            }
+            result += '>';
+            if (node.childNodes && node.childNodes.length) {
+                for (i = 0, n = node.childNodes.length; i < n; i++) {
+                    child = node.childNodes[i];
+                    result += this.serializeNode(child);
+                }
+            }
+            result += '</' + node.nodeName + '>';
+            return result;
         }
     },
 
     isElement: true,
+
+
+    /**
+     * @event painted
+     * Fires whenever this Element actually becomes visible (painted) on the screen. This is useful when you need to
+     * perform 'read' operations on the DOM element, i.e: calculating natural sizes and positioning.
+     *
+     * __Note:__ This event is not available to be used with event delegation. Instead `painted` only fires if you explicitly
+     * add at least one listener to it, for performance reasons.
+     *
+     * @param {Ext.Element} this The component instance.
+     */
+
+    /**
+     * @event resize
+     * Important note: For the best performance on mobile devices, use this only when you absolutely need to monitor
+     * a Element's size.
+     *
+     * __Note:__ This event is not available to be used with event delegation. Instead `resize` only fires if you explicitly
+     * add at least one listener to it, for performance reasons.
+     *
+     * @param {Ext.Element} this The component instance.
+     */
 
     constructor: function(dom) {
         if (typeof dom == 'string') {
@@ -284,7 +396,7 @@ Ext.define('Ext.dom.Element', {
                 dom.id = id = this.mixins.identifiable.getUniqueId.call(this);
             }
 
-            this.self.cache[id] = this;
+            Ext.Element.cache[id] = this;
         }
 
         return id;
@@ -292,7 +404,7 @@ Ext.define('Ext.dom.Element', {
 
     setId: function(id) {
         var currentId = this.id,
-            cache = this.self.cache;
+            cache = Ext.Element.cache;
 
         if (currentId) {
             delete cache[currentId];
@@ -313,15 +425,15 @@ Ext.define('Ext.dom.Element', {
     },
 
     /**
-     * Sets the innerHTML of this element.
-     * @param {String} html The new HTML
+     * Sets the `innerHTML` of this element.
+     * @param {String} html The new HTML.
      */
     setHtml: function(html) {
         this.dom.innerHTML = html;
     },
 
     /**
-     * Returns the innerHTML of an Element.
+     * Returns the `innerHTML` of an element.
      * @return {String}
      */
     getHtml: function() {
@@ -341,15 +453,20 @@ Ext.define('Ext.dom.Element', {
         domStyle.display = '';
     },
 
-    isPainted: function() {
-        var dom = this.dom;
-        return Boolean(dom && dom.offsetParent);
-    },
+    isPainted: (function() {
+        return !Ext.browser.is.IE ? function() {
+            var dom = this.dom;
+            return Boolean(dom && dom.offsetParent);
+        } : function() {
+            var dom = this.dom;
+            return Boolean(dom && (dom.offsetHeight !== 0 && dom.offsetWidth !== 0));
+        }
+    })(),
 
     /**
-     * Sets the passed attributes as attributes of this element (a style attribute can be a string, object or function)
-     * @param {Object} attributes The object with the attributes
-     * @param {Boolean} [useSet=true] false to override the default setAttribute to use expandos.
+     * Sets the passed attributes as attributes of this element (a style attribute can be a string, object or function).
+     * @param {Object} attributes The object with the attributes.
+     * @param {Boolean} [useSet=true] `false` to override the default `setAttribute` to use expandos.
      * @return {Ext.dom.Element} this
      */
     set: function(attributes, useSet) {
@@ -383,17 +500,17 @@ Ext.define('Ext.dom.Element', {
     },
 
     /**
-     * Returns true if this element matches the passed simple selector (e.g. div.some-class or span:first-child)
-     * @param {String} selector The simple selector to test
-     * @return {Boolean} True if this element matches the selector, else false
+     * Returns `true` if this element matches the passed simple selector (e.g. 'div.some-class' or 'span:first-child').
+     * @param {String} selector The simple selector to test.
+     * @return {Boolean} `true` if this element matches the selector, else `false`.
      */
     is: function(selector) {
         return Ext.DomQuery.is(this.dom, selector);
     },
 
     /**
-     * Returns the value of the "value" attribute
-     * @param {Boolean} asNumber true to parse the value as a number
+     * Returns the value of the `value` attribute.
+     * @param {Boolean} asNumber `true` to parse the value as a number.
      * @return {String/Number}
      */
     getValue: function(asNumber) {
@@ -404,9 +521,9 @@ Ext.define('Ext.dom.Element', {
 
     /**
      * Returns the value of an attribute from the element's underlying DOM node.
-     * @param {String} name The attribute name
-     * @param {String} [namespace] The namespace in which to look for the attribute
-     * @return {String} The attribute value
+     * @param {String} name The attribute name.
+     * @param {String} [namespace] The namespace in which to look for the attribute.
+     * @return {String} The attribute value.
      */
     getAttribute: function(name, namespace) {
         var dom = this.dom;
@@ -415,8 +532,25 @@ Ext.define('Ext.dom.Element', {
                || dom.getAttribute(name) || dom[name];
     },
 
+    setSizeState: function(state) {
+        var classes = ['x-sized', 'x-unsized', 'x-stretched'],
+            states = [true, false, null],
+            index = states.indexOf(state),
+            addedClass;
+
+        if (index !== -1) {
+            addedClass = classes[index];
+            classes.splice(index, 1);
+            this.addCls(addedClass);
+        }
+
+        this.removeCls(classes);
+
+        return this;
+    },
+
     /**
-     * Removes this element's dom reference. Note that event and cache removal is handled at {@link Ext#removeNode}
+     * Removes this element's DOM reference. Note that event and cache removal is handled at {@link Ext#removeNode}
      */
     destroy: function() {
         this.isDestroyed = true;
@@ -452,14 +586,14 @@ Ext.define('Ext.dom.Element', {
          * {@link Ext.dom.Element#fly}.
          *
          * Use this to make one-time references to DOM elements which are not going to be accessed again either by
-         * application code, or by Ext's classes. If accessing an element which will be processed regularly, then {@link
-         * Ext#get Ext.get} will be more appropriate to take advantage of the caching provided by the Ext.dom.Element
+         * application code, or by Ext's classes. If accessing an element which will be processed regularly, then {@link Ext#get Ext.get}
+         * will be more appropriate to take advantage of the caching provided by the {@link Ext.dom.Element}
          * class.
          *
-         * @param {String/HTMLElement} element The dom node or id
+         * @param {String/HTMLElement} element The DOM node or `id`.
          * @param {String} [named] Allows for creation of named reusable flyweights to prevent conflicts (e.g.
-         * internally Ext uses "_global")
-         * @return {Ext.dom.Element} The shared Element object (or null if no matching element was found)
+         * internally Ext uses "_global").
+         * @return {Ext.dom.Element} The shared Element object (or `null` if no matching element was found).
          * @static
          */
         fly: function(element, named) {
@@ -491,7 +625,7 @@ Ext.define('Ext.dom.Element', {
      * @alias Ext.dom.Element#get
      */
     Ext.get = function(element) {
-        return Element.get.call(Element, element);
+        return Element.get(element);
     };
 
     /**
@@ -588,7 +722,7 @@ Ext.define('Ext.dom.Element', {
     /**
      * @member Ext.dom.Element
      * @method isDescendent
-     * Determines if this element is a descendent of the passed in Element.
+     * Determines if this element is a descendant of the passed in Element.
      * @removed 2.0.0
      */
     Ext.deprecateMethod(Ext.dom.Element, 'isDescendent', null, "Ext.dom.Element.isDescendent() has been removed");

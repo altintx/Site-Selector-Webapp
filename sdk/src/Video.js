@@ -1,4 +1,5 @@
 /**
+ * @aside example video
  * Provides a simple Container for HTML5 Video.
  *
  * ## Notes
@@ -14,13 +15,13 @@
  *
  * ## Useful Methods
  *
- * - {@link #pause}
+ * - {@link #method-pause}
  * - {@link #method-play}
  * - {@link #toggle}
  *
  * ## Example
  *
- *     var panel = new Ext.Panel({
+ *     var panel = Ext.create('Ext.Panel', {
  *         fullscreen: true,
  *         items: [
  *             {
@@ -34,7 +35,6 @@
  *             }
  *         ]
  *     });
- *
  */
 Ext.define('Ext.Video', {
     extend: 'Ext.Media',
@@ -42,7 +42,7 @@ Ext.define('Ext.Video', {
 
     config: {
         /**
-         * @cfg {String/Array} urls
+         * @cfg {String/Array} url
          * Location of the video to play. This should be in H.264 format and in a .mov file format.
          * @accessor
          */
@@ -58,7 +58,13 @@ Ext.define('Ext.Video', {
          * @cfg
          * @inheritdoc
          */
-        cls: Ext.baseCSSPrefix + 'video'
+        baseCls: Ext.baseCSSPrefix + 'video',
+
+        /**
+         * @cfg {Boolean} controls
+         * Determines if native controls should be shown for this video player.
+         */
+        controls: true
     },
 
     template: [{
@@ -125,9 +131,13 @@ Ext.define('Ext.Video', {
             }));
         }
 
-        if (me.getPlaying()) {
+        if (me.isPlaying()) {
             me.play();
         }
+    },
+
+    updateControls: function(value) {
+        this.media.set({controls:value ? true : undefined});
     },
 
     onErased: function() {
@@ -146,7 +156,7 @@ Ext.define('Ext.Video', {
             ghost = this.ghost;
 
         media.show();
-        if (Ext.os.is.Android2) {
+        if (Ext.browser.is.AndroidStock2) {
             setTimeout(function() {
                 me.play();
                 setTimeout(function() {
@@ -158,13 +168,13 @@ Ext.define('Ext.Video', {
             // we can control the Viewport
             ghost.hide();
             me.play();
-            setTimeout(function() {
-                me.play();
-            }, 10);
         }
     },
 
-    // native video tag display only only, move the media down so we can control the Viewport
+    /**
+     * @private
+     * native video tag display only, move the media down so we can control the Viewport
+     */
     onPause: function() {
         this.callParent(arguments);
         if (!this.isInlineVideo) {
@@ -173,7 +183,10 @@ Ext.define('Ext.Video', {
         }
     },
 
-    // native video tag display only only, move the media down so we can control the Viewport
+    /**
+     * @private
+     * native video tag display only, move the media down so we can control the Viewport
+     */
     onPlay: function() {
         this.callParent(arguments);
         this.media.setTop(0);

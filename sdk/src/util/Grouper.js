@@ -8,26 +8,26 @@ Ext.define('Ext.util.Grouper', {
     extend: 'Ext.util.Sorter',
 
     isGrouper: true,
-    
+
     config: {
+        /**
+         * @cfg {Function} groupFn This function will be called for each item in the collection to
+         * determine the group to which it belongs.
+         * @cfg {Object} groupFn.item The current item from the collection
+         * @cfg {String} groupFn.return The group identifier for the item
+         */
         groupFn: null,
 
         /**
          * @cfg {String} sortProperty You can define this configuration if you want the groups to be sorted
-         * on something other then the group string returned by the groupFn.
-         * @param item1
-         * @param item2
+         * on something other then the group string returned by the `groupFn`.
          */
         sortProperty: null,
 
         /**
-         * @cfg
-         * Grouper has a custom sorterFn that cannot be overriden by the user. If a property has been defined
-         * on this grouper, we use the default sorterFn, else we sort based on the returned group string.
-         * @param item1
-         * @param item2
-         * @private
-         * @hide
+         * @cfg {Function} sorterFn
+         * Grouper has a custom sorterFn that cannot be overridden by the user. If a property has been defined
+         * on this grouper, we use the default `sorterFn`, else we sort based on the returned group string.
          */
         sorterFn: function(item1, item2) {
             var property = this.getSortProperty(),
@@ -50,7 +50,7 @@ Ext.define('Ext.util.Grouper', {
 
     /**
      * @private
-     * Basic default sorter function that just compares the defined property of each object
+     * Basic default sorter function that just compares the defined property of each object.
      */
     defaultSortFn: function(item1, item2) {
         var me = this,
@@ -93,6 +93,6 @@ Ext.define('Ext.util.Grouper', {
 
     getGroupString: function(item) {
         var group = this.getGroupFn().call(this, item);
-        return typeof group != 'undefined' ? group.toString() : '';
+        return (group !== null && typeof group != 'undefined') ? group.toString() : '';
     }
 });

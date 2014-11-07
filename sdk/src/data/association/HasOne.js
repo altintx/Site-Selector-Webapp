@@ -14,7 +14,10 @@
  *             ],
  *
  *             // we can use the hasOne shortcut on the model to create a hasOne association
- *             associations: { type: 'hasOne', model: 'Address' }
+ *             hasOne: {
+ *                 model: 'Address',
+ *                 name : 'address'
+ *             }
  *         }
  *     });
  *
@@ -26,7 +29,7 @@
  *                 { name: 'number', type: 'string' },
  *                 { name: 'street', type: 'string' },
  *                 { name: 'city', type: 'string' },
- *                 { name: 'zip', type: 'string' },
+ *                 { name: 'zip', type: 'string' }
  *             ]
  *         }
  *     });
@@ -56,7 +59,7 @@
  *
  * The new getAddress function will also accept an object containing success, failure and callback properties
  * - callback will always be called, success will only be called if the associated model was loaded successfully
- * and failure will only be called if the associatied model could not be loaded:
+ * and failure will only be called if the associated model could not be loaded:
  *
  *     person.getAddress({
  *         reload: true, // force a reload if the owner model is already cached
@@ -96,13 +99,13 @@
  *
  *     //alternative syntax:
  *     person.setAddress(10, {
- *         callback: function(address, operation), // a function that will always be called
- *         success : function(address, operation), // a function that will only be called if the load succeeded
- *         failure : function(address, operation), // a function that will only be called if the load did not succeed
+ *         callback: function(address, operation) {}, // a function that will always be called
+ *         success : function(address, operation) {}, // a function that will only be called if the load succeeded
+ *         failure : function(address, operation) {}, // a function that will only be called if the load did not succeed
  *         scope   : this //optionally pass in a scope object to execute the callbacks in
- *     })
+ *     });
  *
- * ## Customisation
+ * ## Customization
  *
  * Associations reflect on the models they are linking to automatically set up properties such as the
  * {@link #primaryKey} and {@link #foreignKey}. These can alternatively be specified:
@@ -114,9 +117,11 @@
  *                 // ...
  *             ],
  *
- *             associations: [
- *                 { type: 'hasOne', model: 'Address', primaryKey: 'unique_id', foreignKey: 'addr_id' }
- *             ]
+ *             hasOne: {
+ *                 model     : 'Address', 
+ *                 primaryKey: 'unique_id',
+ *                 foreignKey: 'addr_id'
+ *             }
  *         }
  *     });
  *
@@ -177,14 +182,14 @@ Ext.define('Ext.data.association.HasOne', {
             if (inverse) {
                 foreignKey = inverse.getForeignKey();
             } else {
-                foreignKey = this.getOwnerName().toLowerCase() + '_id';
+                foreignKey = this.getAssociatedName().toLowerCase() + '_id';
             }
         }
         return foreignKey;
     },
 
     updateForeignKey: function(foreignKey, oldForeignKey) {
-        var fields = this.getAssociatedModel().getFields(),
+        var fields = this.getOwnerModel().getFields(),
             field = fields.get(foreignKey);
 
         if (!field) {
@@ -206,7 +211,7 @@ Ext.define('Ext.data.association.HasOne', {
 
     applyInstanceName: function(instanceName) {
         if (!instanceName) {
-            instanceName = this.getAssociatedName() + 'BelongsToInstance';
+            instanceName = this.getAssociatedName() + 'HasOneInstance';
         }
         return instanceName;
     },
@@ -277,9 +282,13 @@ Ext.define('Ext.data.association.HasOne', {
 
             this.set(foreignKey, value);
 
-            record = Model.cache.get(Model.generateCacheId(associatedModel.modelName, value));
-            if (record) {
-                this[instanceName] = record;
+            if (value || value === 0) {
+                record = Model.cache[Model.generateCacheId(associatedModel.modelName, value)];
+                if (record) {
+                    this[instanceName] = record;
+                }
+            } else {
+                delete this[instanceName];
             }
 
             if (Ext.isFunction(options)) {
@@ -292,6 +301,8 @@ Ext.define('Ext.data.association.HasOne', {
             if (Ext.isObject(options)) {
                 return this.save(options);
             }
+
+            return this;
         };
     },
 
@@ -328,7 +339,7 @@ Ext.define('Ext.data.association.HasOne', {
                 options.success = function(rec){
                     model[instanceName] = rec;
                     if (success) {
-                        success.call(this, arguments);
+                        success.apply(this, arguments);
                     }
                 };
 
@@ -359,7 +370,7 @@ Ext.define('Ext.data.association.HasOne', {
         var inverse = this.getInverseAssociation(),
             newRecord = reader.read([associationData]).getRecords()[0];
 
-        record[this.getInstanceName()] = newRecord;
+        record[this.getSetterName()].call(record, newRecord);
 
         //if the inverse association was found, set it now on each record we've just created
         if (inverse) {

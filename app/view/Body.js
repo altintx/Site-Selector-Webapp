@@ -171,13 +171,13 @@ Ext.define("SiteSelector.view.Body", {
 		} else {
 			Ext.Msg.show({
 				title: "Consult your doctor",
-				message: "Site Selector will now highlight areas commonly used for infusion sites. This doesn't mean you should use them, not does it mean they will work for you. Consult your doctor.",
+				message: "Site Selector will now highlight areas commonly used for infusion sites. This doesn't mean you should use them, nor does it mean they will work for you. Consult your doctor.",
 				buttons: [{
-					text: "Highlight Common Sites",
+					text: "Highlight",
 					itemId: "ok"
 				},
 				{
-					text: "Don't Highlight",
+					text: "Don't",
 					itemId: "cancel"
 				}],
 				fn: function(buttonId) {

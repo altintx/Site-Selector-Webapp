@@ -2,7 +2,7 @@
  * {@link Ext.TitleBar}'s are most commonly used as a docked item within an {@link Ext.Container}.
  *
  * The main difference between a {@link Ext.TitleBar} and an {@link Ext.Toolbar} is that
- * the {@link #title} configuration is **always** centered horiztonally in a {@link Ext.TitleBar} between
+ * the {@link #title} configuration is **always** centered horizontally in a {@link Ext.TitleBar} between
  * any items aligned left or right.
  *
  * You can also give items of a {@link Ext.TitleBar} an `align` configuration of `left` or `right`
@@ -18,12 +18,10 @@
  *         items: [
  *             {
  *                 iconCls: 'add',
- *                 iconMask: true,
  *                 align: 'left'
  *             },
  *             {
  *                 iconCls: 'home',
- *                 iconMask: true,
  *                 align: 'right'
  *             }
  *         ]
@@ -46,7 +44,6 @@
  *             },
  *             {
  *                 iconCls: 'home',
- *                 iconMask: true,
  *                 align: 'right'
  *             }
  *         ]
@@ -70,7 +67,7 @@
  *             {
  *                 align: 'right',
  *                 text: 'Another button'
- *             },
+ *             }
  *         ]
  *     });
  *
@@ -86,11 +83,10 @@ Ext.define('Ext.TitleBar', {
     requires: [
         'Ext.Button',
         'Ext.Title',
-        'Ext.Spacer',
-        'Ext.util.SizeMonitor'
+        'Ext.Spacer'
     ],
 
-    // private
+    // @private
     isToolbar: true,
 
     config: {
@@ -121,11 +117,25 @@ Ext.define('Ext.TitleBar', {
         title: null,
 
         /**
+         * @cfg {String} titleAlign
+         * The alignment for the title of the toolbar.
+         * @accessor
+         */
+        titleAlign: 'center',
+
+        /**
          * @cfg {String} defaultType
          * The default xtype to create.
          * @accessor
          */
         defaultType: 'button',
+
+        /**
+         * @cfg {String} minHeight
+         * The minimum height height of the Toolbar.
+         * @accessor
+         */
+        minHeight: null,
 
         /**
          * @cfg
@@ -144,20 +154,24 @@ Ext.define('Ext.TitleBar', {
          * the TitleBar.
          * @accessor
          */
-        items: []
+        items: [],
+
+        /**
+         * @cfg {String} maxButtonWidth The maximum width of the button by percentage
+         * @accessor
+         */
+        maxButtonWidth: '40%'
     },
 
-    /**
-     * The max button width in this toolbar
-     * @private
-     */
-    maxButtonWidth: '40%',
+    platformConfig: [{
+        theme: ['Blackberry', 'Tizen'],
+        titleAlign: 'left'
+    }, {
+        theme: ['Cupertino'],
+        maxButtonWidth: '80%'
+    }],
 
-    constructor: function() {
-        this.refreshTitlePosition = Ext.Function.createThrottled(this.refreshTitlePosition, 50, this);
-
-        this.callParent(arguments);
-    },
+    hasCSSMinHeight: true,
 
     beforeInitialize: function() {
         this.applyItems = this.applyInitialItems;
@@ -166,73 +180,88 @@ Ext.define('Ext.TitleBar', {
     initialize: function() {
         delete this.applyItems;
 
-        this.doAdd = this.doBoxAdd;
-        this.remove = this.doBoxRemove;
-        this.doInsert = this.doBoxInsert;
-
         this.add(this.initialItems);
         delete this.initialItems;
 
         this.on({
-            painted: 'onPainted',
-            erased: 'onErased'
+            painted: 'refreshTitlePosition',
+            single: true
         });
     },
 
     applyInitialItems: function(items) {
-        var SizeMonitor = Ext.util.SizeMonitor,
-            defaults = this.getDefaults() || {},
-            leftBox, rightBox, spacer;
+        var me = this,
+            titleAlign = me.getTitleAlign(),
+            defaults = me.getDefaults() || {};
 
-        this.initialItems = items;
+        me.initialItems = items;
 
-        this.leftBox = leftBox = this.add({
+        me.leftBox = me.add({
             xtype: 'container',
             style: 'position: relative',
             layout: {
                 type: 'hbox',
                 align: 'center'
+            },
+            listeners: {
+                resize: 'refreshTitlePosition',
+                scope: me
             }
         });
 
-        this.spacer = spacer = this.add({
+        me.spacer = me.add({
             xtype: 'component',
             style: 'position: relative',
-            flex: 1
+            flex: 1,
+            listeners: {
+                resize: 'refreshTitlePosition',
+                scope: me
+            }
         });
 
-        this.rightBox = rightBox = this.add({
+        me.rightBox = me.add({
             xtype: 'container',
             style: 'position: relative',
             layout: {
                 type: 'hbox',
                 align: 'center'
+            },
+            listeners: {
+                resize: 'refreshTitlePosition',
+                scope: me
             }
         });
 
-        this.titleComponent = this.add({
-            xtype: 'title',
-            hidden: defaults.hidden,
-            centered: true
-        });
 
-        this.sizeMonitors = {
-            leftBox: new SizeMonitor({
-                element: leftBox.renderElement,
-                callback: this.refreshTitlePosition,
-                scope: this
-            }),
-            spacer: new SizeMonitor({
-                element: spacer.renderElement,
-                callback: this.refreshTitlePosition,
-                scope: this
-            }),
-            rightBox: new SizeMonitor({
-                element: rightBox.renderElement,
-                callback: this.refreshTitlePosition,
-                scope: this
-            })
-        };
+        switch(titleAlign) {
+            case 'left':
+                me.titleComponent = me.leftBox.add({
+                    xtype: 'title',
+                    cls: Ext.baseCSSPrefix + 'title-align-left',
+                    hidden: defaults.hidden
+                });
+                me.refreshTitlePosition = Ext.emptyFn;
+            break;
+            case 'right':
+                me.titleComponent = me.rightBox.add({
+                    xtype: 'title',
+                    cls: Ext.baseCSSPrefix + 'title-align-right',
+                    hidden: defaults.hidden
+                });
+                me.refreshTitlePosition = Ext.emptyFn;
+            break;
+            default:
+                me.titleComponent = me.add({
+                    xtype: 'title',
+                    hidden: defaults.hidden,
+                    centered: true
+                });
+            break;
+        }
+
+        me.doAdd = me.doBoxAdd;
+        me.remove = me.doBoxRemove;
+        me.doInsert = me.doBoxInsert;
     },
 
     doBoxAdd: function(item) {
@@ -242,62 +271,43 @@ Ext.define('Ext.TitleBar', {
         else {
             this.leftBox.add(item);
         }
-
-        if (this.painted) {
-            this.refreshTitlePosition();
-        }
     },
 
-    doBoxRemove: function(item) {
+    doBoxRemove: function(item, destroy) {
         if (item.config.align == 'right') {
-            this.rightBox.remove(item);
+            this.rightBox.remove(item, destroy);
         }
         else {
-            this.leftBox.remove(item);
-        }
-
-        if (this.painted) {
-            this.refreshTitlePosition();
+            this.leftBox.remove(item, destroy);
         }
     },
 
     doBoxInsert: function(index, item) {
         if (item.config.align == 'right') {
-            this.rightBox.add(item);
+            this.rightBox.insert(index, item);
         }
         else {
-            this.leftBox.add(item);
+            this.leftBox.insert(index, item);
         }
     },
 
-    onPainted: function() {
-        var sizeMonitors = this.sizeMonitors;
-
-        this.painted = true;
-        this.refreshTitlePosition();
-
-        sizeMonitors.leftBox.refresh();
-        sizeMonitors.spacer.refresh();
-        sizeMonitors.rightBox.refresh();
-    },
-
-    onErased: function() {
-        this.painted = false;
-    },
-
-    getMaxButtonWidth: function() {
-        var value = this.maxButtonWidth;
+    calculateMaxButtonWidth: function() {
+        var maxButtonWidth = this.getMaxButtonWidth();
 
         //check if it is a percentage
-        if (Ext.isString(this.maxButtonWidth)) {
-            value = parseInt(value.replace('%', ''), 10);
-            value = Math.round((this.element.getWidth() / 100) * value);
+        if (Ext.isString(maxButtonWidth)) {
+            maxButtonWidth = parseInt(maxButtonWidth.replace('%', ''), 10);
         }
+        maxButtonWidth = Math.round((this.element.getWidth() / 100) * maxButtonWidth);
 
-        return value;
+        return maxButtonWidth;
     },
 
     refreshTitlePosition: function() {
+        if (this.isDestroyed) {
+            return;
+        }
+
         var titleElement = this.titleComponent.renderElement;
 
         titleElement.setWidth(null);
@@ -306,33 +316,40 @@ Ext.define('Ext.TitleBar', {
         //set the min/max width of the left button
         var leftBox = this.leftBox,
             leftButton = leftBox.down('button'),
+            singleButton = leftBox.getItems().getCount() == 1,
             leftBoxWidth, maxButtonWidth;
 
-        if (leftButton) {
+        if (leftButton && singleButton) {
             if (leftButton.getWidth() == null) {
                 leftButton.renderElement.setWidth('auto');
             }
 
             leftBoxWidth = leftBox.renderElement.getWidth();
-            maxButtonWidth = this.getMaxButtonWidth();
+            maxButtonWidth = this.calculateMaxButtonWidth();
 
             if (leftBoxWidth > maxButtonWidth) {
                 leftButton.renderElement.setWidth(maxButtonWidth);
             }
         }
 
-        var spacerBox = this.spacer.renderElement.getPageBox(),
-            titleBox = titleElement.getPageBox(),
+        var spacerBox = this.spacer.renderElement.getPageBox();
+
+        if (Ext.browser.is.IE) {
+            titleElement.setWidth(spacerBox.width);
+        }
+
+        var titleBox = titleElement.getPageBox(),
             widthDiff = titleBox.width - spacerBox.width,
             titleLeft = titleBox.left,
             titleRight = titleBox.right,
             halfWidthDiff, leftDiff, rightDiff;
 
+
         if (widthDiff > 0) {
-            titleElement.setWidth(spacerBox.width);
             halfWidthDiff = widthDiff / 2;
             titleLeft += halfWidthDiff;
             titleRight -= halfWidthDiff;
+            titleElement.setWidth(spacerBox.width);
         }
 
         leftDiff = spacerBox.left - titleLeft;
@@ -352,20 +369,8 @@ Ext.define('Ext.TitleBar', {
     updateTitle: function(newTitle) {
         this.titleComponent.setTitle(newTitle);
 
-        this.titleBox = null;
-
-        if (this.painted) {
+        if (this.isPainted()) {
             this.refreshTitlePosition();
         }
-    },
-
-    destroy: function() {
-        this.callParent();
-
-        var sizeMonitors = this.sizeMonitors;
-
-        sizeMonitors.leftBox.destroy();
-        sizeMonitors.spacer.destroy();
-        sizeMonitors.rightBox.destroy();
     }
 });

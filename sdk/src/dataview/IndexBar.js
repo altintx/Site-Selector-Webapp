@@ -39,7 +39,6 @@
  *            {firstName: 'Nigel',   lastName: 'White'},
  *            {firstName: 'Don',     lastName: 'Griffin'},
  *            {firstName: 'Nico',    lastName: 'Ferrero'},
- *            {firstName: 'Nicolas', lastName: 'Belmonte'},
  *            {firstName: 'Jason',   lastName: 'Johnston'}
  *        ]
  *     });
@@ -88,13 +87,19 @@ Ext.define('Ext.dataview.IndexBar', {
 
         /**
          * @cfg {String} listPrefix
-         * The prefix string to be appended at the beginning of the list.
+         * The prefix string to be used at the beginning of the list.
          * E.g: useful to add a "#" prefix before numbers.
          * @accessor
          */
         listPrefix: null
     },
-
+    platformConfig: [
+        {
+            theme: ['Blackberry'],
+            direction: 'vertical',
+            letters: ['*', '#', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+        }
+    ],
     // @private
     itemCls: Ext.baseCSSPrefix + '',
 
@@ -105,11 +110,31 @@ Ext.define('Ext.dataview.IndexBar', {
     },
 
     getElementConfig: function() {
-        return {
-            reference: 'wrapper',
-            classList: ['x-centered', 'x-indexbar-wrapper'],
-            children: [this.callParent()]
-        };
+        // Blackberry Specific code for Index Bar Indicator
+        if(Ext.theme.is.Blackberry) {
+            return {
+                reference: 'wrapper',
+                classList: ['x-centered', 'x-indexbar-wrapper'],
+                children: [
+                    {
+                        reference: 'indicator',
+                        classList: ['x-indexbar-indicator'],
+                        hidden: true,
+                        children: [{
+                            reference: 'indicatorInner',
+                            classList: ['x-indexbar-indicator-inner']
+                        }]
+                    },
+                    this.callParent()
+                ]
+            };
+        } else {
+            return {
+                reference: 'wrapper',
+                classList: ['x-centered', 'x-indexbar-wrapper'],
+                children: [this.callParent()]
+            };
+        }
     },
 
     updateLetters: function(letters) {
@@ -142,48 +167,75 @@ Ext.define('Ext.dataview.IndexBar', {
         this.innerElement.on({
             touchstart: this.onTouchStart,
             touchend: this.onTouchEnd,
-            touchmove: this.onTouchMove,
+            dragend: this.onDragEnd,
+            drag: this.onDrag,
             scope: this
         });
     },
 
-    // @private
-    onTouchStart: function(e, t) {
+    onTouchStart: function(e) {
         e.stopPropagation();
         this.innerElement.addCls(this.getBaseCls() + '-pressed');
         this.pageBox = this.innerElement.getPageBox();
-        this.onTouchMove(e);
+        this.onDrag(e);
+    },
+
+    onTouchEnd: function(e) {
+        this.onDragEnd();
     },
 
     // @private
-    onTouchEnd: function(e, t) {
+    onDragEnd: function() {
         this.innerElement.removeCls(this.getBaseCls() + '-pressed');
+
+        // Blackberry Specific code for Index Bar Indicator
+        if(this.indicator) {
+            this.indicator.hide();
+        }
     },
 
     // @private
-    onTouchMove: function(e) {
+    onDrag: function(e) {
         var point = Ext.util.Point.fromEvent(e),
-            target,
+            target, isValidTarget,
             pageBox = this.pageBox;
 
         if (!pageBox) {
             pageBox = this.pageBox = this.el.getPageBox();
         }
 
+
         if (this.getDirection() === 'vertical') {
             if (point.y > pageBox.bottom || point.y < pageBox.top) {
                 return;
             }
             target = Ext.Element.fromPoint(pageBox.left + (pageBox.width / 2), point.y);
+            isValidTarget = target.getParent() == this.element;
+
+            // Blackberry Specific code for Index Bar Indicator
+            if(this.indicator) {
+                this.indicator.show();
+
+                var halfIndicatorHeight = this.indicator.getHeight() / 2,
+                    y = point.y - this.element.getY();
+
+                y = Math.min(Math.max(y, halfIndicatorHeight), this.element.getHeight() - halfIndicatorHeight);
+
+                if (this.indicatorInner && isValidTarget) {
+                    this.indicatorInner.setHtml(target.getHtml().toUpperCase());
+                }
+                this.indicator.setTop(y - (halfIndicatorHeight));
+            }
         }
         else {
             if (point.x > pageBox.right || point.x < pageBox.left) {
                 return;
             }
             target = Ext.Element.fromPoint(point.x, pageBox.top + (pageBox.height / 2));
+            isValidTarget = target.getParent() == this.element;
         }
 
-        if (target) {
+        if (target && isValidTarget) {
             this.fireEvent('index', this, target.dom.innerHTML, target);
         }
     },
@@ -206,7 +258,7 @@ Ext.define('Ext.dataview.IndexBar', {
     /**
      * @member Ext.dataview.IndexBar
      * @method isHorizontal
-     * Returns true when direction is horizontal.
+     * Returns `true` when direction is horizontal.
      * @removed 2.0.0
      */
     Ext.deprecateMethod(this, 'isHorizontal', null, "Ext.dataview.IndexBar.isHorizontal() has been removed");
@@ -214,7 +266,7 @@ Ext.define('Ext.dataview.IndexBar', {
     /**
      * @member Ext.dataview.IndexBar
      * @method isVertical
-     * Returns true when direction is vertical.
+     * Returns `true` when direction is vertical.
      * @removed 2.0.0
      */
     Ext.deprecateMethod(this, 'isVertical', null, "Ext.dataview.IndexBar.isVertical() has been removed");
@@ -228,9 +280,9 @@ Ext.define('Ext.dataview.IndexBar', {
     Ext.deprecateMethod(this, 'refresh', null, "Ext.dataview.IndexBar.refresh() has been removed");
 
     /**
-     * @Member Ext.dataview.IndexBar
+     * @member Ext.dataview.IndexBar
      * @cfg {Boolean} alphabet
-     * True to use the letters property to show a list of the alphabet.
+     * `true` to use the letters property to show a list of the alphabet.
      * @removed 2.0.0
      */
     Ext.deprecateProperty(this, 'alphabet', null, "Ext.dataview.IndexBar.alphabet has been removed");

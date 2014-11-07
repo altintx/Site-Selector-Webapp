@@ -1,6 +1,11 @@
+//@tag dom,core
+//@define Ext.DomHelper
+//@require Ext.dom.Query
+
 /**
  * @class Ext.DomHelper
  * @alternateClassName Ext.dom.Helper
+ * @singleton
  *
  * The DomHelper class provides a layer of abstraction from DOM and transparently supports creating elements via DOM or
  * using HTML fragments. It also has the ability to create HTML fragment templates from your DOM building code.
@@ -111,7 +116,7 @@
  *     var tpl = new Ext.DomHelper.createTemplate(html);
  *     tpl.compile();
  *
- *     //... use template like normal
+ *     // ... use template like normal
  *
  * ## Performance Boost
  *
@@ -218,7 +223,7 @@ Ext.define('Ext.dom.Helper', {
      *
      *      var buf = [];
      *
-     *      ...
+     *      // ...
      *
      *      Ext.DomHelper.generateStyles({
      *          backgroundColor: 'red'
@@ -246,7 +251,7 @@ Ext.define('Ext.dom.Helper', {
 
     /**
      * Returns the markup for the passed Element(s) config.
-     * @param {Object} spec The DOM object spec (and children)
+     * @param {Object} spec The DOM object spec (and children).
      * @return {String}
      */
     markup: function(spec) {
@@ -341,8 +346,15 @@ Ext.define('Ext.dom.Helper', {
             rangeEl = (isAfterBegin ? 'first' : 'last') + 'Child';
             if (el.firstChild) {
                 if (range) {
-                    range[setStart](el[rangeEl]);
-                    frag = range.createContextualFragment(html);
+                    // Creating ranges on a hidden element throws an error, checking for the element being painted is
+                    // VERY expensive, so we'll catch the error and fall back to using the full fragment
+                    try {
+                        range[setStart](el[rangeEl]);
+                        frag = range.createContextualFragment(html);
+                    }
+                    catch(e) {
+                        frag = this.createContextualFragment(html);
+                    }
                 } else {
                     frag = this.createContextualFragment(html);
                 }

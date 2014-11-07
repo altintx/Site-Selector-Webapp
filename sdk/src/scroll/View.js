@@ -1,10 +1,10 @@
 /**
- * This is a simple container that is used to combile content and a {@link Ext.scroll.View} instance. It also
+ * This is a simple container that is used to compile content and a {@link Ext.scroll.View} instance. It also
  * provides scroll indicators.
  *
  * 99% of the time all you need to use in this class is {@link #getScroller}.
  *
- * This should never should be extended.
+ * This should never be extended.
  */
 Ext.define('Ext.scroll.View', {
     extend: 'Ext.Evented',
@@ -173,8 +173,14 @@ Ext.define('Ext.scroll.View', {
     },
 
     updateElement: function(element) {
-        var scrollerElement = element.getFirstChild().getFirstChild(),
-            scroller = this.getScroller();
+        var scroller = this.getScroller(),
+            scrollerElement;
+
+
+        scrollerElement = element.getFirstChild().getFirstChild();
+        if (this.FixedHBoxStretching) {
+            scrollerElement = scrollerElement.getFirstChild();
+        }
 
         element.addCls(this.getCls());
         element.insertFirst(this.indicatorsGrid);
@@ -335,6 +341,13 @@ Ext.define('Ext.scroll.View', {
         var element = this.getElement(),
             indicators = this.getIndicators();
 
+        Ext.destroy(this.getScroller(), this.indicatorsGrid);
+
+        if (this.hasOwnProperty('indicatorsHidingTimer')) {
+            clearTimeout(this.indicatorsHidingTimer);
+            delete this.indicatorsHidingTimer;
+        }
+
         if (element && !element.isDestroyed) {
             element.removeCls(this.getCls());
         }
@@ -342,7 +355,6 @@ Ext.define('Ext.scroll.View', {
         indicators.x.destroy();
         indicators.y.destroy();
 
-        Ext.destroy(this.getScroller(), this.indicatorsGrid);
         delete this.indicatorsGrid;
 
         this.callParent(arguments);

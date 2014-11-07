@@ -42,6 +42,11 @@ Ext.define('Ext.data.proxy.Direct', {
 
     config: {
         /**
+         * @cfg url
+         * @hide
+         */
+
+        /**
          * @cfg {String/String[]} paramOrder
          * Defaults to undefined. A list of params to be executed server side.  Specify the params in the order in
          * which they must be executed on the server-side as either (1) an Array of String values, or (2) a String
@@ -86,7 +91,7 @@ Ext.define('Ext.data.proxy.Direct', {
         extraParams: null
     },
 
-    // private
+    // @private
     paramOrderRe: /[\s,|]/,
 
     applyParamOrder: function(paramOrder) {
@@ -96,37 +101,54 @@ Ext.define('Ext.data.proxy.Direct', {
         return paramOrder;
     },
 
-    applyDirectFn: function(directFn) {
-        return Ext.direct.Manager.parseMethod(directFn);
-    },
+    resolveMethods : function() {
+        var me = this,
+            fn = me.getDirectFn(),
+            api = me.getApi(),
+            Manager = Ext.direct.Manager,
+            method;
 
-    applyApi: function(api) {
-        var fn;
+        if (fn) {
+            me.setDirectFn(method = Manager.parseMethod(fn));
 
-        if (api && Ext.isObject(api)) {
+            if (!Ext.isFunction(method)) {
+                Ext.Error.raise('Cannot resolve directFn ' + fn);
+            }
+        }
+        else if (api) {
             for (fn in api) {
                 if (api.hasOwnProperty(fn)) {
-                    api[fn] = Ext.direct.Manager.parseMethod(api[fn]);
+                    method = api[fn];
+                    api[fn] = Manager.parseMethod(method);
+
+                    if (!Ext.isFunction(api[fn])) {
+                        Ext.Error.raise('Cannot resolve Direct api ' + fn + ' method ' + method);
+                    }
                 }
             }
         }
 
-        return api;
+        me.methodsResolved = true;
     },
 
     doRequest: function(operation, callback, scope) {
         var me = this,
             writer = me.getWriter(),
             request = me.buildRequest(operation, callback, scope),
-            api = me.getApi(),
-            fn = api && api[request.getAction()] || me.getDirectFn(),
+            api = me.getApi() || {},
             params = request.getParams(),
             args = [],
-            method;
+            fn, method;
+
+        if (!me.methodsResolved) {
+            me.resolveMethods();
+        }
+
+        fn = api[request.getAction()] || me.getDirectFn();
 
         //<debug>
         if (!fn) {
-            Ext.Error.raise('No direct function specified for this proxy');
+            Ext.Logger.error('No direct function specified for this proxy');
         }
         //</debug>
 
@@ -162,22 +184,26 @@ Ext.define('Ext.data.proxy.Direct', {
         var me = this;
 
         return function(data, event) {
-            me.processResponse(event.getStatus(), operation, request, event.getResult(), callback, scope);
+            me.processResponse(event.getStatus(), operation, request, event, callback, scope);
         };
     },
 
-    // inherit docs
+    getResponseResult: function(response) {
+        return response.getResult();
+    },
+
+    // @inheritdoc
     extractResponseData: function(response) {
         var result = response.getResult();
         return Ext.isDefined(result) ? result : response.getData();
     },
 
-    // inherit docs
+    // @inheritdoc
     setException: function(operation, response) {
         operation.setException(response.getMessage());
     },
 
-    // inherit docs
+    // @inheritdoc
     buildUrl: function() {
         return '';
     }
